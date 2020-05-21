@@ -3,3 +3,7 @@
 </p>
 
 **Jolimail** is an open source alternative to all the transactionnal email solutions.
+
+## Documentation
+
+- [Architecture](./documentation/architecture.md)
