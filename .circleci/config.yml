@@ -1,0 +1,23 @@
+version: 2
+
+workflows:
+  version: 2
+  workflow:
+    jobs:
+      - test-server
+
+jobs:
+  test-server:
+    docker:
+      - image: jdrouet/rust-nightly:buster-slim-dev
+    steps:
+      - checkout
+      - run:
+          command: ls -lha
+          working_directory: ~/project/server
+      - run:
+          command: rustfmt --edition 2018 --check src/{**/,}*.rs\
+          working_directory: ~/project/server
+      - run:
+          command: cargo test
+          working_directory: ~/project/server
