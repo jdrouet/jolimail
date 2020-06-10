@@ -4,20 +4,24 @@ workflows:
   version: 2
   workflow:
     jobs:
+      - lint-server
       - test-server
 
 jobs:
-  test-server:
+  lint-server:
     docker:
       - image: jdrouet/rust-nightly:buster-slim-dev
     steps:
       - checkout
       - run:
-          command: ls -lha
+          command: rustfmt --edition 2018 --check src/{**/,}*.rs
           working_directory: ~/project/server
-      - run:
-          command: rustfmt --edition 2018 --check src/{**/,}*.rs\
-          working_directory: ~/project/server
-      - run:
-          command: cargo test
-          working_directory: ~/project/server
+
+  test-server:
+    docker:
+      - image: jdrouet/docker-with-compose
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run: docker-compose -f server/docker-compose.dev.yml build
+      - run: docker-compose -f server/docker-compose.dev.yml run runner

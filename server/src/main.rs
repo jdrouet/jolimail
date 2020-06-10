@@ -7,9 +7,14 @@ extern crate log;
 
 mod controller;
 mod error;
+mod service;
 
 use actix_web::{middleware, web, App, HttpServer};
+use deadpool_postgres::Pool;
 use std::env;
+
+use service::database::client::get_pool;
+use service::database::migration::Migrator;
 
 macro_rules! create_app {
     () => {
@@ -41,13 +46,27 @@ fn get_bind() -> String {
     format!("{}:{}", get_address(), get_port())
 }
 
+async fn migrate_database(pool: &Pool) {
+    info!("running migrations");
+    let mut client = pool.get().await.expect("couldn't get client");
+    let migrator = Migrator::from_env().expect("couldn't init migration");
+    migrator
+        .up(&mut client)
+        .await
+        .expect("couldn't run migration");
+}
+
 #[actix_rt::main]
 async fn main() -> std::io::Result<()> {
     env_logger::init();
 
+    let pool = get_pool();
+    migrate_database(&pool).await;
+
     info!("starting server");
     HttpServer::new(move || {
         bind_services!(create_app!()
+            .data(pool.clone())
             .wrap(middleware::DefaultHeaders::new().header("X-Version", "0.1.0"))
             .wrap(middleware::Logger::default())
             .wrap(middleware::Compress::default()))
@@ -60,12 +79,13 @@ async fn main() -> std::io::Result<()> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::service::database::client::tests::POOL;
     use actix_http::Request;
     use actix_web::dev::ServiceResponse;
     use actix_web::{test, App};
 
     pub async fn execute_request(req: Request) -> ServiceResponse {
-        let mut app = test::init_service(bind_services!(create_app!())).await;
+        let mut app = test::init_service(bind_services!(create_app!().data(POOL.clone()))).await;
         test::call_service(&mut app, req).await
     }
 
