@@ -16,6 +16,8 @@ pub struct ServerErrorResponse {
 #[derive(Debug)]
 pub enum ServerError {
     BadRequest(String),
+    Conflict(String),
+    NotFound(String),
     InternalServerError(String),
 }
 
@@ -29,6 +31,8 @@ impl ServerError {
     fn response(&self) -> ResponseBuilder {
         match *self {
             ServerError::BadRequest(_) => HttpResponse::BadRequest(),
+            ServerError::Conflict(_) => HttpResponse::Conflict(),
+            ServerError::NotFound(_) => HttpResponse::NotFound(),
             ServerError::InternalServerError(_) => HttpResponse::InternalServerError(),
         }
     }
@@ -36,6 +40,8 @@ impl ServerError {
     fn name(&self) -> String {
         match *self {
             ServerError::BadRequest(_) => "Bad Request".into(),
+            ServerError::Conflict(_) => "Conflict".into(),
+            ServerError::NotFound(_) => "Not Found".into(),
             ServerError::InternalServerError(_) => "Internal Server Error".into(),
         }
     }
@@ -43,6 +49,8 @@ impl ServerError {
     fn message(&self) -> Option<String> {
         match *self {
             ServerError::BadRequest(ref msg) => Some(msg.clone()),
+            ServerError::Conflict(ref msg) => Some(msg.clone()),
+            ServerError::NotFound(ref msg) => Some(msg.clone()),
             ServerError::InternalServerError(ref msg) => Some(msg.clone()),
         }
     }

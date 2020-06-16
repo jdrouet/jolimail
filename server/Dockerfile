@@ -9,6 +9,12 @@ RUN cargo fetch
 
 COPY src /code/src
 
+FROM base AS tester
+
+ENV TEST_MIGRATION_PATH=/migrations
+
+COPY migrations /migrations
+
 CMD [ "cargo", "test", "--offline" ]
 
 FROM base AS builder
