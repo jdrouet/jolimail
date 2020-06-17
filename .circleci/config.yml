@@ -4,10 +4,29 @@ workflows:
   version: 2
   workflow:
     jobs:
+      - test-client
       - lint-server
-      - test-server
+      - test-server:
+          requires:
+            - lint-server
+      - build-image:
+          requires:
+            - test-client
+            - test-server
 
 jobs:
+  test-client:
+    docker:
+      - image: node:lts-buster
+    steps:
+      - checkout
+      - run:
+          command: npm install
+          working_directory: ~/project/client
+      - run:
+          command: npm test
+          working_directory: ~/project/client
+
   lint-server:
     docker:
       - image: rust:1-slim-buster
@@ -35,3 +54,11 @@ jobs:
             DATABASE_DBNAME: postgres
             MIGRATION_PATH: migrations
             TEST_MIGRATION_PATH: migrations
+
+  build-image:
+    docker:
+      - image: docker:stable
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run: docker build -t jdrouet/jolimail .
