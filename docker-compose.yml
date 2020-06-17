@@ -10,16 +10,17 @@ services:
     ports:
       - 5432:5432
 
-  runner:
-    build:
-      context: .
-      target: tester
+  main:
+    build: .
     environment:
       DATABASE_HOST: database
       DATABASE_USER: postgres
       DATABASE_DBNAME: postgres
+      RUST_LOG: info
     networks:
       - backend
+    ports:
+      - 3000:3000
     depends_on:
       - database
 

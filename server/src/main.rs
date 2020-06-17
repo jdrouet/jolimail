@@ -10,6 +10,7 @@ mod error;
 mod model;
 mod service;
 
+use actix_files::Files;
 use actix_web::{middleware, web, App, HttpServer};
 use deadpool_postgres::Pool;
 use std::env;
@@ -48,6 +49,13 @@ fn get_port() -> String {
     }
 }
 
+fn get_client() -> String {
+    match env::var("CLIENT_PATH") {
+        Ok(value) => value,
+        Err(_) => "static".into(),
+    }
+}
+
 fn get_bind() -> String {
     format!("{}:{}", get_address(), get_port())
 }
@@ -76,6 +84,7 @@ async fn main() -> std::io::Result<()> {
             .wrap(middleware::DefaultHeaders::new().header("X-Version", "0.1.0"))
             .wrap(middleware::Logger::default())
             .wrap(middleware::Compress::default()))
+        .service(Files::new("/", get_client()).index_file("index.html"))
     })
     .bind(get_bind())?
     .run()
