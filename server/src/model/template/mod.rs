@@ -29,6 +29,7 @@ WHERE id = $1
 "#;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Template {
     pub id: Uuid,
     pub slug: String,

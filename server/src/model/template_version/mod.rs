@@ -6,6 +6,7 @@ use uuid::Uuid;
 pub mod create;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct TemplateVersion {
     pub id: Uuid,
     pub template_id: Uuid,
