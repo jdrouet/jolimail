@@ -10,6 +10,10 @@ workflows:
           requires:
             - lint-server
       - build-image:
+          filters:
+            branches:
+              only:
+                - master
           requires:
             - test-client
             - test-server
