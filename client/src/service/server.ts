@@ -40,3 +40,13 @@ export const useTemplateList = function () {
   }, [setList]);
   return list;
 };
+
+export const useTemplate = function (templateId: string) {
+  const [result, setResult] = useState<Template>();
+  useEffect(() => {
+    fetch(`/api/templates/${templateId}`)
+      .then((res) => res.json())
+      .then((content) => setResult(content));
+  }, [setResult, templateId]);
+  return result;
+};
