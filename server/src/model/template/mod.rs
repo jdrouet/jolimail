@@ -14,11 +14,18 @@ WHERE deleted_at IS NULL
 ORDER BY updated_at DESC
 "#;
 
+const QUERY_FIND_BY_ID: &'static str = r#"
+SELECT id, slug, title, description, current_version_id, created_at, updated_at, deleted_at
+FROM templates
+WHERE id = $1
+LIMIT 1
+"#;
+
 const QUERY_CONTENT_BY_SLUG: &'static str = r#"
 SELECT template_versions.content
 FROM templates
 JOIN template_versions ON templates.current_version_id = template_versions.id
-WHERE templates.slug = $1
+WHERE templates.id = $1
 LIMIT 1
 "#;
 
@@ -64,13 +71,20 @@ impl Template {
         Ok(rows.iter().map(Template::from).collect())
     }
 
-    pub async fn get_content_by_slug(
+    pub async fn find_by_id(client: &Client, id: &Uuid) -> Result<Option<Template>, ServerError> {
+        debug!("find template by id {}", id);
+        let stmt = client.prepare(QUERY_FIND_BY_ID).await?;
+        let rows = client.query(&stmt, &[&id]).await?;
+        Ok(rows.first().map(Template::from))
+    }
+
+    pub async fn get_content_by_id(
         client: &Client,
-        slug: &str,
+        id: &Uuid,
     ) -> Result<Option<String>, ServerError> {
-        debug!("get template content by slug {}", slug);
+        debug!("get template content by id {}", id);
         let stmt = client.prepare(QUERY_CONTENT_BY_SLUG).await?;
-        let rows = client.query(&stmt, &[&slug]).await?;
+        let rows = client.query(&stmt, &[&id]).await?;
         Ok(rows.first().map(|row| row.get(0)))
     }
 

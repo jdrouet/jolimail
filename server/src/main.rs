@@ -28,6 +28,7 @@ macro_rules! bind_services {
     ($app: expr) => {
         $app.service(controller::status::handler)
             .service(controller::template::create::handler)
+            .service(controller::template::get::handler)
             .service(controller::template::get_content::handler)
             .service(controller::template::list::handler)
             .service(controller::template_version::activate::handler)
