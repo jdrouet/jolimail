@@ -39,7 +39,11 @@ COPY server/src /code/src
 
 RUN cargo build --release --offline
 
-FROM rust:1-slim-buster
+FROM debian:buster-slim
+
+RUN apt-get update \
+  && apt-get install -y ca-certificates libssl1.1 \
+  && rm -rf /var/lib/apt/lists/*
 
 ENV ADDRESS=0.0.0.0
 ENV CLIENT_PATH=/client
