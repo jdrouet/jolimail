@@ -4,6 +4,8 @@ import { MemoryRouter, Route } from 'react-router';
 import { render, waitForElement } from '@testing-library/react';
 import View from './index';
 
+jest.mock('mrml-js');
+
 const renderView = () =>
   render(
     <MemoryRouter initialEntries={['/edition/template-id']}>
@@ -14,7 +16,7 @@ const renderView = () =>
   );
 
 test('renders', async () => {
-  const mock = fetchMock.get(
+  const mockTemplate = fetchMock.get(
     '/api/templates/template-id',
     Promise.resolve({
       id: 'template-id',
@@ -22,7 +24,9 @@ test('renders', async () => {
       description: 'Some information',
     }),
   );
+  const mockContent = fetchMock.get('/api/templates/template-id/content', Promise.resolve('<mjml></mjml>'));
   const { container } = renderView();
   await waitForElement(() => container.querySelector('section'));
-  mock.restore();
+  mockTemplate.restore();
+  mockContent.restore();
 });

@@ -1,7 +1,7 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import ButtonGroup from '@material-ui/core/ButtonGroup';
+import CodeIcon from '@material-ui/icons/Code';
+import PreviewIcon from '@material-ui/icons/SubjectOutlined';
+import ToggleButtonGroup from '../../component/toggle-button-group';
 
 export type ViewToggleValue = 'preview' | 'code';
 
@@ -10,17 +10,21 @@ export type ViewToggleProps = {
   value: ViewToggleValue;
 };
 
+const options = [
+  {
+    icon: PreviewIcon,
+    label: 'Preview',
+    value: 'preview',
+  },
+  {
+    icon: CodeIcon,
+    label: 'Code',
+    value: 'code',
+  },
+];
+
 const ViewToggle: React.FC<ViewToggleProps> = ({ onChange, value }) => {
-  return (
-    <ButtonGroup color="primary">
-      <Button disabled={'preview' === value} name="preview" onClick={(e) => onChange('preview')}>
-        Preview
-      </Button>
-      <Button disabled={'code' === value} name="code" onClick={(e) => onChange('code')}>
-        Code
-      </Button>
-    </ButtonGroup>
-  );
+  return <ToggleButtonGroup options={options} onChange={(item) => onChange(item as ViewToggleValue)} title="View" value={value} />;
 };
 
 export default ViewToggle;

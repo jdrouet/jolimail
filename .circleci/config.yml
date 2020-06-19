@@ -6,9 +6,7 @@ workflows:
     jobs:
       - test-client
       - lint-server
-      - test-server:
-          requires:
-            - lint-server
+      - test-server
       - build-image:
           filters:
             branches:
@@ -21,15 +19,12 @@ workflows:
 jobs:
   test-client:
     docker:
-      - image: node:lts-buster
+      - image: docker:stable
     steps:
       - checkout
-      - run:
-          command: npm install
-          working_directory: ~/project/client
-      - run:
-          command: npm test
-          working_directory: ~/project/client
+      - setup_remote_docker
+      - run: docker build --tag jolimail-test-client --target client-base .
+      - run: docker run -e CI=true jolimail-test-client npm test
 
   lint-server:
     docker:

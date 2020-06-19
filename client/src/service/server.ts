@@ -50,3 +50,15 @@ export const useTemplate = function (templateId: string) {
   }, [setResult, templateId]);
   return result;
 };
+
+export const getTemplateContent = function (templateId: string) {
+  return fetch(`/api/templates/${templateId}/content`).then((res) => res.text());
+};
+
+export const useTemplateContent = function (templateId: string) {
+  const [result, setResult] = useState<string>();
+  useEffect(() => {
+    getTemplateContent(templateId).then(setResult);
+  }, [setResult, templateId]);
+  return result;
+};
