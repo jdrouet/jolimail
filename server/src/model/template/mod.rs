@@ -6,6 +6,7 @@ use tokio_postgres::row::Row;
 use uuid::Uuid;
 
 pub mod create;
+pub mod update;
 
 const QUERY_LIST_ALL: &'static str = r#"
 SELECT id, slug, title, description, current_version_id, created_at, updated_at, deleted_at
@@ -17,7 +18,7 @@ ORDER BY updated_at DESC
 const QUERY_FIND_BY_ID: &'static str = r#"
 SELECT id, slug, title, description, current_version_id, created_at, updated_at, deleted_at
 FROM templates
-WHERE id = $1
+WHERE id = $1 AND deleted_at IS null
 LIMIT 1
 "#;
 
@@ -25,15 +26,11 @@ const QUERY_CONTENT_BY_SLUG: &'static str = r#"
 SELECT template_versions.content
 FROM templates
 JOIN template_versions ON templates.current_version_id = template_versions.id
-WHERE templates.id = $1
+WHERE templates.id = $1 AND templates.deleted_at IS null
 LIMIT 1
 "#;
 
-const QUERY_UPDATE_VERSION: &'static str = r#"
-UPDATE templates
-SET current_version_id = $2
-WHERE id = $1
-"#;
+const DELETE_BY_ID: &'static str = "UPDATE templates SET deleted_at = now() WHERE id = $1";
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -88,30 +85,19 @@ impl Template {
         Ok(rows.first().map(|row| row.get(0)))
     }
 
-    pub async fn set_current_version(
+    pub async fn unset_current_version(
         client: &Client,
-        template_id: Uuid,
-        version_id: Uuid,
-    ) -> Result<(), ServerError> {
-        debug!(
-            "set template {} current version {}",
-            template_id, version_id
-        );
-        let stmt = client.prepare(QUERY_UPDATE_VERSION).await?;
-        client.execute(&stmt, &[&template_id, &version_id]).await?;
-        Ok(())
+        template_id: &Uuid,
+        version_id: &Uuid,
+    ) -> Result<u64, ServerError> {
+        let stmt = client.prepare("UPDATE templates SET current_version_id = null WHERE id = $1 AND current_version_id = $2").await?;
+        let count = client.execute(&stmt, &[&template_id, &version_id]).await?;
+        Ok(count)
     }
-}
 
-#[cfg(test)]
-pub mod tests {
-    use super::*;
-    use crate::service::database::client::tests::POOL;
-
-    pub async fn set_template_version(template_id: Uuid, version_id: Uuid) {
-        let client = POOL.get().await.unwrap();
-        Template::set_current_version(&client, template_id, version_id)
-            .await
-            .unwrap()
+    pub async fn delete_by_id(client: &Client, id: &Uuid) -> Result<u64, ServerError> {
+        let stmt = client.prepare(DELETE_BY_ID).await?;
+        let count = client.execute(&stmt, &[&id]).await?;
+        Ok(count)
     }
 }

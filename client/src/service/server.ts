@@ -1,23 +1,16 @@
-import { useEffect, useState } from 'react';
+import axios from 'axios';
+import useSwr from 'swr';
 
-export type TemplateCreate = {
-  title: string;
-  description?: string;
+export type ErrorResponse = {
+  name: string;
+  message?: string;
 };
 
-export const createTemplate = function (payload: TemplateCreate): Promise<Template> {
-  return fetch('/api/templates', {
-    method: 'POST',
-    body: JSON.stringify(payload),
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  }).then((res) => {
-    if (res.status >= 200 && res.status < 400) {
-      return res.json();
-    }
-    throw new Error(res.statusText);
-  });
+export const getter = <T>(url: string, params?: object): Promise<T> =>
+  axios.get(url, { params }).then((res) => res.data);
+
+export const config = {
+  fetcher: getter,
 };
 
 export type Template = {
@@ -31,34 +24,78 @@ export type Template = {
   deletedAt: string | null;
 };
 
-export const useTemplateList = function () {
-  const [list, setList] = useState<Template[]>();
-  useEffect(() => {
-    fetch('/api/templates')
-      .then((res) => res.json())
-      .then((content) => setList(content));
-  }, [setList]);
-  return list;
+export type TemplateCreate = {
+  title: string;
+  description?: string;
 };
 
-export const useTemplate = function (templateId: string) {
-  const [result, setResult] = useState<Template>();
-  useEffect(() => {
-    fetch(`/api/templates/${templateId}`)
-      .then((res) => res.json())
-      .then((content) => setResult(content));
-  }, [setResult, templateId]);
-  return result;
+export type TemplateUpdate = {
+  title?: string;
+  description?: string;
+  currentVersionId?: string;
 };
 
-export const getTemplateContent = function (templateId: string) {
-  return fetch(`/api/templates/${templateId}/content`).then((res) => res.text());
+export type TemplateVersion = {
+  id: string;
+  templateId: string;
+  name: string;
+  content: string | null;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
 };
 
-export const useTemplateContent = function (templateId: string) {
-  const [result, setResult] = useState<string>();
-  useEffect(() => {
-    getTemplateContent(templateId).then(setResult);
-  }, [setResult, templateId]);
-  return result;
+export const createTemplate = (payload: TemplateCreate): Promise<Template> =>
+  axios.post('/api/templates', payload).then((res) => res.data);
+
+export const updateTemplate = (templateId: string, payload: TemplateUpdate): Promise<Template> =>
+  axios.patch(`/api/templates/${templateId}`, payload).then((res) => res.data);
+
+export const getTemplate = (id: string): Promise<Template> => getter(`/api/templates/${id}`);
+
+export const useTemplate = function (templateId?: string) {
+  return useSwr<Template>(templateId ? [`/api/templates/${templateId}`] : null, getter);
 };
+
+export const useTemplateList = () => useSwr<Template[]>('/api/templates', getter);
+
+export const getTemplateContent = (id: string): Promise<string> => getter(`/api/templates/${id}/content`);
+
+export const useTemplateContent = (templateId?: string) =>
+  useSwr<string>(templateId ? [`/api/templates/${templateId}/content`] : null, getter);
+
+export const getTemplateVersion = (id: string, versionId: string): Promise<string> =>
+  getter(`/api/templates/${id}/versions/${versionId}`);
+
+export const useTemplateVersion = function (templateId?: string, versionId?: string) {
+  return useSwr<string>(
+    templateId && versionId ? [`/api/templates/${templateId}/versions/${versionId}`] : null,
+    getter,
+  );
+};
+
+export const getTemplateVersionContent = (templateId: string, versionId: string): Promise<string> =>
+  getter(`/api/templates/${templateId}/versions/${versionId}/content`);
+
+export const useTemplateVersionContent = function (templateId?: string, versionId?: string) {
+  return useSwr<string>(
+    templateId && versionId ? [`/api/templates/${templateId}/versions/${versionId}/content`] : null,
+    getter,
+  );
+};
+
+export const getTemplateVersionList = (templateId: string): Promise<TemplateVersion[]> =>
+  getter(`/api/templates/${templateId}/versions`);
+
+export const useTemplateVersionList = function (templateId?: string) {
+  return useSwr<TemplateVersion[]>(templateId ? [`/api/templates/${templateId}/versions`] : null, getter);
+};
+
+export const createTemplateVersion = (templateId: string, name: string, content?: string) =>
+  axios.post(`/api/templates/${templateId}/versions`, { name, content }).then((res) => res.data);
+
+export const updateTemplateVersion = (templateId: string, versionId: string, content: string) =>
+  axios.patch(`/api/templates/${templateId}/versions/${versionId}`, { content }).then((res) => res.data);
+
+export const deleteTemplateVersion = (templateId: string, versionId: string): Promise<any> =>
+  axios.delete(`/api/templates/${templateId}/versions/${versionId}`);

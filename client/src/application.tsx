@@ -1,25 +1,26 @@
-import React from 'react';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { ThemeProvider } from '@material-ui/core/styles';
-import { HashRouter as Router, Switch, Route } from 'react-router-dom';
-import Skeleton from './component/skeleton';
-import TemplateCreateView from './view/template-create';
-import TemplateEditionView from './view/template-edition';
-import TemplateListView from './view/template-list';
-import { theme } from './theme';
+import React from 'react';
+import { Route, HashRouter as Router, Switch } from 'react-router-dom';
+import { theme } from 'src/theme';
+import TemplateCreateView, { ROUTE as TEMPLATE_CREATE_PATH } from 'src/view/template-create';
+import TemplateEditionView, { ROUTE as TEMPLATE_EDITION_PATH } from 'src/view/template-edition';
+import TemplateListView, { ROUTE as TEMPLATE_LIST_PATH } from 'src/view/template-list';
+import TemplateVersionCreateView, { ROUTE as TEMPLATE_VERSION_CREATE_PATH } from 'src/view/template-version-create';
+import TemplateVersionEditionView, { ROUTE as TEMPLATE_VERSION_EDITION_PATH } from 'src/view/template-version-edition';
 
 function Application() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Router>
-        <Skeleton>
-          <Switch>
-            <Route path="/create" component={TemplateCreateView} />
-            <Route path="/edition/:template_id" component={TemplateEditionView} />
-            <Route path="/" component={TemplateListView} />
-          </Switch>
-        </Skeleton>
+        <Switch>
+          <Route path={TEMPLATE_CREATE_PATH} component={TemplateCreateView} />
+          <Route path={TEMPLATE_VERSION_CREATE_PATH} component={TemplateVersionCreateView} />
+          <Route path={TEMPLATE_VERSION_EDITION_PATH} component={TemplateVersionEditionView} />
+          <Route path={TEMPLATE_EDITION_PATH} component={TemplateEditionView} />
+          <Route path={TEMPLATE_LIST_PATH} component={TemplateListView} />
+        </Switch>
       </Router>
     </ThemeProvider>
   );

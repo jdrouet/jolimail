@@ -1,20 +1,20 @@
 use crate::error::ServerError;
-use crate::model::template::Template;
+use crate::model::template_version::TemplateVersion;
 use actix_web::{get, web, HttpResponse};
 use deadpool_postgres::Pool;
 use uuid::Uuid;
 
-#[get("/api/templates/{id}/content")]
+#[get("/api/templates/{template_id}/versions/{version_id}/content")]
 pub async fn handler(
     pool: web::Data<Pool>,
-    template_id: web::Path<Uuid>,
+    ids: web::Path<(Uuid, Uuid)>,
 ) -> Result<HttpResponse, ServerError> {
     let client = pool.get().await?;
-    match Template::get_content_by_id(&client, &template_id).await? {
+    match TemplateVersion::get_content_by_id(&client, &ids.1).await? {
         Some(template) => Ok(HttpResponse::Ok().body(template)),
         None => Err(ServerError::NotFound(format!(
-            "unable to find template with id {}",
-            template_id
+            "unable to find template_version with id {}",
+            ids.1
         ))),
     }
 }

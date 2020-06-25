@@ -1,55 +1,123 @@
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import Card from '@material-ui/core/Card';
+import Grid from '@material-ui/core/Grid';
+import List from '@material-ui/core/List';
+import ListSubheader from '@material-ui/core/ListSubheader';
 import { makeStyles } from '@material-ui/core/styles';
-import { useTemplate, getTemplateContent } from '../../service/server';
-import Drawer from './drawer';
-import Preview from './preview';
-import { ModeToggleValue } from './mode-toggle';
-import { ViewToggleValue } from './view-toggle';
+import React, { useCallback, useState } from 'react';
+import { useHistory, useParams } from 'react-router-dom';
+import CreateButton from 'src/component/button-fab';
+import Skeleton from 'src/component/skeleton';
+import TemplateCardlet from 'src/component/template-cardlet';
+import TemplateVersionListItem from 'src/component/template-version-list-item';
+import {
+  TemplateVersion,
+  useTemplateVersionList,
+  useTemplate,
+  updateTemplate,
+  deleteTemplateVersion,
+} from 'src/service/server';
+import { getRoute as getTemplateVersionCreatePath } from 'src/view/template-version-create';
+import { getRoute as getTemplateVersionEditionPath } from 'src/view/template-version-edition';
+
+type LocationParams = {
+  templateId: string;
+};
+
+export const getRoute = (params: LocationParams) => `/templates/${params.templateId}`;
+
+export const ROUTE = getRoute({ templateId: ':templateId' });
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    display: 'flex',
-    flexDirection: 'row',
-    height: 'calc(100vh - 68px)',
+    paddingLeft: theme.spacing(),
+    paddingRight: theme.spacing(),
   },
-  drawer: {
-    backgroundColor: theme.palette.background.paper,
-    borderRightColor: theme.palette.divider,
-    borderRightStyle: 'solid',
-    borderRightWidth: 1,
-    minWidth: 200,
-    paddingTop: theme.spacing(1),
-    width: '20%',
-  },
-  container: {
+  editor: {
     flex: 1,
-    padding: theme.spacing(1),
   },
-  textCenter: {
-    textAlign: 'center',
+  preview: {
+    flex: 1,
   },
 }));
 
 const TemplateEditionView: React.FC<any> = () => {
   const classes = useStyles();
-  const [content, setContent] = useState<string>();
-  const [mode, setMode] = useState<ModeToggleValue>('desktop');
-  const [view, setView] = useState<ViewToggleValue>('preview');
-  const { template_id } = useParams<{ template_id: string }>();
-  const template = useTemplate(template_id);
+  const { templateId } = useParams<LocationParams>();
+  const history = useHistory();
+  const [loading, setLoading] = useState<boolean>(false);
+  const {
+    data: versions = [],
+    isValidating: loadingVersionList,
+    revalidate: reloadVersionList,
+  } = useTemplateVersionList(templateId);
+  const { data: template, isValidating: loadingTemplate, revalidate: reloadTemplate } = useTemplate(templateId);
 
-  useEffect(() => {
-    getTemplateContent(template_id).then(setContent);
-  }, [template_id, setContent]);
+  const handleClickCreate = useCallback(() => history.push(getTemplateVersionCreatePath({ templateId })), [
+    history,
+    templateId,
+  ]);
+  const handleClickVersion = useCallback(
+    (version: TemplateVersion) =>
+      history.push(
+        getTemplateVersionEditionPath({
+          templateId,
+          versionId: version.id,
+        }),
+      ),
+    [history, templateId],
+  );
+  const handleClickDelete = useCallback(
+    (version: TemplateVersion) => {
+      setLoading(true);
+      deleteTemplateVersion(templateId, version.id)
+        .then(() => reloadVersionList())
+        .finally(() => setLoading(false));
+    },
+    [reloadVersionList, setLoading, templateId],
+  );
+  const handleClickDuplicate = useCallback((version: TemplateVersion) => {
+    console.log(version);
+  }, []);
+  const handleClickSetToDefault = useCallback(
+    (version: TemplateVersion) => {
+      setLoading(true);
+      updateTemplate(templateId, { currentVersionId: version.id })
+        .then(() => reloadTemplate())
+        .finally(() => setLoading(false));
+    },
+    [reloadTemplate, setLoading, templateId],
+  );
 
   return (
-    <div className={classes.root}>
-      <Drawer onChangeMode={setMode} onChangeView={setView} mode={mode} template={template} view={view} />
-      <main className={classes.container}>
-        <Preview mode={mode} value={content} />
-      </main>
-    </div>
+    <Skeleton loading={loading || loadingVersionList || loadingTemplate} mainClassName={classes.root}>
+      <Grid container spacing={1} justify="center">
+        {template ? (
+          <Grid item xs={12} sm={10} md={8}>
+            <TemplateCardlet template={template} />
+          </Grid>
+        ) : null}
+        <Grid item xs={12} sm={10} md={8}>
+          <Card>
+            <List subheader={<ListSubheader>Available versions</ListSubheader>}>
+              {versions.map((version) => (
+                <TemplateVersionListItem
+                  key={version.id}
+                  currentVersion={version.id === template?.currentVersionId}
+                  onClick={handleClickVersion}
+                  onDelete={handleClickDelete}
+                  onDuplicate={handleClickDuplicate}
+                  onSetToDefault={handleClickSetToDefault}
+                  version={version}
+                />
+              ))}
+            </List>
+          </Card>
+        </Grid>
+      </Grid>
+      {!!versions ? (
+        <CreateButton extended={versions.length === 0} label="Create a version" onClick={handleClickCreate} />
+      ) : null}
+    </Skeleton>
   );
 };
 

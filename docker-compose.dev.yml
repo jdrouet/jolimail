@@ -1,0 +1,19 @@
+version: "3.4"
+
+services:
+  database:
+    image: postgres:12-alpine
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: trust
+    networks:
+      - backend
+    ports:
+      - 5432:5432
+
+  mailer:
+    image: jdrouet/catapulte:beta
+    ports:
+      - 3010:3000
+
+networks:
+  backend: {}

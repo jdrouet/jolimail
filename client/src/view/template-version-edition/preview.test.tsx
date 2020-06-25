@@ -1,5 +1,6 @@
-import React from 'react';
 import { render, waitForElement } from '@testing-library/react';
+import React from 'react';
+
 import Element from './preview';
 
 jest.mock('mrml-js');

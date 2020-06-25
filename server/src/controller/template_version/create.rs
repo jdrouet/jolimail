@@ -1,19 +1,30 @@
 use crate::error::ServerError;
-// use crate::model::template::Template;
 use crate::model::template_version::create::TemplateVersionCreate;
 use actix_web::{post, web, HttpResponse};
 use deadpool_postgres::Pool;
+use serde::Deserialize;
 use uuid::Uuid;
+
+#[derive(Deserialize)]
+pub struct VersionPayload {
+    pub name: String,
+    pub content: Option<String>,
+}
 
 #[post("/api/templates/{template_id}/versions")]
 pub async fn handler(
     pool: web::Data<Pool>,
     template_id: web::Path<Uuid>,
-    content: web::Json<String>,
+    body: web::Json<VersionPayload>,
 ) -> Result<HttpResponse, ServerError> {
+    println!("get pool");
     let client = pool.get().await?;
-    let body = TemplateVersionCreate::create(*template_id, Some(content.to_string()));
-    let created = body.save(&client).await?;
+    println!("create");
+    let created =
+        TemplateVersionCreate::create(*template_id, body.name.clone(), body.content.clone())
+            .save(&client)
+            .await?;
+    println!("sendit");
     Ok(HttpResponse::Ok().json(created))
 }
 
@@ -33,7 +44,7 @@ mod tests {
         reset_database().await;
         let template = create_template("my first template", Some("description")).await;
         let url = format!("/api/templates/{}/versions", template.id);
-        let payload = json!("<mjml></mjml>");
+        let payload = json!({ "name": "0.0.1", "content": "<mjml></mjml>" });
         let req = test::TestRequest::post()
             .uri(url.as_str())
             .set_json(&payload)

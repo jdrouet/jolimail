@@ -6,13 +6,17 @@ import CardHeader from '@material-ui/core/CardHeader';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import React, { useCallback, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import Skeleton from 'src/component/skeleton';
-import { createTemplate } from 'src/service/server';
-import { getRoute as getTemplateEditionRoute } from 'src/view/template-edition';
+import { createTemplateVersion } from 'src/service/server';
+import { getRoute as getTemplateVersionEditionRoute } from 'src/view/template-version-edition';
 
-export const ROUTE = '/templates/create';
-export const getRoute = () => ROUTE;
+type LocationParams = {
+  templateId: string;
+};
+
+export const getRoute = (params: LocationParams) => `/templates/${params.templateId}/versions/create`;
+export const ROUTE = getRoute({ templateId: ':templateId' });
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -34,59 +38,46 @@ const validateInput = (input: string) => input.trim().length > 0;
 const TemplateCreateView: React.FC<any> = () => {
   const classes = useStyles();
   const history = useHistory();
+  const { templateId } = useParams<LocationParams>();
 
-  const [title, setTitle] = useState<string>('');
-  const [description, setDescription] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false);
+  const [name, setName] = useState<string>('');
 
   const handleClickBack = useCallback(() => history.goBack(), [history]);
   const handleSubmit = useCallback(
     (e) => {
       e.preventDefault();
-      createTemplate({ title, description })
-        .then((template) =>
-          history.push(
-            getTemplateEditionRoute({
-              templateId: template.id,
-            }),
-          ),
-        )
-        .catch(console.error);
+      setLoading(true);
+      createTemplateVersion(templateId, name)
+        .then((version) => history.push(getTemplateVersionEditionRoute({ templateId, versionId: version.id })))
+        .finally(() => setLoading(false));
     },
-    [history, title, description],
+    [history, templateId, name],
   );
 
-  const formValid = validateInput(title);
+  const formValid = validateInput(name);
 
   return (
     <Skeleton>
       <form className={classes.root} noValidate onSubmit={handleSubmit}>
         <Card>
-          <CardHeader title="Create your template" />
+          <CardHeader title="Create a new version" />
           <CardContent>
             <TextField
               InputLabelProps={shrinkLabelProps}
               autoFocus
+              disabled={loading}
               fullWidth
-              label="Title"
+              label="Name"
               margin="normal"
-              name="title"
-              onChange={(e) => setTitle(e.target.value)}
+              name="name"
+              onChange={(e) => setName(e.target.value)}
               required
-              value={title}
-            />
-            <TextField
-              InputLabelProps={shrinkLabelProps}
-              fullWidth
-              label="Description"
-              margin="normal"
-              multiline
-              name="description"
-              onChange={(e) => setDescription(e.target.value)}
-              value={description}
+              value={name}
             />
           </CardContent>
           <CardActions className={classes.actions}>
-            <Button color="primary" disabled={!formValid} size="medium" type="submit" variant="contained">
+            <Button color="primary" disabled={loading || !formValid} size="medium" type="submit" variant="contained">
               Create
             </Button>
             <Button onClick={handleClickBack}>Cancel</Button>

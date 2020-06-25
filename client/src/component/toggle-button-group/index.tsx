@@ -1,8 +1,8 @@
-import React from 'react';
 import Button from '@material-ui/core/Button';
 import ButtonGroup from '@material-ui/core/ButtonGroup';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
+import React from 'react';
 
 export type ToggleButtonGroupProps = {
   title?: string;
@@ -23,11 +23,7 @@ const ToggleButtonGroup: React.FC<ToggleButtonGroupProps> = ({ options, onChange
           const Icon = option.icon;
           return (
             <Tooltip key={option.value} title={option.label}>
-              <Button
-                disabled={option.value === value}
-                name={option.value}
-                onClick={() => onChange(option.value)}
-              >
+              <Button disabled={option.value === value} name={option.value} onClick={() => onChange(option.value)}>
                 <Icon />
               </Button>
             </Tooltip>

@@ -1,7 +1,7 @@
-import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
 import Fab from '@material-ui/core/Fab';
+import { makeStyles } from '@material-ui/core/styles';
 import AddIcon from '@material-ui/icons/Add';
+import React from 'react';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -16,14 +16,15 @@ const useStyles = makeStyles((theme) => ({
 
 export type FabButtonProps = {
   extended?: boolean;
+  label: string;
   onClick: () => any;
 };
 
-const FabButton: React.FC<FabButtonProps> = ({ extended, onClick }) => {
+const FabButton: React.FC<FabButtonProps> = ({ extended, label, onClick }) => {
   const classes = useStyles();
 
   const iconClassName = extended ? classes.extendedIcon : undefined;
-  const text = extended ? 'Create a template' : undefined;
+  const text = extended ? label : undefined;
   const variant = extended ? 'extended' : 'round';
 
   return (

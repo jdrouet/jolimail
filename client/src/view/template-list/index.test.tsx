@@ -1,7 +1,8 @@
-import React from 'react';
-import fetchMock from 'fetch-mock';
-import { MemoryRouter, Route } from 'react-router';
 import { fireEvent, render, waitForElement } from '@testing-library/react';
+import fetchMock from 'fetch-mock';
+import React from 'react';
+import { MemoryRouter, Route } from 'react-router';
+
 import View from './index';
 
 const renderView = () =>
@@ -10,12 +11,8 @@ const renderView = () =>
       <Route path="/">
         <View />
       </Route>
-      <Route path="/create">
-        CREATION
-      </Route>
-      <Route path="/edition/first">
-        FIRST TEMPLATE
-      </Route>
+      <Route path="/create">CREATION</Route>
+      <Route path="/edition/first">FIRST TEMPLATE</Route>
     </MemoryRouter>,
   );
 

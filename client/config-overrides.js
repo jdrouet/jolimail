@@ -1,3 +1,4 @@
+const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 const path = require('path');
 
 module.exports = function override(config, env) {
@@ -20,6 +21,10 @@ module.exports = function override(config, env) {
     include: path.resolve(__dirname, 'src'),
     use: [{ loader: require.resolve('wasm-loader'), options: {} }],
   });
+
+  config.plugins.push(new MonacoWebpackPlugin({
+    languages: ['html'],
+  }));
 
   return config;
 };

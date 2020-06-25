@@ -7,9 +7,7 @@ export type MRML = {
 export const useMRML = function () {
   const [mod, setModule] = useState<MRML>();
   useEffect(() => {
-    import('mrml-js')
-      .then(({ toEmail }) => setModule({ toEmail }))
-      .catch(console.error);
+    import('mrml-js').then(({ toEmail }) => setModule({ toEmail })).catch(console.error);
   }, []);
   return mod;
 };

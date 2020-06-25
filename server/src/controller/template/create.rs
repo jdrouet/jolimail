@@ -9,8 +9,8 @@ pub async fn handler(
     body: web::Json<TemplateCreate>,
 ) -> Result<HttpResponse, ServerError> {
     let client = pool.get().await?;
-    let created = body.save(&client).await?;
-    Ok(HttpResponse::Ok().json(created))
+    let template = body.save(&client).await?;
+    Ok(HttpResponse::Ok().json(template))
 }
 
 #[cfg(test)]
@@ -40,6 +40,6 @@ mod tests {
         let body: Template = from_slice(body.as_ref()).unwrap();
         assert_eq!(body.title, "My first template");
         assert_eq!(body.slug, "my-first-template");
-        assert_eq!(body.current_version_id, None);
+        assert!(body.current_version_id.is_none());
     }
 }

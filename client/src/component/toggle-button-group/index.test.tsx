@@ -1,6 +1,7 @@
-import React from 'react';
 import SmartphoneIcon from '@material-ui/icons/Smartphone';
-import { render, fireEvent, waitForElement } from '@testing-library/react';
+import { fireEvent, render, waitForElement } from '@testing-library/react';
+import React from 'react';
+
 import Element from './index';
 
 const options = [

@@ -1,4 +1,5 @@
 import fetchMock from 'fetch-mock';
+
 import { createTemplate } from './server';
 
 test('createTemplate', async () => {

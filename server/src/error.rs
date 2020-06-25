@@ -58,6 +58,7 @@ impl ServerError {
 
 impl ResponseError for ServerError {
     fn error_response(&self) -> HttpResponse {
+        println!("error: {:?}", self);
         self.response().json(ServerErrorResponse {
             name: self.name(),
             message: self.message(),
