@@ -4,12 +4,14 @@ use serde::{Deserialize, Serialize};
 use slug::slugify;
 
 use super::Template;
+use super::COLUMNS;
 
-const QUERY_INSERT: &'static str = r#"
-INSERT INTO templates (title, slug, description)
-VALUES ($1, $2, $3)
-RETURNING id, slug, title, description, current_version_id, created_at, updated_at, deleted_at
-"#;
+lazy_static! {
+    pub static ref QUERY_INSERT: String = format!(
+        "INSERT INTO templates (title, slug, description) VALUES ($1, $2, $3) RETURNING {}",
+        COLUMNS.as_str()
+    );
+}
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct TemplateCreate {
@@ -20,7 +22,7 @@ pub struct TemplateCreate {
 impl TemplateCreate {
     pub async fn save(&self, client: &Client) -> Result<Template, ServerError> {
         debug!("save template {}", self.title);
-        let stmt = client.prepare(QUERY_INSERT).await?;
+        let stmt = client.prepare(QUERY_INSERT.as_str()).await?;
         let slug = slugify(self.title.as_str());
         let rows = client
             .query(&stmt, &[&self.title, &slug, &self.description])

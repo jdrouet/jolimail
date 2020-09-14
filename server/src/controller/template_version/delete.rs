@@ -46,7 +46,7 @@ mod tests {
     async fn success() {
         reset_database().await;
         let tmpl = create_template("testing", Some("some description")).await;
-        let vers = create_template_version(tmpl.id, "0.0.1".into(), None).await;
+        let vers = create_template_version(tmpl.id, "0.0.1".into(), None, None).await;
         let url = format!("/api/templates/{}/versions/{}", tmpl.id, vers.id);
         let req = test::TestRequest::delete().uri(url.as_str()).to_request();
         let res = execute_request(req).await;

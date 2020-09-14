@@ -51,7 +51,7 @@ mod tests {
     async fn success_set_template_version() {
         reset_database().await;
         let tmpl = create_template("testing", Some("some description")).await;
-        let vers = create_template_version(tmpl.id, "0.0.1".into(), None).await;
+        let vers = create_template_version(tmpl.id, "0.0.1".into(), None, None).await;
         let payload = json!({ "templateVersionId": vers.id });
         let url = format!("/api/templates/{}", tmpl.id);
         let req = test::TestRequest::patch()

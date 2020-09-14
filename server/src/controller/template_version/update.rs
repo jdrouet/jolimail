@@ -1,25 +1,43 @@
 use crate::error::ServerError;
 use crate::model::template_version::update::TemplateVersionUpdate;
+use crate::service::validation::validate_json_schema;
 use actix_web::{patch, web, HttpResponse};
 use deadpool_postgres::Pool;
 use serde::Deserialize;
+use serde_json::Value as JsonValue;
 use uuid::Uuid;
 
 #[derive(Deserialize)]
-pub struct Payload {
-    pub content: String,
+pub struct BodyPayload {
+    pub content: Option<String>,
+    pub attributes: Option<JsonValue>,
+}
+
+impl BodyPayload {
+    pub fn validate(&self) -> Result<(), ServerError> {
+        if let Some(attributes) = self.attributes.as_ref() {
+            validate_json_schema(&attributes)?;
+        }
+        Ok(())
+    }
 }
 
 #[patch("/api/templates/{template_id}/versions/{version_id}")]
 pub async fn handler(
     pool: web::Data<Pool>,
     params: web::Path<(Uuid, Uuid)>,
-    payload: web::Json<Payload>,
+    payload: web::Json<BodyPayload>,
 ) -> Result<HttpResponse, ServerError> {
     let client = pool.get().await?;
-    let template = TemplateVersionUpdate::update(&params.1, &params.0, payload.content.as_str())
-        .save(&client)
-        .await?;
+    payload.validate()?;
+    let template = TemplateVersionUpdate::update(
+        &params.1,
+        &params.0,
+        payload.content.clone(),
+        payload.attributes.clone(),
+    )
+    .save(&client)
+    .await?;
     match template {
         Some(value) => Ok(HttpResponse::Ok().json(value)),
         None => Err(ServerError::NotFound(format!(
@@ -41,10 +59,10 @@ mod tests {
 
     #[actix_rt::test]
     #[serial]
-    async fn success() {
+    async fn success_content() {
         reset_database().await;
         let tmpl = create_template("testing", Some("some description")).await;
-        let vers = create_template_version(tmpl.id, "0.0.1".into(), None).await;
+        let vers = create_template_version(tmpl.id, "0.0.1".into(), None, None).await;
         let payload = json!({ "content": "<mjml><mj-body></mj-body></mjml>" });
         let url = format!("/api/templates/{}/versions/{}", tmpl.id, vers.id);
         let req = test::TestRequest::patch()
@@ -53,5 +71,49 @@ mod tests {
             .to_request();
         let res = execute_request(req).await;
         assert_eq!(res.status(), StatusCode::OK);
+    }
+
+    #[actix_rt::test]
+    #[serial]
+    async fn success_attributes() {
+        reset_database().await;
+        let tmpl = create_template("testing", Some("some description")).await;
+        let vers = create_template_version(tmpl.id, "0.0.1".into(), None, None).await;
+        let payload = json!({
+            "attributes": {
+                "type": "object",
+                "properties": {
+                    "url": {
+                        "type": "string",
+                    },
+                },
+                "required": ["url"]
+            },
+        });
+        let url = format!("/api/templates/{}/versions/{}", tmpl.id, vers.id);
+        let req = test::TestRequest::patch()
+            .uri(url.as_str())
+            .set_json(&payload)
+            .to_request();
+        let res = execute_request(req).await;
+        assert_eq!(res.status(), StatusCode::OK);
+    }
+
+    #[actix_rt::test]
+    #[serial]
+    async fn invalid_attributes() {
+        reset_database().await;
+        let tmpl = create_template("testing", Some("some description")).await;
+        let vers = create_template_version(tmpl.id, "0.0.1".into(), None, None).await;
+        let payload = json!({
+            "attributes": "invalid",
+        });
+        let url = format!("/api/templates/{}/versions/{}", tmpl.id, vers.id);
+        let req = test::TestRequest::patch()
+            .uri(url.as_str())
+            .set_json(&payload)
+            .to_request();
+        let res = execute_request(req).await;
+        assert_eq!(res.status(), StatusCode::BAD_REQUEST);
     }
 }

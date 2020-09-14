@@ -2,36 +2,30 @@ use crate::error::ServerError;
 use chrono::prelude::*;
 use deadpool_postgres::Client;
 use serde::{Deserialize, Serialize};
+use serde_json::Value as JsonValue;
 use tokio_postgres::row::Row;
 use uuid::Uuid;
 
 pub mod create;
 pub mod update;
 
-const QUERY_FIND_BY_ID: &'static str = r#"
-SELECT id, template_id, name, content, created_at, updated_at, deleted_at
-FROM template_versions
-WHERE id = $1 AND deleted_at IS null
-LIMIT 1
-"#;
-
-const QUERY_FIND_BY_TEMPLATE_ID: &'static str = r#"
-SELECT id, template_id, name, content, created_at, updated_at, deleted_at
-FROM template_versions
-WHERE template_id = $1 AND deleted_at IS null
-ORDER BY created_at DESC
-LIMIT $2
-OFFSET $3
-"#;
-
-const QUERY_FIND_BY_TEMPLATE_ID_NO_CONTENT: &'static str = r#"
-SELECT id, template_id, name, null as content, created_at, updated_at, deleted_at
-FROM template_versions
-WHERE template_id = $1 AND deleted_at IS null
-ORDER BY created_at DESC
-LIMIT $2
-OFFSET $3
-"#;
+lazy_static! {
+    pub static ref COLUMNS: String =
+        String::from("id, template_id, name, content, attributes, created_at, updated_at, deleted_at");
+    pub static ref COLUMNS_NODATA: String = String::from("id, template_id, name, null as content, null as attributes, created_at, updated_at, deleted_at");
+    pub static ref QUERY_FIND_BY_ID: String = format!(
+        "SELECT {} FROM template_versions WHERE id = $1 AND deleted_at IS null LIMIT 1",
+        COLUMNS.as_str()
+    );
+    pub static ref QUERY_FIND_BY_TEMPLATE_ID: String = format!(
+        "SELECT {} FROM template_versions WHERE template_id = $1 AND deleted_at IS null ORDER BY created_at DESC LIMIT $2 OFFSET $3",
+        COLUMNS.as_str()
+    );
+    pub static ref QUERY_FIND_BY_TEMPLATE_ID_NO_CONTENT: String = format!(
+        "SELECT {} FROM template_versions WHERE template_id = $1 AND deleted_at IS null ORDER BY created_at DESC LIMIT $2 OFFSET $3",
+        COLUMNS_NODATA.as_str()
+    );
+}
 
 const QUERY_CONTENT_BY_ID: &'static str = r#"
 SELECT template_versions.content
@@ -50,6 +44,7 @@ pub struct TemplateVersion {
     pub template_id: Uuid,
     pub name: String,
     pub content: Option<String>,
+    pub attributes: JsonValue,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
     pub deleted_at: Option<DateTime<Utc>>,
@@ -62,9 +57,10 @@ impl From<&Row> for TemplateVersion {
             template_id: row.get(1),
             name: row.get(2),
             content: row.get(3),
-            created_at: row.get(4),
-            updated_at: row.get(5),
-            deleted_at: row.get(6),
+            attributes: row.get(4),
+            created_at: row.get(5),
+            updated_at: row.get(6),
+            deleted_at: row.get(7),
         }
     }
 }
@@ -86,9 +82,9 @@ impl TemplateVersion {
     ) -> Result<Vec<Self>, ServerError> {
         debug!("list template versions");
         let query = if content {
-            QUERY_FIND_BY_TEMPLATE_ID
+            QUERY_FIND_BY_TEMPLATE_ID.as_str()
         } else {
-            QUERY_FIND_BY_TEMPLATE_ID_NO_CONTENT
+            QUERY_FIND_BY_TEMPLATE_ID_NO_CONTENT.as_str()
         };
         let stmt = client.prepare(query).await?;
         let rows = client.query(&stmt, &[template_id, &limit, &offset]).await?;

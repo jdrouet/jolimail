@@ -56,7 +56,7 @@ mod tests {
     async fn template_without_current() {
         reset_database().await;
         let tmpl = create_template("testing", Some("some description")).await;
-        let _vers = create_template_version(tmpl.id, "0.0.1".into(), None).await;
+        let _vers = create_template_version(tmpl.id, "0.0.1".into(), None, None).await;
         let url = format!("/api/templates/{}/content", tmpl.id);
         let req = test::TestRequest::get().uri(url.as_str()).to_request();
         let res = execute_request(req).await;
@@ -68,7 +68,7 @@ mod tests {
     async fn success() {
         reset_database().await;
         let tmpl = create_template("testing", Some("some description")).await;
-        let vers = create_template_version(tmpl.id, "0.0.1".into(), None).await;
+        let vers = create_template_version(tmpl.id, "0.0.1".into(), None, None).await;
         set_template_version(&tmpl.id, &vers.id).await;
         let url = format!("/api/templates/{}/content", tmpl.id);
         let req = test::TestRequest::get().uri(url.as_str()).to_request();

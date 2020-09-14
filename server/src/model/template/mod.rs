@@ -8,19 +8,19 @@ use uuid::Uuid;
 pub mod create;
 pub mod update;
 
-const QUERY_LIST_ALL: &'static str = r#"
-SELECT id, slug, title, description, current_version_id, created_at, updated_at, deleted_at
-FROM templates
-WHERE deleted_at IS NULL
-ORDER BY updated_at DESC
-"#;
-
-const QUERY_FIND_BY_ID: &'static str = r#"
-SELECT id, slug, title, description, current_version_id, created_at, updated_at, deleted_at
-FROM templates
-WHERE id = $1 AND deleted_at IS null
-LIMIT 1
-"#;
+lazy_static! {
+    pub static ref COLUMNS: String = String::from(
+        "id, slug, title, description, current_version_id, created_at, updated_at, deleted_at"
+    );
+    pub static ref QUERY_LIST_ALL: String = format!(
+        "SELECT {} FROM templates WHERE deleted_at IS NULL ORDER BY updated_at DESC",
+        COLUMNS.as_str()
+    );
+    pub static ref QUERY_FIND_BY_ID: String = format!(
+        "SELECT {} FROM templates WHERE id = $1 AND deleted_at IS NULL LIMIT 1",
+        COLUMNS.as_str()
+    );
+}
 
 const QUERY_CONTENT_BY_SLUG: &'static str = r#"
 SELECT template_versions.content
@@ -63,14 +63,14 @@ impl From<&Row> for Template {
 impl Template {
     pub async fn list(client: &Client) -> Result<Vec<Template>, ServerError> {
         debug!("list templates");
-        let stmt = client.prepare(QUERY_LIST_ALL).await?;
+        let stmt = client.prepare(QUERY_LIST_ALL.as_str()).await?;
         let rows = client.query(&stmt, &[]).await?;
         Ok(rows.iter().map(Template::from).collect())
     }
 
     pub async fn find_by_id(client: &Client, id: &Uuid) -> Result<Option<Template>, ServerError> {
         debug!("find template by id {}", id);
-        let stmt = client.prepare(QUERY_FIND_BY_ID).await?;
+        let stmt = client.prepare(QUERY_FIND_BY_ID.as_str()).await?;
         let rows = client.query(&stmt, &[&id]).await?;
         Ok(rows.first().map(Template::from))
     }

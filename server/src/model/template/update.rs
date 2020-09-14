@@ -5,6 +5,8 @@ use serde::{Deserialize, Serialize};
 use tokio_postgres::types::ToSql;
 use uuid::Uuid;
 
+use super::COLUMNS;
+
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct TemplateUpdate {
     pub id: Uuid,
@@ -31,10 +33,10 @@ impl TemplateUpdate {
             changes.push(format!("current_version_id = ${}", params.len()));
         }
         let stmt = format!(
-            "UPDATE templates SET {} WHERE id = $1 RETURNING id, slug, title, description, current_version_id, created_at, updated_at, deleted_at",
-            changes.join(", ")
+            "UPDATE templates SET {} WHERE id = $1 RETURNING {}",
+            changes.join(", "),
+            COLUMNS.as_str()
         );
-        println!("stmt: {}", stmt);
         let stmt = client.prepare(stmt.as_str()).await?;
         let rows = client.query(&stmt, &params).await?;
         Ok(rows.first().map(Template::from))

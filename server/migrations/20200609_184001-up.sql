@@ -3,6 +3,7 @@ CREATE TABLE template_versions (
   template_id UUID NOT NULL REFERENCES templates(id) ON DELETE CASCADE,
   name TEXT NOT NULL,
   content TEXT NOT NULL,
+  attributes JSONB NOT NULL DEFAULT '{}',
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
   deleted_at TIMESTAMP WITH TIME ZONE

@@ -1,30 +1,44 @@
 use crate::error::ServerError;
 use crate::model::template_version::create::TemplateVersionCreate;
+use crate::service::validation::validate_json_schema;
 use actix_web::{post, web, HttpResponse};
 use deadpool_postgres::Pool;
 use serde::Deserialize;
+use serde_json::Value as JsonValue;
 use uuid::Uuid;
 
 #[derive(Deserialize)]
-pub struct VersionPayload {
+pub struct BodyPayload {
     pub name: String,
     pub content: Option<String>,
+    pub attributes: Option<JsonValue>,
+}
+
+impl BodyPayload {
+    pub fn validate(&self) -> Result<(), ServerError> {
+        if let Some(attributes) = self.attributes.as_ref() {
+            validate_json_schema(&attributes)?;
+        }
+        Ok(())
+    }
 }
 
 #[post("/api/templates/{template_id}/versions")]
 pub async fn handler(
     pool: web::Data<Pool>,
     template_id: web::Path<Uuid>,
-    body: web::Json<VersionPayload>,
+    body: web::Json<BodyPayload>,
 ) -> Result<HttpResponse, ServerError> {
-    println!("get pool");
     let client = pool.get().await?;
-    println!("create");
-    let created =
-        TemplateVersionCreate::create(*template_id, body.name.clone(), body.content.clone())
-            .save(&client)
-            .await?;
-    println!("sendit");
+    body.validate()?;
+    let created = TemplateVersionCreate::create(
+        *template_id,
+        body.name.clone(),
+        body.content.clone(),
+        body.attributes.clone(),
+    )
+    .save(&client)
+    .await?;
     Ok(HttpResponse::Ok().json(created))
 }
 
