@@ -11,3 +11,13 @@ export const useMRML = function () {
   }, []);
   return mod;
 };
+
+export const validate = (instance: MRML | undefined, input: string | undefined): boolean | undefined => {
+  if (!instance || !input) return undefined;
+  try {
+    instance.toEmail(input);
+    return true;
+  } catch {
+    return false;
+  }
+};

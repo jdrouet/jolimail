@@ -15,6 +15,11 @@ const version = {
   templateId: 'iooinrgoieg',
   name: '0.0.1',
   content: '',
+  attributes: {
+    type: 'object',
+    properties: {},
+    required: [],
+  },
   createdAt: new Date().toString(),
   updatedAt: new Date().toString(),
   deletedAt: null,

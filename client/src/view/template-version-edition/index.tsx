@@ -1,18 +1,25 @@
-import { IconButton } from '@material-ui/core';
+import Badge from '@material-ui/core/Badge';
+import IconButton from '@material-ui/core/IconButton';
 import { makeStyles } from '@material-ui/core/styles';
+import Tooltip from '@material-ui/core/Tooltip';
+import NotificationIcon from '@material-ui/icons/Notifications';
 import SaveIcon from '@material-ui/icons/Save';
+import cn from 'classnames';
 import React, { useCallback, useEffect, useState } from 'react';
-import MonacoEditor from 'react-monaco-editor';
 import { useParams } from 'react-router-dom';
 import Skeleton from 'src/component/skeleton';
-import { getTemplateVersionContent, updateTemplateVersion } from 'src/service/server';
+import { useValidator, validate as validateJsonSchema } from 'src/service/json-schema';
+import { useMRML, validate as validateTemplate } from 'src/service/mrml';
+import { getTemplateVersion, updateTemplateVersion } from 'src/service/server';
 
+import Editor from './editor';
 import Preview from './preview';
 
 type LocationParams = {
   templateId: string;
   versionId: string;
 };
+
 export const getRoute = (params: LocationParams) => `/templates/${params.templateId}/versions/${params.versionId}`;
 export const ROUTE = getRoute({ templateId: ':templateId', versionId: ':versionId' });
 
@@ -22,16 +29,20 @@ const useStyles = makeStyles(() => ({
     flexDirection: 'row',
     height: '100vh',
   },
-  editor: {
+  grow: {
     flex: 1,
   },
-  preview: {
-    flex: 1,
+  editor: {
+    display: 'flex',
+    flexDirection: 'column',
   },
 }));
 
-const editorOptions = {
-  renderIndentGuides: true,
+const getNotificationTooltip = (templateValid: boolean | undefined, attributesValid: boolean | undefined) => {
+  if (!templateValid && !attributesValid) return 'Template and attributes are invalid...';
+  if (!templateValid) return 'Template invalid...';
+  if (!attributesValid) return 'Attributes invalid...';
+  return 'Everything looks fine';
 };
 
 const TemplateEditionView: React.FC<any> = () => {
@@ -39,21 +50,33 @@ const TemplateEditionView: React.FC<any> = () => {
   const { templateId, versionId } = useParams<LocationParams>();
   const [loading, setLoading] = useState<boolean>(false);
   const [content, setContent] = useState<string>('');
+  const [attributes, setAttributes] = useState<string>('');
+  const validator = useValidator();
+  const mrml = useMRML();
+
+  const attributesValid = validateJsonSchema(validator, attributes);
+  const templateValid = validateTemplate(mrml, content);
 
   useEffect(() => {
     setLoading(true);
-    getTemplateVersionContent(templateId, versionId)
-      .then(setContent)
+    getTemplateVersion(templateId, versionId)
+      .then((version) => {
+        setContent(version.content || '');
+        setAttributes(JSON.stringify(version.attributes || {}, null, 2));
+      })
       .catch(console.error)
       .finally(() => setLoading(false));
-  }, [setContent, templateId, versionId]);
+  }, [setAttributes, setContent, templateId, versionId]);
 
   const handleSave = useCallback(() => {
     setLoading(true);
-    updateTemplateVersion(templateId, versionId, content)
-      .then((version) => setContent(version.content))
+    updateTemplateVersion(templateId, versionId, { content, attributes: JSON.parse(attributes) as object })
+      .then((version) => {
+        setContent(version.content || '');
+        setAttributes(JSON.stringify(version.attributes || {}, null, 2));
+      })
       .finally(() => setLoading(false));
-  }, [content, setContent, templateId, versionId]);
+  }, [attributes, content, setAttributes, setContent, templateId, versionId]);
 
   return (
     <Skeleton
@@ -61,16 +84,32 @@ const TemplateEditionView: React.FC<any> = () => {
       mainClassName={classes.root}
       rightElements={
         <React.Fragment>
-          <IconButton color="inherit" disabled={loading} onClick={handleSave}>
-            <SaveIcon fontSize="small" />
-          </IconButton>
+          <Badge color="secondary" overlap="circle" invisible={attributesValid && templateValid} variant="dot">
+            <Tooltip title={getNotificationTooltip(templateValid, attributesValid)}>
+              <IconButton color="inherit" disabled={attributesValid && templateValid}>
+                <NotificationIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
+          </Badge>
+          <Tooltip title="Save template and attributes">
+            <IconButton color="inherit" disabled={loading || !attributesValid || !templateValid} onClick={handleSave}>
+              <SaveIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
         </React.Fragment>
       }
     >
-      <section className={classes.editor}>
-        <MonacoEditor options={editorOptions} onChange={setContent} value={content} language="html" theme="vs-dark" />
+      <section className={cn(classes.grow, classes.editor)}>
+        <Editor
+          template={content}
+          attributes={attributes}
+          templateInvalid={!templateValid}
+          attributesInvalid={!attributesValid}
+          onChangeTemplate={setContent}
+          onChangeAttributes={setAttributes}
+        />
       </section>
-      <section className={classes.preview}>
+      <section className={classes.grow}>
         <Preview value={content} />
       </section>
     </Skeleton>

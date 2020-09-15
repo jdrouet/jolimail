@@ -40,6 +40,7 @@ export type TemplateVersion = {
   templateId: string;
   name: string;
   content: string | null;
+  attributes: object | null;
   createdAt: string;
   updatedAt: string;
   deletedAt: string | null;
@@ -64,7 +65,7 @@ export const getTemplateContent = (id: string): Promise<string> => getter(`/api/
 export const useTemplateContent = (templateId?: string) =>
   useSwr<string>(templateId ? [`/api/templates/${templateId}/content`] : null, getter);
 
-export const getTemplateVersion = (id: string, versionId: string): Promise<string> =>
+export const getTemplateVersion = (id: string, versionId: string): Promise<TemplateVersion> =>
   getter(`/api/templates/${id}/versions/${versionId}`);
 
 export const useTemplateVersion = function (templateId?: string, versionId?: string) {
@@ -94,8 +95,13 @@ export const useTemplateVersionList = function (templateId?: string) {
 export const createTemplateVersion = (templateId: string, name: string, content?: string) =>
   axios.post(`/api/templates/${templateId}/versions`, { name, content }).then((res) => res.data);
 
-export const updateTemplateVersion = (templateId: string, versionId: string, content: string) =>
-  axios.patch(`/api/templates/${templateId}/versions/${versionId}`, { content }).then((res) => res.data);
+export type TemplateVersionUpdate = {
+  content?: string;
+  attributes?: object;
+};
+
+export const updateTemplateVersion = (templateId: string, versionId: string, payload: TemplateVersionUpdate) =>
+  axios.patch(`/api/templates/${templateId}/versions/${versionId}`, payload).then((res) => res.data);
 
 export const deleteTemplateVersion = (templateId: string, versionId: string): Promise<any> =>
   axios.delete(`/api/templates/${templateId}/versions/${versionId}`);

@@ -22,9 +22,11 @@ module.exports = function override(config, env) {
     use: [{ loader: require.resolve('wasm-loader'), options: {} }],
   });
 
-  config.plugins.push(new MonacoWebpackPlugin({
-    languages: ['html'],
-  }));
+  config.plugins.push(
+    new MonacoWebpackPlugin({
+      languages: ['html', 'json'],
+    }),
+  );
 
   return config;
 };

@@ -14,7 +14,7 @@ lazy_static! {
         String::from("id, template_id, name, content, attributes, created_at, updated_at, deleted_at");
     pub static ref COLUMNS_NODATA: String = String::from("id, template_id, name, null as content, null as attributes, created_at, updated_at, deleted_at");
     pub static ref QUERY_FIND_BY_ID: String = format!(
-        "SELECT {} FROM template_versions WHERE id = $1 AND deleted_at IS null LIMIT 1",
+        "SELECT {} FROM template_versions WHERE template_id = $1 AND id = $2 AND deleted_at IS null LIMIT 1",
         COLUMNS.as_str()
     );
     pub static ref QUERY_FIND_BY_TEMPLATE_ID: String = format!(
@@ -66,11 +66,14 @@ impl From<&Row> for TemplateVersion {
 }
 
 impl TemplateVersion {
-    #[allow(unused)]
-    pub async fn find_by_id(client: &Client, id: &Uuid) -> Result<Option<Self>, ServerError> {
-        debug!("get template version {}", id);
+    pub async fn find_by_id(
+        client: &Client,
+        template_id: &Uuid,
+        version_id: &Uuid,
+    ) -> Result<Option<Self>, ServerError> {
+        debug!("get template version {}", version_id);
         let stmt = client.prepare(&QUERY_FIND_BY_ID).await?;
-        let rows = client.query(&stmt, &[id]).await?;
+        let rows = client.query(&stmt, &[template_id, version_id]).await?;
         Ok(rows.first().map(TemplateVersion::from))
     }
     pub async fn find_by_template(
