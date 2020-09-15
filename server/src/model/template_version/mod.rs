@@ -12,7 +12,7 @@ pub mod update;
 lazy_static! {
     pub static ref COLUMNS: String =
         String::from("id, template_id, name, content, attributes, created_at, updated_at, deleted_at");
-    pub static ref COLUMNS_NODATA: String = String::from("id, template_id, name, null as content, null as attributes, created_at, updated_at, deleted_at");
+    pub static ref COLUMNS_NODATA: String = String::from("id, template_id, name, null as content, null::JSONB as attributes, created_at, updated_at, deleted_at");
     pub static ref QUERY_FIND_BY_ID: String = format!(
         "SELECT {} FROM template_versions WHERE template_id = $1 AND id = $2 AND deleted_at IS null LIMIT 1",
         COLUMNS.as_str()
@@ -44,7 +44,7 @@ pub struct TemplateVersion {
     pub template_id: Uuid,
     pub name: String,
     pub content: Option<String>,
-    pub attributes: JsonValue,
+    pub attributes: Option<JsonValue>,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
     pub deleted_at: Option<DateTime<Utc>>,

@@ -80,6 +80,7 @@ const TemplateEditionView: React.FC<any> = () => {
 
   return (
     <Skeleton
+      backButtonVisible
       loading={loading}
       mainClassName={classes.root}
       rightElements={

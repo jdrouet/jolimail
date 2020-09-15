@@ -11,10 +11,10 @@ import TemplateCardlet from 'src/component/template-cardlet';
 import TemplateVersionListItem from 'src/component/template-version-list-item';
 import {
   TemplateVersion,
-  useTemplateVersionList,
-  useTemplate,
-  updateTemplate,
   deleteTemplateVersion,
+  updateTemplate,
+  useTemplate,
+  useTemplateVersionList,
 } from 'src/service/server';
 import { getRoute as getTemplateVersionCreatePath } from 'src/view/template-version-create';
 import { getRoute as getTemplateVersionEditionPath } from 'src/view/template-version-edition';
@@ -89,7 +89,7 @@ const TemplateEditionView: React.FC<any> = () => {
   );
 
   return (
-    <Skeleton loading={loading || loadingVersionList || loadingTemplate} mainClassName={classes.root}>
+    <Skeleton backButtonVisible loading={loading || loadingVersionList || loadingTemplate} mainClassName={classes.root}>
       <Grid container spacing={1} justify="center">
         {template ? (
           <Grid item xs={12} sm={10} md={8}>

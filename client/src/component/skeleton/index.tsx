@@ -1,9 +1,13 @@
-import { CircularProgress } from '@material-ui/core';
 import AppBar from '@material-ui/core/AppBar';
+import ButtonBase from '@material-ui/core/ButtonBase';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import IconButton from '@material-ui/core/IconButton';
 import { makeStyles } from '@material-ui/core/styles';
 import Toolbar from '@material-ui/core/Toolbar';
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import cn from 'classnames';
-import React from 'react';
+import React, { useCallback } from 'react';
+import { useHistory } from 'react-router-dom';
 import logoSrc from 'src/image/logo.svg';
 
 const useStyles = makeStyles((theme) => ({
@@ -17,9 +21,17 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     flexDirection: 'row',
   },
+  backButton: {
+    marginLeft: theme.spacing(-2),
+    marginRight: theme.spacing(),
+  },
   logo: {
-    maxHeight: '1.5rem',
     marginRight: theme.spacing(2),
+    marginLeft: theme.spacing(-1),
+  },
+  logoImg: {
+    margin: theme.spacing(),
+    maxHeight: '1.5rem',
   },
   container: {
     paddingTop: 64,
@@ -28,19 +40,37 @@ const useStyles = makeStyles((theme) => ({
 
 export type SkeletonProps = {
   children: any;
+  backButtonVisible?: boolean;
   loading?: boolean;
   mainClassName?: string;
   rightElements?: JSX.Element | JSX.Element[];
 };
 
-const Skeleton: React.FC<SkeletonProps> = ({ children, loading, mainClassName, rightElements }) => {
+const Skeleton: React.FC<SkeletonProps> = ({ backButtonVisible, children, loading, mainClassName, rightElements }) => {
   const classes = useStyles();
+  const history = useHistory();
+
+  const handleClickBack = useCallback(() => {
+    history.goBack();
+  }, [history]);
+
+  const handleClickHome = useCallback(() => {
+    history.push('/');
+  }, [history]);
+
   return (
     <React.Fragment>
       <AppBar key="header-bar" position="fixed">
         <Toolbar>
           <div className={classes.left}>
-            <img className={classes.logo} alt="Jolimail" src={logoSrc} />
+            {backButtonVisible ? (
+              <IconButton className={classes.backButton} color="inherit" onClick={handleClickBack}>
+                <ArrowBackIcon />
+              </IconButton>
+            ) : null}
+            <ButtonBase className={classes.logo} onClick={handleClickHome}>
+              <img className={classes.logoImg} alt="Jolimail" src={logoSrc} />
+            </ButtonBase>
             {loading ? <CircularProgress color="secondary" size={24} thickness={6} /> : null}
           </div>
           <div className={classes.right}>{rightElements}</div>
