@@ -75,6 +75,7 @@ const TemplateEditionView: React.FC<any> = () => {
         setContent(version.content || '');
         setAttributes(JSON.stringify(version.attributes || {}, null, 2));
       })
+      // TODO handle validation errors server side
       .finally(() => setLoading(false));
   }, [attributes, content, setAttributes, setContent, templateId, versionId]);
 

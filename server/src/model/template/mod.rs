@@ -5,6 +5,7 @@ use serde::{Deserialize, Serialize};
 use tokio_postgres::row::Row;
 use uuid::Uuid;
 
+pub mod content;
 pub mod create;
 pub mod update;
 

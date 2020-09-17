@@ -1,20 +1,19 @@
 use crate::error::ServerError;
-use crate::model::template::Template;
+use crate::model::template::content::TemplateContent;
 use actix_web::{get, web, HttpResponse};
 use deadpool_postgres::Pool;
-use uuid::Uuid;
 
-#[get("/api/templates/{id}/content")]
+#[get("/api/templates/{template_slug}/content")]
 pub async fn handler(
     pool: web::Data<Pool>,
-    template_id: web::Path<Uuid>,
+    template_slug: web::Path<String>,
 ) -> Result<HttpResponse, ServerError> {
     let client = pool.get().await?;
-    match Template::get_content_by_id(&client, &template_id).await? {
-        Some(template) => Ok(HttpResponse::Ok().body(template)),
+    match TemplateContent::find_by_slug(&client, template_slug.as_str()).await? {
+        Some(template) => Ok(HttpResponse::Ok().json(template)),
         None => Err(ServerError::NotFound(format!(
-            "unable to find template with id {}",
-            template_id
+            "unable to find template with slug {}",
+            template_slug
         ))),
     }
 }
@@ -34,7 +33,7 @@ mod tests {
     async fn template_not_found() {
         reset_database().await;
         let req = test::TestRequest::get()
-            .uri("/api/templates/da62fa2c-566e-4ff3-be1b-4189ed4d057d/content")
+            .uri("/api/templates/yolo/content")
             .to_request();
         let res = execute_request(req).await;
         assert_eq!(res.status(), StatusCode::NOT_FOUND);
@@ -45,7 +44,7 @@ mod tests {
     async fn template_without_content() {
         reset_database().await;
         let tmpl = create_template("testing", Some("some description")).await;
-        let url = format!("/api/templates/{}/content", tmpl.id);
+        let url = format!("/api/templates/{}/content", tmpl.slug);
         let req = test::TestRequest::get().uri(url.as_str()).to_request();
         let res = execute_request(req).await;
         assert_eq!(res.status(), StatusCode::NOT_FOUND);
@@ -57,7 +56,7 @@ mod tests {
         reset_database().await;
         let tmpl = create_template("testing", Some("some description")).await;
         let _vers = create_template_version(tmpl.id, "0.0.1".into(), None, None).await;
-        let url = format!("/api/templates/{}/content", tmpl.id);
+        let url = format!("/api/templates/{}/content", tmpl.slug);
         let req = test::TestRequest::get().uri(url.as_str()).to_request();
         let res = execute_request(req).await;
         assert_eq!(res.status(), StatusCode::NOT_FOUND);
@@ -70,7 +69,7 @@ mod tests {
         let tmpl = create_template("testing", Some("some description")).await;
         let vers = create_template_version(tmpl.id, "0.0.1".into(), None, None).await;
         set_template_version(&tmpl.id, &vers.id).await;
-        let url = format!("/api/templates/{}/content", tmpl.id);
+        let url = format!("/api/templates/{}/content", tmpl.slug);
         let req = test::TestRequest::get().uri(url.as_str()).to_request();
         let res = execute_request(req).await;
         assert_eq!(res.status(), StatusCode::OK);
