@@ -1,8 +1,8 @@
 use crate::error::ServerError;
 use deadpool_postgres::Client;
 use serde::{Deserialize, Serialize};
-use tokio_postgres::row::Row;
 use serde_json::Value as JsonValue;
+use tokio_postgres::row::Row;
 
 lazy_static! {
     pub static ref QUERY_FIND_BY_SLUG: String = concat!(
@@ -15,7 +15,8 @@ lazy_static! {
         "JOIN template_versions ON templates.current_version_id = template_versions.id ",
         "WHERE templates.slug = $1 AND templates.deleted_at IS NULL ",
         "LIMIT 1"
-    ).to_string();
+    )
+    .to_string();
 }
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct TemplateContent {
