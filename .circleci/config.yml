@@ -21,9 +21,13 @@ jobs:
     docker:
       - image: docker:stable
     steps:
+      - run: mkdir -p ~/.docker/cli-plugins
+      - run: curl --output ~/.docker/cli-plugins/docker-buildx --location --retry 3 https://github.com/docker/buildx/releases/download/v0.4.2/buildx-v0.4.2.linux-amd64
+      - run: chmod a+x ~/.docker/cli-plugins/docker-buildx
+      - run: docker buildx install
       - checkout
       - setup_remote_docker
-      - run: docker build --tag jolimail-test-client --target client-base .
+      - run: docker buildx build --tag jolimail-test-client --target client-base --load .
       - run: docker run -e CI=true jolimail-test-client npm test
 
   lint-server:
@@ -59,7 +63,7 @@ jobs:
       - image: docker:stable
     steps:
       - run: mkdir -p ~/.docker/cli-plugins
-      - run: curl --output ~/.docker/cli-plugins/docker-buildx --location --retry 3 https://github.com/docker/buildx/releases/download/v0.3.1/buildx-v0.3.1.linux-amd64
+      - run: curl --output ~/.docker/cli-plugins/docker-buildx --location --retry 3 https://github.com/docker/buildx/releases/download/v0.4.2/buildx-v0.4.2.linux-amd64
       - run: chmod a+x ~/.docker/cli-plugins/docker-buildx
       - run: docker buildx install
       - run: docker run --rm --privileged docker/binfmt:66f9012c56a8316f9244ffd7622d7c21c1f6f28d
