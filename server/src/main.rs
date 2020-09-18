@@ -31,7 +31,6 @@ macro_rules! bind_services {
         $app.service(controller::status::handler)
             .service(controller::template_version::create::handler)
             .service(controller::template_version::get::handler)
-            .service(controller::template_version::get_content::handler)
             .service(controller::template_version::list::handler)
             .service(controller::template_version::update::handler)
             .service(controller::template_version::delete::handler)
