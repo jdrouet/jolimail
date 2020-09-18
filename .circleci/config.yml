@@ -4,7 +4,7 @@ workflows:
   version: 2
   workflow:
     jobs:
-      - test-client
+      # - test-client
       - lint-server
       - test-server
       - build-image:
@@ -13,23 +13,24 @@ workflows:
               only:
                 - master
           requires:
-            - test-client
+            # - test-client
             - test-server
+            - lint-server
 
 jobs:
-  test-client:
-    docker:
-      - image: docker:stable
-    steps:
-      - run: apk add --no-cache curl
-      - run: mkdir -p ~/.docker/cli-plugins
-      - run: curl --output ~/.docker/cli-plugins/docker-buildx --location --retry 3 https://github.com/docker/buildx/releases/download/v0.4.2/buildx-v0.4.2.linux-amd64
-      - run: chmod a+x ~/.docker/cli-plugins/docker-buildx
-      - run: docker buildx install
-      - checkout
-      - setup_remote_docker
-      - run: docker buildx build --tag jolimail-test-client --target client-base --load .
-      - run: docker run -e CI=true jolimail-test-client npm test
+  # test-client:
+  #   docker:
+  #     - image: docker:stable
+  #   steps:
+  #     - run: apk add --no-cache curl
+  #     - run: mkdir -p ~/.docker/cli-plugins
+  #     - run: curl --output ~/.docker/cli-plugins/docker-buildx --location --retry 3 https://github.com/docker/buildx/releases/download/v0.4.2/buildx-v0.4.2.linux-amd64
+  #     - run: chmod a+x ~/.docker/cli-plugins/docker-buildx
+  #     - run: docker buildx install
+  #     - checkout
+  #     - setup_remote_docker
+  #     - run: docker buildx build --tag jolimail-test-client --target client-base --load .
+  #     - run: docker run -e CI=true jolimail-test-client npm test
 
   lint-server:
     docker:
