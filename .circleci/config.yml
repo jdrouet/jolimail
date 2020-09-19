@@ -69,8 +69,8 @@ jobs:
       - run: curl --output ~/.docker/cli-plugins/docker-buildx --location --retry 3 https://github.com/docker/buildx/releases/download/v0.4.2/buildx-v0.4.2.linux-amd64
       - run: chmod a+x ~/.docker/cli-plugins/docker-buildx
       - run: docker buildx install
-      - run: docker run --rm --privileged docker/binfmt:66f9012c56a8316f9244ffd7622d7c21c1f6f28d
       - checkout
       - setup_remote_docker
+      - run: docker run --rm --privileged docker/binfmt:66f9012c56a8316f9244ffd7622d7c21c1f6f28d
       - run: docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
       - run: docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7 --tag jdrouet/jolimail:$CIRCLE_BRANCH --push .
