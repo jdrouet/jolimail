@@ -62,12 +62,8 @@ jobs:
 
   build-image:
     docker:
-      - image: docker:stable
+      - image: jdrouet/docker-with-buildx:stable
     steps:
-      - run: apk add --no-cache curl
-      - run: mkdir -p ~/.docker/cli-plugins
-      - run: curl --output ~/.docker/cli-plugins/docker-buildx --location --retry 3 https://github.com/docker/buildx/releases/download/v0.4.2/buildx-v0.4.2.linux-amd64
-      - run: chmod a+x ~/.docker/cli-plugins/docker-buildx
       - run: docker buildx install
       - checkout
       - setup_remote_docker
