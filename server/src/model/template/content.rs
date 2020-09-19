@@ -22,7 +22,7 @@ lazy_static! {
 pub struct TemplateContent {
     pub name: String,
     pub description: String,
-    pub template: String,
+    pub content: String,
     pub attributes: JsonValue,
 }
 
@@ -31,7 +31,7 @@ impl From<&Row> for TemplateContent {
         Self {
             name: row.get(0),
             description: row.get(1),
-            template: row.get(2),
+            content: row.get(2),
             attributes: row.get(3),
         }
     }
