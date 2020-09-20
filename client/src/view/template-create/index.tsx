@@ -44,7 +44,7 @@ const TemplateCreateView: React.FC<any> = () => {
       e.preventDefault();
       createTemplate({ title, description })
         .then((template) =>
-          history.push(
+          history.replace(
             getTemplateEditionRoute({
               templateId: template.id,
             }),

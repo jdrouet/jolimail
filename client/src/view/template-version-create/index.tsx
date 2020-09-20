@@ -49,7 +49,7 @@ const TemplateCreateView: React.FC<any> = () => {
       e.preventDefault();
       setLoading(true);
       createTemplateVersion(templateId, name)
-        .then((version) => history.push(getTemplateVersionEditionRoute({ templateId, versionId: version.id })))
+        .then((version) => history.replace(getTemplateVersionEditionRoute({ templateId, versionId: version.id })))
         .finally(() => setLoading(false));
     },
     [history, templateId, name],

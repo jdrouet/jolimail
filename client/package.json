@@ -68,6 +68,7 @@
     "react-dom": "^16.13.1",
     "react-monaco-editor": "^0.40.0",
     "react-router-dom": "^5.2.0",
+    "react-syntax-highlighter": "^13.5.3",
     "swr": "^0.3.2"
   },
   "devDependencies": {
@@ -86,6 +87,7 @@
     "@types/react": "^16.9.49",
     "@types/react-dom": "^16.9.8",
     "@types/react-router-dom": "^5.1.5",
+    "@types/react-syntax-highlighter": "^11.0.5",
     "fetch-mock": "^9.10.7",
     "import-sort-style-module": "^6.0.0",
     "monaco-editor-webpack-plugin": "^1.9.0",

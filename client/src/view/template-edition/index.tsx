@@ -8,6 +8,7 @@ import { useHistory, useParams } from 'react-router-dom';
 import CreateButton from 'src/component/button-fab';
 import Skeleton from 'src/component/skeleton';
 import TemplateCardlet from 'src/component/template-cardlet';
+import TemplateUsageCardlet from 'src/component/template-usage-cardlet';
 import TemplateVersionListItem from 'src/component/template-version-list-item';
 import {
   TemplateVersion,
@@ -88,31 +89,40 @@ const TemplateEditionView: React.FC<any> = () => {
     [reloadTemplate, setLoading, templateId],
   );
 
+  const defaultVersion = versions.find((item) => template?.currentVersionId === item.id);
+
   return (
     <Skeleton backButtonVisible loading={loading || loadingVersionList || loadingTemplate} mainClassName={classes.root}>
       <Grid container spacing={1} justify="center">
         {template ? (
+          <React.Fragment>
+            <Grid item xs={12} sm={10} md={8}>
+              <TemplateCardlet template={template} />
+            </Grid>
+            <Grid item xs={12} sm={10} md={8}>
+              <TemplateUsageCardlet template={template} version={defaultVersion} />
+            </Grid>
+          </React.Fragment>
+        ) : null}
+        {versions.length ? (
           <Grid item xs={12} sm={10} md={8}>
-            <TemplateCardlet template={template} />
+            <Card>
+              <List subheader={<ListSubheader>Available versions</ListSubheader>}>
+                {versions.map((version) => (
+                  <TemplateVersionListItem
+                    key={version.id}
+                    currentVersion={version.id === template?.currentVersionId}
+                    onClick={handleClickVersion}
+                    onDelete={handleClickDelete}
+                    onDuplicate={handleClickDuplicate}
+                    onSetToDefault={handleClickSetToDefault}
+                    version={version}
+                  />
+                ))}
+              </List>
+            </Card>
           </Grid>
         ) : null}
-        <Grid item xs={12} sm={10} md={8}>
-          <Card>
-            <List subheader={<ListSubheader>Available versions</ListSubheader>}>
-              {versions.map((version) => (
-                <TemplateVersionListItem
-                  key={version.id}
-                  currentVersion={version.id === template?.currentVersionId}
-                  onClick={handleClickVersion}
-                  onDelete={handleClickDelete}
-                  onDuplicate={handleClickDuplicate}
-                  onSetToDefault={handleClickSetToDefault}
-                  version={version}
-                />
-              ))}
-            </List>
-          </Card>
-        </Grid>
       </Grid>
       {!!versions ? (
         <CreateButton extended={versions.length === 0} label="Create a version" onClick={handleClickCreate} />
