@@ -12,7 +12,7 @@ pub mod update;
 lazy_static! {
     pub static ref COLUMNS: String =
         String::from("id, template_id, name, content, attributes, created_at, updated_at, deleted_at");
-    pub static ref COLUMNS_NODATA: String = String::from("id, template_id, name, null as content, null::JSONB as attributes, created_at, updated_at, deleted_at");
+    pub static ref COLUMNS_NODATA: String = String::from("id, template_id, name, null as content, attributes, created_at, updated_at, deleted_at");
     pub static ref QUERY_FIND_BY_ID: String = format!(
         "SELECT {} FROM template_versions WHERE template_id = $1 AND id = $2 AND deleted_at IS null LIMIT 1",
         COLUMNS.as_str()
@@ -26,13 +26,6 @@ lazy_static! {
         COLUMNS_NODATA.as_str()
     );
 }
-
-const QUERY_CONTENT_BY_ID: &'static str = r#"
-SELECT template_versions.content
-FROM template_versions
-WHERE template_versions.id = $1 AND deleted_at IS null
-LIMIT 1
-"#;
 
 const DELETE_BY_ID: &'static str =
     "UPDATE template_versions SET deleted_at = now() WHERE template_id = $1 and id = $2";
@@ -92,16 +85,6 @@ impl TemplateVersion {
         let stmt = client.prepare(query).await?;
         let rows = client.query(&stmt, &[template_id, &limit, &offset]).await?;
         Ok(rows.iter().map(TemplateVersion::from).collect())
-    }
-
-    pub async fn get_content_by_id(
-        client: &Client,
-        version_id: &Uuid,
-    ) -> Result<Option<String>, ServerError> {
-        debug!("get template versions content by id {}", version_id);
-        let stmt = client.prepare(QUERY_CONTENT_BY_ID).await?;
-        let rows = client.query(&stmt, &[version_id]).await?;
-        Ok(rows.first().map(|row| row.get(0)))
     }
 
     pub async fn delete_by_id(
