@@ -19,9 +19,9 @@ const useStyles = makeStyles(() => ({
 
 const buildCurlCatapulte = (template: Template) => {
   const output = ['curl --request POST'];
-  output.push('--header "Content-Type: application-json"');
-  output.push(`--data '${JSON.stringify({ from: 'sender@example.com', to: 'recipient', params: {} })}'`);
-  output.push(`http://catapulte-instance:port/template/${template.slug}`);
+  output.push('--header "Content-Type: application/json"');
+  output.push(`--data '${JSON.stringify({ from: 'sender@example.com', to: 'recipient@example.com', params: {} })}'`);
+  output.push(`http://catapulte-instance:port/templates/${template.slug}`);
   return output.join(' \\\n\t');
 };
 
