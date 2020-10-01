@@ -5,7 +5,7 @@ import Typography from '@material-ui/core/Typography';
 import cn from 'classnames';
 import React from 'react';
 import SyntaxHighlighter from 'react-syntax-highlighter';
-import { Template, TemplateVersion } from 'src/service/server';
+import { Template, TemplateVersion, useSettings } from 'src/service/server';
 
 const useStyles = makeStyles(() => ({
   root: {},
@@ -17,15 +17,15 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const buildCurlCatapulte = (template: Template) => {
+const buildCurlCatapulte = (baseUrl: string, template: Template) => {
   const output = ['curl --request POST'];
   output.push('--header "Content-Type: application/json"');
   output.push(`--data '${JSON.stringify({ from: 'sender@example.com', to: 'recipient@example.com', params: {} })}'`);
-  output.push(`http://catapulte-instance:port/templates/${template.slug}`);
+  output.push(`${baseUrl}/templates/${template.slug}`);
   return output.join(' \\\n\t');
 };
 
-const buildCurlJolimail = (template: Template) => `curl ${window.location.origin}/template/${template.slug}`;
+const buildCurlJolimail = (baseUrl: string, template: Template) => `curl ${baseUrl}/template/${template.slug}`;
 
 export type TemplateCardletProps = {
   className?: string;
@@ -35,13 +35,14 @@ export type TemplateCardletProps = {
 
 const TemplateUsageCardlet: React.FC<TemplateCardletProps> = ({ className, template, version }) => {
   const classes = useStyles();
+  const { data: settings } = useSettings();
   return (
     <Card className={cn(classes.root, className)} data-template={template.id}>
       <CardContent>
         <Typography gutterBottom color="textSecondary" variant="subtitle2">
           How to use
         </Typography>
-        {version ? (
+        {version && settings ? (
           <React.Fragment>
             <Typography>
               When using with{' '}
@@ -50,9 +51,11 @@ const TemplateUsageCardlet: React.FC<TemplateCardletProps> = ({ className, templ
               </a>
               , you just need a simple http request
             </Typography>
-            <SyntaxHighlighter language="bash">{buildCurlCatapulte(template)}</SyntaxHighlighter>
+            <SyntaxHighlighter language="bash">
+              {buildCurlCatapulte(settings.exampleCatapulteBaseUrl, template)}
+            </SyntaxHighlighter>
             <Typography>If you just want to download the template, you also need a simple http request</Typography>
-            <SyntaxHighlighter language="bash">{buildCurlJolimail(template)}</SyntaxHighlighter>
+            <SyntaxHighlighter language="bash">{buildCurlJolimail(window.location.origin, template)}</SyntaxHighlighter>
           </React.Fragment>
         ) : (
           <Typography>

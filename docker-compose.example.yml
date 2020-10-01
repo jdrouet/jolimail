@@ -37,6 +37,7 @@ services:
       DATABASE_HOST: database
       DATABASE_USER: postgres
       DATABASE_DBNAME: postgres
+      EXAMPLE_CATAPULTE_BASE_URL: http://localhost:3010
       RUST_LOG: info
     networks:
       - backend

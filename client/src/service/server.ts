@@ -13,6 +13,10 @@ export const config = {
   fetcher: getter,
 };
 
+export type Settings = {
+  exampleCatapulteBaseUrl: string;
+};
+
 export type Template = {
   id: string;
   title: string;
@@ -105,3 +109,5 @@ export const updateTemplateVersion = (templateId: string, versionId: string, pay
 
 export const deleteTemplateVersion = (templateId: string, versionId: string): Promise<any> =>
   axios.delete(`/api/templates/${templateId}/versions/${versionId}`);
+
+export const useSettings = () => useSwr<Settings>('/api/settings', getter);

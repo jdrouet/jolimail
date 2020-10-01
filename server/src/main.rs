@@ -28,7 +28,8 @@ macro_rules! create_app {
 
 macro_rules! bind_services {
     ($app: expr) => {
-        $app.service(controller::status::handler)
+        $app.service(controller::settings::handler)
+            .service(controller::status::handler)
             .service(controller::template_version::create::handler)
             .service(controller::template_version::get::handler)
             .service(controller::template_version::list::handler)
