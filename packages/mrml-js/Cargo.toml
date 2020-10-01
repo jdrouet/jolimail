@@ -11,7 +11,7 @@ crate-type = ["cdylib", "rlib"]
 default = ["console_error_panic_hook"]
 
 [dependencies]
-mrml = "0.2"
+mrml = "0.3"
 serde = "1.0"
 serde_derive = "1.0"
 
