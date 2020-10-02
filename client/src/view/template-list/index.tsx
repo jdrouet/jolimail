@@ -1,3 +1,4 @@
+import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
@@ -13,12 +14,12 @@ export const ROUTE = '/';
 export const getRoute = () => ROUTE;
 
 const useStyles = makeStyles((theme) => ({
-  list: {
-    margin: '0 auto',
-    maxWidth: 500,
+  root: {
+    paddingLeft: theme.spacing(1),
+    paddingRight: theme.spacing(1),
   },
   item: {
-    marginTop: theme.spacing(1),
+    marginTop: theme.spacing(),
   },
 }));
 
@@ -31,14 +32,16 @@ const TemplateListView: React.FC<any> = () => {
   const handleClickCreate = () => history.push(getTemplateCreatePath());
 
   return (
-    <Skeleton>
-      <main className={classes.list}>
+    <Skeleton mainClassName={classes.root}>
+      <Grid container spacing={1} justify="center">
         {templateList.map((item) => (
-          <Clickable key={item.id} onClick={handleClickTemplate} value={item}>
-            <TemplateCardlet className={classes.item} template={item} />
-          </Clickable>
+          <Grid item key={item.id} xs={12} sm={10} md={8}>
+            <Clickable onClick={handleClickTemplate} value={item}>
+              <TemplateCardlet className={classes.item} template={item} />
+            </Clickable>
+          </Grid>
         ))}
-      </main>
+      </Grid>
       {!!templateList ? (
         <CreateButton extended={templateList.length === 0} label="Create a template" onClick={handleClickCreate} />
       ) : null}
