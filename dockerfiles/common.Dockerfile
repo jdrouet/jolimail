@@ -26,6 +26,17 @@ FROM --platform=$BUILDPLATFORM client-base AS client-builder
 ENV NODE_ENV=production
 RUN npm run build
 
+# fetch the vendor with the builder platform to avoid qemu issues
+FROM --platform=$BUILDPLATFORM rust:1-slim-buster AS server-sources
+
+ENV USER=root
+
+WORKDIR /code
+RUN cargo init
+COPY server/Cargo.toml /code/Cargo.toml
+RUN mkdir -p /code/.cargo \
+  && cargo vendor > /code/.cargo/config
+
 FROM rust:1-slim-buster AS server-builder
 
 RUN apt-get update -y \
@@ -35,11 +46,11 @@ RUN apt-get update -y \
 ENV USER=root
 
 WORKDIR /code
-RUN cargo init
-COPY server/Cargo.toml /code/Cargo.toml
-RUN cargo fetch
 
+COPY server/Cargo.toml /code/Cargo.toml
 COPY server/src /code/src
+COPY --from=server-sources /code/.cargo /code/.cargo
+COPY --from=server-sources /code/vendor /code/vendor
 
 RUN cargo build --release --offline
 
