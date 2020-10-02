@@ -38,7 +38,7 @@ mod tests {
     #[actix_rt::test]
     #[serial]
     async fn status_get_success() {
-        let req = test::TestRequest::get().uri("/api-settings").to_request();
+        let req = test::TestRequest::get().uri("/api/settings").to_request();
         let res = execute_request(req).await;
         assert_eq!(res.status(), StatusCode::OK);
     }
