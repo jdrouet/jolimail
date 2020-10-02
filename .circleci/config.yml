@@ -5,46 +5,13 @@ workflows:
   main:
     jobs:
       # - test-client
-      - lint-server:
-          filters:
-            tags:
-              ignore: /.*/
-      - test-server:
-          filters:
-            tags:
-              ignore: /.*/
+      - lint-server
+      - test-server
       - build-image:
-          filters:
-            tags:
-              ignore: /.*/
           requires:
             # - test-client
             - test-server
             - lint-server
-  deploy:
-    jobs:
-      # - test-client
-      - lint-server:
-          filters:
-            tags:
-              only: /^[0-9]+\.[0-9]+\.[0-9]+$/
-            branches:
-              ignore: /.*/
-      - test-server:
-          filters:
-            tags:
-              only: /^[0-9]+\.[0-9]+\.[0-9]+$/
-            branches:
-              ignore: /.*/
-      - build-push-image:
-          requires:
-            - test-server
-            - lint-server
-          filters:
-            tags:
-              only: /^[0-9]+\.[0-9]+\.[0-9]+$/
-            branches:
-              ignore: /.*/
 
 jobs:
   # test-client:
