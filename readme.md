@@ -35,6 +35,10 @@ Then you should be able to reach jolimail [here](http://localhost:8080) and the 
 
 If you want to use it in a production environment, you can will just need a postgres instance where the templates will be stored.
 
+You can also deploy it on Heroku with the following button
+
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/jdrouet/jolimail)
+
 ## Should you use it?
 
 If, like us, you didn't find any good way of doing transactionnal emails, then Yes!

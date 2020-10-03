@@ -1,0 +1,44 @@
+{
+  "name": "Jolimail",
+  "description": "A Rust application that allows your to create, store and version mjml templates",
+  "repository": "https://github.com/jdrouet/jolimail",
+  "logo": "https://github.com/jdrouet/jolimail/raw/master/client/public/logo512.png",
+  "keywords": ["rust", "mjml", "mrml", "email", "template"],
+  "website": "https://jolimail.io",
+  "env": {
+    "RUST_LOG": {
+      "description": "Log level",
+      "value": "info"
+    },
+    "DATABASE_HOST": {
+      "description": "Hostname of the postgres server",
+      "value": ""
+    },
+    "DATABASE_PORT": {
+      "description": "Port of the postgres server",
+      "value": "5432"
+    },
+    "DATABASE_DBNAME": {
+      "description": "Name of the postgres server database",
+      "value": ""
+    },
+    "DATABASE_USER": {
+      "description": "User to connect the postgres server",
+      "value": ""
+    },
+    "DATABASE_PASSWORD": {
+      "description": "Password to connect the postgres server",
+      "value": ""
+    },
+    "EXAMPLE_CATAPULTE_BASE_URL": {
+      "description": "Catapulte server url to provide in example",
+      "value": "https://catapulte.jolimail.io"
+    }
+  },
+  "addons": [
+    {
+      "plan": "heroku-postgresql",
+      "as": "DATABASE"
+    }
+  ]
+}
