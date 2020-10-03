@@ -1,8 +1,10 @@
 import Card from '@material-ui/core/Card';
 import Grid from '@material-ui/core/Grid';
+import IconButton from '@material-ui/core/IconButton';
 import List from '@material-ui/core/List';
 import ListSubheader from '@material-ui/core/ListSubheader';
 import { makeStyles } from '@material-ui/core/styles';
+import DeleteIcon from '@material-ui/icons/Delete';
 import React, { useCallback, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import CreateButton from 'src/component/button-fab';
@@ -12,6 +14,7 @@ import TemplateUsageCardlet from 'src/component/template-usage-cardlet';
 import TemplateVersionListItem from 'src/component/template-version-list-item';
 import {
   TemplateVersion,
+  deleteTemplate,
   deleteTemplateVersion,
   updateTemplate,
   useTemplate,
@@ -67,7 +70,7 @@ const TemplateEditionView: React.FC<any> = () => {
       ),
     [history, templateId],
   );
-  const handleClickDelete = useCallback(
+  const handleClickDeleteVersion = useCallback(
     (version: TemplateVersion) => {
       setLoading(true);
       deleteTemplateVersion(templateId, version.id)
@@ -88,11 +91,34 @@ const TemplateEditionView: React.FC<any> = () => {
     },
     [reloadTemplate, setLoading, templateId],
   );
+  const handleClickDelete = useCallback(() => {
+    if (!window.confirm('Are you sure you want to delete this template?')) {
+      return;
+    }
+    setLoading(true);
+    deleteTemplate(templateId)
+      .then(() => history.goBack())
+      .finally(() => setLoading(false));
+  }, [history, templateId]);
 
   const defaultVersion = versions.find((item) => template?.currentVersionId === item.id);
 
   return (
-    <Skeleton backButtonVisible loading={loading || loadingVersionList || loadingTemplate} mainClassName={classes.root}>
+    <Skeleton
+      backButtonVisible
+      loading={loading || loadingVersionList || loadingTemplate}
+      mainClassName={classes.root}
+      rightElements={
+        <IconButton
+          color="inherit"
+          data-action="template-delete"
+          onClick={handleClickDelete}
+          title="Delete the template"
+        >
+          <DeleteIcon />
+        </IconButton>
+      }
+    >
       <Grid container spacing={1} justify="center">
         {template ? (
           <React.Fragment>
@@ -113,7 +139,7 @@ const TemplateEditionView: React.FC<any> = () => {
                     key={version.id}
                     currentVersion={version.id === template?.currentVersionId}
                     onClick={handleClickVersion}
-                    onDelete={handleClickDelete}
+                    onDelete={handleClickDeleteVersion}
                     onDuplicate={handleClickDuplicate}
                     onSetToDefault={handleClickSetToDefault}
                     version={version}

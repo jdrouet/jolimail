@@ -56,6 +56,8 @@ export const createTemplate = (payload: TemplateCreate): Promise<Template> =>
 export const updateTemplate = (templateId: string, payload: TemplateUpdate): Promise<Template> =>
   axios.patch(`/api/templates/${templateId}`, payload).then((res) => res.data);
 
+export const deleteTemplate = (templateId: string): Promise<any> => axios.delete(`/api/templates/${templateId}`);
+
 export const getTemplate = (id: string): Promise<Template> => getter(`/api/templates/${id}`);
 
 export const useTemplate = function (templateId?: string) {
