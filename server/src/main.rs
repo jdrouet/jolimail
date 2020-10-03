@@ -90,7 +90,7 @@ async fn main() -> std::io::Result<()> {
     HttpServer::new(move || {
         bind_services!(create_app!()
             .data(pool.clone())
-            .wrap(middleware::DefaultHeaders::new().header("X-Version", "0.1.0"))
+            .wrap(middleware::DefaultHeaders::new().header("X-Version", "0.1.1"))
             .wrap(middleware::Logger::default())
             .wrap(middleware::Compress::default()))
         .service(Files::new("/", get_client()).index_file("index.html"))
