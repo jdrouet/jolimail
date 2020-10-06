@@ -40,7 +40,7 @@ pub mod tests {
         let client = POOL.get().await.unwrap();
         let tmpl = TemplateCreate {
             title: title.to_string(),
-            description: description.and_then(|value| Some(value.to_string())),
+            description: description.map(|value| value.to_string()),
         };
         tmpl.save(&client).await.unwrap()
     }

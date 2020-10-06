@@ -4,7 +4,7 @@ use std::collections::HashSet;
 use std::path::PathBuf;
 
 /// build sql query to create migration table
-fn create_migration_table_query<'a>(tablename: &str) -> String {
+fn create_migration_table_query(tablename: &str) -> String {
     r#"
   CREATE TABLE IF NOT EXISTS {{TABLENAME}} (
     name TEXT NOT NULL PRIMARY KEY,
@@ -16,7 +16,7 @@ fn create_migration_table_query<'a>(tablename: &str) -> String {
 
 /// extract tablename from environment variables or fallback to "migrations"
 fn get_tablename_from_env() -> String {
-    std::env::var("MIGRATION_TABLENAME").unwrap_or("migrations".into())
+    std::env::var("MIGRATION_TABLENAME").unwrap_or_else(|_| "migrations".into())
 }
 
 /// extract scripts path from environment variables
@@ -31,7 +31,7 @@ fn filter_script_entry(entry: std::fs::DirEntry) -> Option<String> {
         .to_str()
         .and_then(|value| fname_regex.captures(value))
         .and_then(|capture| capture.get(1))
-        .and_then(|m| Some(String::from(m.as_str())))
+        .map(|m| String::from(m.as_str()))
 }
 
 /// extract list of scripts from migration folder
@@ -95,7 +95,7 @@ impl Migrator {
     /// check if the script has been run
     async fn check_migrated<'a>(
         &self,
-        client: &Transaction<'a>,
+        client: &Transaction<'_>,
         name: &str,
     ) -> Result<bool, Error> {
         debug!("create migrated {}", name);
@@ -121,7 +121,7 @@ impl Migrator {
 
     async fn execute_script<'a>(
         &self,
-        client: &Transaction<'a>,
+        client: &Transaction<'_>,
         content: &str,
     ) -> Result<(), Error> {
         match client.batch_execute(content).await {
@@ -132,7 +132,7 @@ impl Migrator {
 
     async fn insert_migration<'a>(
         &self,
-        client: &Transaction<'a>,
+        client: &Transaction<'_>,
         name: &str,
     ) -> Result<(), Error> {
         debug!("insert migration for {}", name);
@@ -143,7 +143,7 @@ impl Migrator {
 
     async fn delete_migration<'a>(
         &self,
-        client: &Transaction<'a>,
+        client: &Transaction<'_>,
         name: &str,
     ) -> Result<(), Error> {
         debug!("delete migration for {}", name);
@@ -154,7 +154,7 @@ impl Migrator {
 
     async fn run_script<'a>(
         &self,
-        tx: &Transaction<'a>,
+        tx: &Transaction<'_>,
         name: &str,
         up: bool,
     ) -> Result<(), Error> {
@@ -224,7 +224,7 @@ pub mod tests {
     use crate::service::database::client::tests::POOL;
 
     pub fn get_migration_path() -> String {
-        std::env::var("TEST_MIGRATION_PATH").unwrap_or("migrations".into())
+        std::env::var("TEST_MIGRATION_PATH").unwrap_or_else(|_| "migrations".into())
     }
 
     #[test]

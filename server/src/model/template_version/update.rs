@@ -23,8 +23,8 @@ impl TemplateVersionUpdate {
         attributes: Option<JsonValue>,
     ) -> Self {
         Self {
-            id: version_id.clone(),
-            template_id: template_id.clone(),
+            id: *version_id,
+            template_id: *template_id,
             content,
             attributes,
         }

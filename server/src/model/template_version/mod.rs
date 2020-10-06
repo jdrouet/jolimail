@@ -27,7 +27,7 @@ lazy_static! {
     );
 }
 
-const DELETE_BY_ID: &'static str =
+const DELETE_BY_ID: &str =
     "UPDATE template_versions SET deleted_at = now() WHERE template_id = $1 and id = $2";
 
 #[derive(Clone, Debug, Deserialize, Serialize)]

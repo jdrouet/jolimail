@@ -57,15 +57,15 @@ pub mod tests {
     ) -> Option<Template> {
         let client = POOL.get().await.unwrap();
         let body = TemplateUpdate {
-            id: id.clone(),
+            id: *id,
             title: title.clone(),
             description: description.clone(),
-            current_version_id: current_version_id.clone(),
+            current_version_id,
         };
         body.save(&client).await.unwrap()
     }
 
     pub async fn set_template_version(id: &Uuid, version_id: &Uuid) -> Option<Template> {
-        update_template(id, None, None, Some(version_id.clone())).await
+        update_template(id, None, None, Some(*version_id)).await
     }
 }

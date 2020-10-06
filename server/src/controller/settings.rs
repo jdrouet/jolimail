@@ -19,7 +19,7 @@ impl Default for Settings {
     fn default() -> Self {
         Self {
             example_catapulte_base_url: std::env::var("EXAMPLE_CATAPULTE_BASE_URL")
-                .unwrap_or(EXAMPLE_CATAPULTE_BASE_URL.into()),
+                .unwrap_or_else(|_| EXAMPLE_CATAPULTE_BASE_URL.into()),
         }
     }
 }
