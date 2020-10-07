@@ -21,7 +21,7 @@ pub async fn handler(
 ) -> Result<HttpResponse, ServerError> {
     let client = pool.get().await?;
     let body = TemplateUpdate {
-        id: params.clone(),
+        id: *params,
         title: payload.title.clone(),
         description: payload.description.clone(),
         current_version_id: payload.current_version_id,

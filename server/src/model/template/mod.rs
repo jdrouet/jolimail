@@ -31,7 +31,7 @@ lazy_static! {
 // LIMIT 1
 // "#;
 
-const DELETE_BY_ID: &'static str = "UPDATE templates SET deleted_at = now() WHERE id = $1";
+const DELETE_BY_ID: &str = "UPDATE templates SET deleted_at = now() WHERE id = $1";
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]

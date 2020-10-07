@@ -74,6 +74,6 @@ mod tests {
         let res = execute_request(req).await;
         assert_eq!(res.status(), StatusCode::OK);
         let body = test::read_body(res).await;
-        assert!(body.to_vec().len() > 0);
+        assert!(!body.to_vec().is_empty());
     }
 }

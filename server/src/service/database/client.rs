@@ -36,7 +36,7 @@ impl From<tokio_postgres::error::DbError> for ServerError {
         if error.table().is_some() && error.constraint().is_some() {
             let constraint = error.constraint().unwrap();
             let table = error.table().unwrap();
-            let constraint: Vec<&str> = constraint.split("_").collect();
+            let constraint: Vec<&str> = constraint.split('_').collect();
             if constraint.len() == 3
                 && constraint.get(0).is_some()
                 && constraint.get(0) == Some(&table)

@@ -14,7 +14,7 @@ lazy_static! {
     );
 }
 
-const DEFAULT_TEMPLATE_CONTENT: &'static str = r#"<mjml>
+const DEFAULT_TEMPLATE_CONTENT: &str = r#"<mjml>
     <mj-head>
         <mj-title>Hello {{username}}</mj-title>
         <mj-preview>This is the preview of your email</mj-preview>
@@ -51,7 +51,7 @@ impl TemplateVersionCreate {
         content: Option<String>,
         attributes: Option<JsonValue>,
     ) -> Self {
-        let content = content.unwrap_or(DEFAULT_TEMPLATE_CONTENT.into());
+        let content = content.unwrap_or_else(|| DEFAULT_TEMPLATE_CONTENT.into());
         let attributes = match attributes {
             Some(value) => value,
             None => default_attributes(),
