@@ -37,8 +37,7 @@ const Preview: React.FC<PreviewProps> = ({ className, mode = 'desktop', value })
   useEffect(() => {
     if (!mrml || !value) return;
     try {
-      const result = mrml.toEmail(value);
-      setContent(result.html);
+      setContent(mrml.toHtml(value));
     } catch (err) {
       console.error(err);
     }

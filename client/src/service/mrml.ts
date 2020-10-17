@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
 
 export type MRML = {
-  toEmail: (input: string) => { subject: string; text: string; html: string };
+  toHtml: (input: string) => string;
 };
 
 export const useMRML = function () {
   const [mod, setModule] = useState<MRML>();
   useEffect(() => {
-    import('mrml-js').then(({ toEmail }) => setModule({ toEmail })).catch(console.error);
+    import('mrml').then(({ toHtml }) => setModule({ toHtml })).catch(console.error);
   }, []);
   return mod;
 };
@@ -15,7 +15,7 @@ export const useMRML = function () {
 export const validate = (instance: MRML | undefined, input: string | undefined): boolean | undefined => {
   if (!instance || !input) return undefined;
   try {
-    instance.toEmail(input);
+    instance.toHtml(input);
     return true;
   } catch {
     return false;
