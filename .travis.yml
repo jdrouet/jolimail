@@ -1,0 +1,38 @@
+language: rust
+
+rust: stable
+
+cache: cargo
+
+env:
+  global:
+    - RUST_LOG=info
+    - DATABASE_HOST=localhost
+    - DATABASE_USER=postgres
+    - DATABASE_DBNAME=postgres
+    - MIGRATION_PATH=migrations
+    - TEST_MIGRATION_PATH=migrations
+    - TARGET_PLATFORM=linux/amd64,linux/386,linux/arm64,linux/arm/v7
+
+stages:
+  - lint
+  - test
+  - build
+
+jobs:
+  include:
+    - stage: lint
+      name: run rustfmt on server
+      script:
+        - rustup component add rustfmt
+        - make -C server lint
+
+    - stage: test
+      name: run test
+      script:
+        - docker run -d -p 5432:5432 -e POSTGRES_HOST_AUTH_METHOD=trust postgres:12-alpine
+        - make -C server test
+
+    - stage: build
+      name: build docker image
+      script: docker build --tag jdrouet/jolimail:local .

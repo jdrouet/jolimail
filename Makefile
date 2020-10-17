@@ -1,31 +1,22 @@
-RPI_CONTEXT?=rpi
-TAG_NAME?=master
 TARGET_PLATFORM?=linux/amd64,linux/386,linux/arm64,linux/arm/v7
 
-all: build-client build-server
-
-builder-local:
-	docker buildx create --name local --platform ${TARGET_PLATFORM}
-
-builder-shared:
-	docker buildx create --name shared --platform ${TARGET_PLATFORM}
-	docker buildx create --append --name shared --platform linux/arm/v7 ${RPI_CONTEXT}
-
-build-client:
-	docker buildx use local
-	docker buildx build \
-		--build-arg BUILD_TAG=${TAG_NAME} \
-		--platform ${TARGET_PLATFORM} \
-		--tag jdrouet/jolimail:${TAG_NAME}-client \
-		--file dockerfiles/client.Dockerfile \
-		--push .
-
-build-server:
-	docker buildx use shared
-	docker buildx build \
-		--build-arg BUILD_TAG=${TAG_NAME} \
+publish:
+	docker buildx build --push \
+		--file multiarch.Dockerfile \
 		--platform ${TARGET_PLATFORM} \
 		--tag jdrouet/jolimail:${TAG_NAME} \
-		--file dockerfiles/server.Dockerfile \
-		--push .
- 
+		--tag jdrouet/jolimail:latest \
+		.
+
+ci-install-buildx:
+	sudo rm -rf /var/lib/apt/lists/*
+	curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+	sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu ${shell lsb_release -cs} edge"
+	sudo apt-get update
+	sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-ce
+	docker run --rm --privileged tonistiigi/binfmt:latest --install all
+	mkdir -vp ~/.docker/cli-plugins/
+	curl --silent -L "https://github.com/docker/buildx/releases/download/v0.4.2/buildx-v0.4.2.linux-amd64" > ~/.docker/cli-plugins/docker-buildx
+	chmod a+x ~/.docker/cli-plugins/docker-buildx
+	docker buildx install
+	docker buildx create --use
