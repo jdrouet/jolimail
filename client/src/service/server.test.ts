@@ -1,14 +1,15 @@
-import fetchMock from 'fetch-mock';
+import nock from 'nock';
 
 import { createTemplate } from './server';
 
 test('createTemplate', async () => {
-  const mock = fetchMock.post('/api/templates', 400);
+  const scope = nock('http://localhost').post('/api/templates').reply(400, 'Bad Request');
   try {
     await createTemplate({ title: 'testing' });
     expect(true).toBeFalsy();
   } catch (err) {
-    expect(err.message).toEqual('Bad Request');
+    expect(err.message).toEqual('Request failed with status code 400');
   }
-  mock.restore();
+  expect(scope.isDone()).toBeTruthy();
+  nock.cleanAll();
 });
