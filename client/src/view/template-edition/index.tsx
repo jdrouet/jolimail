@@ -36,9 +36,6 @@ const useStyles = makeStyles((theme) => ({
     paddingLeft: theme.spacing(),
     paddingRight: theme.spacing(),
   },
-  editor: {
-    flex: 1,
-  },
   preview: {
     flex: 1,
   },

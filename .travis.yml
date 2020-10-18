@@ -22,16 +22,30 @@ stages:
 jobs:
   include:
     - stage: lint
+      name: run prettier on client
+      script:
+        - nvm install 14
+        - nvm use 14
+        - make -C client lint
+
+    - stage: lint
       name: run rustfmt on server
       script:
         - rustup component add rustfmt
         - make -C server lint
 
     - stage: test
-      name: run test
+      name: run server test
       script:
         - docker run -d -p 5432:5432 -e POSTGRES_HOST_AUTH_METHOD=trust postgres:12-alpine
         - make -C server test
+
+    - stage: test
+      name: run client test
+      script:
+        - nvm install 14
+        - nvm use 14
+        - make -C client test
 
     - stage: build
       name: build docker image
