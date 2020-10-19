@@ -4,6 +4,10 @@
 
 **Jolimail** is an open source alternative to all the transactionnal email solutions.
 
+[![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
+[![Build Status](https://travis-ci.com/jdrouet/jolimail.svg?branch=main)](https://travis-ci.com/jdrouet/jolimail)
+![Docker Pulls](https://img.shields.io/docker/pulls/jdrouet/jolimail)
+
 ## Why did we build jolimail?
 
 Catapulte comes from the frustration of using several email providers.
