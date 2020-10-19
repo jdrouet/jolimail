@@ -15,12 +15,13 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export type FabButtonProps = {
-  extended?: boolean;
-  label: string;
-  onClick: () => any;
+  'data-action'?: string;
+  'extended'?: boolean;
+  'label': string;
+  'onClick': () => any;
 };
 
-const FabButton: React.FC<FabButtonProps> = ({ extended, label, onClick }) => {
+const FabButton: React.FC<FabButtonProps> = ({ extended, label, onClick, ...props }) => {
   const classes = useStyles();
 
   const iconClassName = extended ? classes.extendedIcon : undefined;
@@ -28,7 +29,7 @@ const FabButton: React.FC<FabButtonProps> = ({ extended, label, onClick }) => {
   const variant = extended ? 'extended' : 'round';
 
   return (
-    <Fab className={classes.root} color="primary" onClick={onClick} size="medium" variant={variant}>
+    <Fab className={classes.root} color="primary" onClick={onClick} size="medium" variant={variant} {...props}>
       <AddIcon className={iconClassName} />
       {text}
     </Fab>
