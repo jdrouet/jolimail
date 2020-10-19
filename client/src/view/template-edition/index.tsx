@@ -1,9 +1,11 @@
+import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
 import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
 import List from '@material-ui/core/List';
 import ListSubheader from '@material-ui/core/ListSubheader';
 import { makeStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
 import DeleteIcon from '@material-ui/icons/Delete';
 import React, { useCallback, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
@@ -12,6 +14,7 @@ import Skeleton from 'src/component/skeleton';
 import TemplateCardlet from 'src/component/template-cardlet';
 import TemplateUsageCardlet from 'src/component/template-usage-cardlet';
 import TemplateVersionListItem from 'src/component/template-version-list-item';
+import emptyListSrc from 'src/image/empty.svg';
 import {
   TemplateVersion,
   deleteTemplate,
@@ -38,6 +41,13 @@ const useStyles = makeStyles((theme) => ({
   },
   preview: {
     flex: 1,
+  },
+  empty: {
+    '& > img': {
+      maxWidth: 200,
+      margin: theme.spacing(3),
+    },
+    'textAlign': 'center',
   },
 }));
 
@@ -145,10 +155,30 @@ const TemplateEditionView: React.FC<any> = () => {
               </List>
             </Card>
           </Grid>
-        ) : null}
+        ) : (
+          <Grid className={classes.empty} item xs={12} sm={10} md={8}>
+            <img alt="empty template versions" src={emptyListSrc} />
+            <Typography gutterBottom variant="h5">
+              Seems like there are no versions
+            </Typography>
+            <Button
+              color="primary"
+              data-action="create-template-version"
+              onClick={handleClickCreate}
+              variant="contained"
+            >
+              Create
+            </Button>
+          </Grid>
+        )}
       </Grid>
-      {!!versions ? (
-        <CreateButton extended={versions.length === 0} label="Create a version" onClick={handleClickCreate} />
+      {Array.isArray(versions) && versions.length > 0 ? (
+        <CreateButton
+          data-action="create-template-version"
+          extended
+          label="Create a version"
+          onClick={handleClickCreate}
+        />
       ) : null}
     </Skeleton>
   );
