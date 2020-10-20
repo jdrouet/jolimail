@@ -8,7 +8,7 @@ edition = "2018"
 
 [dependencies]
 actix-files = "0.2"
-actix-http = "1.0"
+actix-http = "2.0"
 actix-web = "2.0"
 actix-rt = "1.0"
 chrono = { version = "0.4", features = ["serde"] }
