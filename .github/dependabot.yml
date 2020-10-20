@@ -1,0 +1,17 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/client"
+    schedule:
+      interval: "daily"
+    labels:
+      - "client"
+      - "dependencies"
+
+  - package-ecosystem: "cargo"
+    directory: "/server"
+    schedule:
+      interval: "daily"
+    labels:
+      - "server"
+      - "dependencies"
