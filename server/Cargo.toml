@@ -13,7 +13,7 @@ actix-web = "2.0"
 actix-rt = "1.0"
 chrono = { version = "0.4", features = ["serde"] }
 deadpool-postgres = "0.5"
-env_logger = "0.7"
+env_logger = "0.8"
 jsonschema = "0.3"
 lazy_static = "1.4"
 log = "0.4"
