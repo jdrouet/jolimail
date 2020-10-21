@@ -8,14 +8,14 @@ use uuid::Uuid;
 #[delete("/api/templates/{template_id}/versions/{version_id}")]
 pub async fn handler(
     pool: web::Data<Pool>,
-    params: web::Path<(Uuid, Uuid)>,
+    web::Path((template_id, version_id)): web::Path<(Uuid, Uuid)>,
 ) -> Result<HttpResponse, ServerError> {
     let client = pool.get().await?;
-    Template::unset_current_version(&client, &params.0, &params.1).await?;
-    match TemplateVersion::delete_by_id(&client, &params.0, &params.1).await? {
+    Template::unset_current_version(&client, &template_id, &version_id).await?;
+    match TemplateVersion::delete_by_id(&client, &template_id, &version_id).await? {
         0 => Err(ServerError::NotFound(format!(
             "unable to find template version with id {}",
-            params.1
+            version_id
         ))),
         _ => Ok(HttpResponse::Ok().finish()),
     }
