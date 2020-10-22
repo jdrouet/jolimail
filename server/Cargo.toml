@@ -26,4 +26,4 @@ tokio-postgres = { version = "0.5", features = ["with-chrono-0_4", "with-serde_j
 uuid = { version = "0.8", features = ["serde"] }
 
 [dev-dependencies]
-serial_test = "0.4"
+serial_test = "0.5"
