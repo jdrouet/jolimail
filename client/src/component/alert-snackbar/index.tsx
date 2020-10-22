@@ -8,7 +8,7 @@ type AlertState = {
   severity: AlertProps['severity'];
 };
 
-type HandleOpenAlert = (message: string, severity?: AlertProps['severity']) => void;
+type HandleOpenAlert = (message: string, severity: AlertProps['severity']) => void;
 
 export type AlertSnackbarProps = AlertState & { onClose: (event: any, reason?: string) => void };
 
@@ -21,7 +21,7 @@ export const useAlertState = function () {
   const onClose = useCallback(() => setState((previous) => ({ ...previous, open: false })), [setState]);
 
   const onOpen: HandleOpenAlert = useCallback(
-    (message: string, severity: AlertProps['severity'] = 'error') =>
+    (message: string, severity: AlertProps['severity']) =>
       setState({
         open: true,
         message,
@@ -33,7 +33,7 @@ export const useAlertState = function () {
   return { ...state, onClose, onOpen };
 };
 
-const AlertSnackbar: React.FC<AlertSnackbarProps> = ({ message, onClose, open, severity = 'error' }) => {
+const AlertSnackbar: React.FC<AlertSnackbarProps> = ({ message, onClose, open, severity }) => {
   const handleClose = (event: any, reason?: string) => {
     if (reason === 'clickaway') return;
     return onClose(event, reason);
