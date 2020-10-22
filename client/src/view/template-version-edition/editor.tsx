@@ -3,7 +3,9 @@ import { makeStyles } from '@material-ui/core/styles';
 import Tab from '@material-ui/core/Tab';
 import Tabs from '@material-ui/core/Tabs';
 import React, { useCallback, useState } from 'react';
-import MonacoEditor from 'react-monaco-editor';
+// import MonacoEditor from 'react-monaco-editor';
+
+const MonacoEditor = React.lazy(() => import('react-monaco-editor'));
 
 export enum TabValue {
   template = 'template',
@@ -74,13 +76,15 @@ const TemplateEditionViewEditor: React.FC<TemplateEditionViewEditor> = ({
         />
       </Tabs>
       <div className={classes.grow}>
-        <MonacoEditor
-          options={editorOptions}
-          onChange={handleChangeEditor}
-          value={content}
-          language={tab === TabValue.template ? 'html' : 'json'}
-          theme="vs-dark"
-        />
+        <React.Suspense fallback={<div />}>
+          <MonacoEditor
+            options={editorOptions}
+            onChange={handleChangeEditor}
+            value={content}
+            language={tab === TabValue.template ? 'html' : 'json'}
+            theme="vs-dark"
+          />
+        </React.Suspense>
       </div>
     </React.Fragment>
   );
