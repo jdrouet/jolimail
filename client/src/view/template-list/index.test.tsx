@@ -1,40 +1,29 @@
-import {
-  findByAltText,
-  findByTestId,
-  fireEvent,
-  render,
-  waitFor,
-  waitForElementToBeRemoved,
-} from '@testing-library/react';
+import { findByAltText, findByTestId, fireEvent, waitFor, waitForElementToBeRemoved } from '@testing-library/react';
 import nock from 'nock';
 import React from 'react';
 import { MemoryRouter, Route } from 'react-router-dom';
-import { SWRConfig, cache } from 'swr';
+import { wrap } from 'src/__utils__/swr';
 
 import View from './index';
 
-beforeEach(() => {
-  nock.cleanAll();
-  cache.clear();
-});
+const renderApp = () =>
+  wrap(
+    <MemoryRouter initialEntries={['/']}>
+      <Route path="/">
+        <View key="empty case" />
+      </Route>
+      <Route path="/templates/create">
+        <div data-testid="create-view" />
+      </Route>
+      <Route path="/templates/:templateId">
+        <div data-testid="template-view" />
+      </Route>
+    </MemoryRouter>,
+  );
 
 test('empty case', async () => {
   const scope = nock('http://localhost').get('/api/templates').once().reply(200, []);
-  const { container } = render(
-    <SWRConfig value={{ dedupingInterval: 0 }}>
-      <MemoryRouter initialEntries={['/']}>
-        <Route path="/">
-          <View key="empty case" />
-        </Route>
-        <Route path="/templates/create">
-          <div data-testid="create-view" />
-        </Route>
-        <Route path="/templates/:templateId">
-          <div data-testid="template-view" />
-        </Route>
-      </MemoryRouter>
-    </SWRConfig>,
-  );
+  const { container } = renderApp();
   await waitForElementToBeRemoved(() => container.querySelector('#loading'));
   await findByAltText(container, 'empty template list');
   const button = container.querySelector('button[data-action="create-template"]');
@@ -58,21 +47,7 @@ test('with some values', async () => {
         deleteAt: null,
       },
     ]);
-  const { container } = render(
-    <SWRConfig value={{ dedupingInterval: 0 }}>
-      <MemoryRouter initialEntries={['/']}>
-        <Route path="/">
-          <View key="with values" />
-        </Route>
-        <Route path="/templates/create">
-          <div data-testid="create-view" />
-        </Route>
-        <Route path="/templates/:templateId">
-          <div data-testid="template-view" />
-        </Route>
-      </MemoryRouter>
-    </SWRConfig>,
-  );
+  const { container } = renderApp();
   await waitForElementToBeRemoved(() => container.querySelector('#loading'));
   const createButton = await waitFor(() => container.querySelector('button[data-action="create-template"]'));
   expect(createButton).toBeVisible();

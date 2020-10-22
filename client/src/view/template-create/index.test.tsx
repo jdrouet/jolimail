@@ -5,8 +5,6 @@ import { MemoryRouter, Route } from 'react-router-dom';
 
 import View from './index';
 
-afterEach(() => nock.cleanAll());
-
 test('perfect case', async () => {
   const scope = nock('http://localhost').post('/api/templates').reply(200, { id: 'random-template-id' });
   const { container } = render(
