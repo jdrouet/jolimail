@@ -1,7 +1,7 @@
 import { fireEvent, getByText, render, waitFor } from '@testing-library/react';
 import nock from 'nock';
 import React from 'react';
-import { MemoryRouter, Route } from 'react-router-dom';
+import { MemoryRouter, Route, Switch } from 'react-router-dom';
 
 import View from './index';
 
@@ -9,12 +9,14 @@ test('perfect case', async () => {
   const scope = nock('http://localhost').post('/api/templates').reply(200, { id: 'random-template-id' });
   const { container } = render(
     <MemoryRouter initialEntries={['/templates/create']}>
-      <Route path="/templates/create">
-        <View />
-      </Route>
-      <Route>
-        <div id="other-view" />
-      </Route>
+      <Switch>
+        <Route exact path="/templates/create">
+          <View />
+        </Route>
+        <Route exact path="/templates/:templateId">
+          <div id="other-view" />
+        </Route>
+      </Switch>
     </MemoryRouter>,
   );
   expect(getByText(container, 'Create your template')).toBeVisible();
@@ -30,7 +32,9 @@ test('perfect case', async () => {
   fireEvent.click(createButton!);
   await waitFor(() => container.querySelector('button[name="create"][disabled]'));
   await waitFor(() => scope.isDone());
-  expect(container.querySelector('#other-view')).toBeVisible();
+  await waitFor(() => {
+    expect(container.querySelector('#other-view')).toBeVisible();
+  });
 });
 
 test('conflict error case', async () => {

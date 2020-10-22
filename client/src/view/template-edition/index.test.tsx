@@ -1,7 +1,7 @@
 import { getByAltText, getByText, getByTitle, waitForElementToBeRemoved } from '@testing-library/react';
 import nock from 'nock';
 import React from 'react';
-import { MemoryRouter, Route } from 'react-router-dom';
+import { MemoryRouter, Route, Switch } from 'react-router-dom';
 import { wrap } from 'src/__utils__/swr';
 
 import View from './index';
@@ -9,12 +9,14 @@ import View from './index';
 const renderApp = () =>
   wrap(
     <MemoryRouter initialEntries={['/templates/my-template']}>
-      <Route path="/templates/:templateId">
-        <View />
-      </Route>
-      <Route path="/">
-        <div id="other-view" />
-      </Route>
+      <Switch>
+        <Route exact path="/templates/:templateId">
+          <View />
+        </Route>
+        <Route exact path="/">
+          <div id="other-view" />
+        </Route>
+      </Switch>
     </MemoryRouter>,
   );
 

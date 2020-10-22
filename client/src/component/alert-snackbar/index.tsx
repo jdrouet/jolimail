@@ -1,6 +1,6 @@
 import Snackbar from '@material-ui/core/Snackbar';
 import Alert, { AlertProps } from '@material-ui/lab/Alert';
-import React, { useCallback, useState } from 'react';
+import React, { useState } from 'react';
 
 type AlertState = {
   message?: string;
@@ -12,23 +12,20 @@ type HandleOpenAlert = (message: string, severity: AlertProps['severity']) => vo
 
 export type AlertSnackbarProps = AlertState & { onClose: (event: any, reason?: string) => void };
 
-export const useAlertState = function () {
+export const useAlertState = () => {
   const [state, setState] = useState<AlertState>({
     open: false,
     severity: 'error',
   });
 
-  const onClose = useCallback(() => setState((previous) => ({ ...previous, open: false })), [setState]);
+  const onClose = () => setState((previous) => ({ ...previous, open: false }));
 
-  const onOpen: HandleOpenAlert = useCallback(
-    (message: string, severity: AlertProps['severity']) =>
-      setState({
-        open: true,
-        message,
-        severity,
-      }),
-    [setState],
-  );
+  const onOpen: HandleOpenAlert = (message: string, severity: AlertProps['severity']) =>
+    setState({
+      open: true,
+      message,
+      severity,
+    });
 
   return { ...state, onClose, onOpen };
 };
