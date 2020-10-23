@@ -5,8 +5,10 @@ import CardContent from '@material-ui/core/CardContent';
 import CardHeader from '@material-ui/core/CardHeader';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
+import { AxiosError } from 'axios';
 import React, { useCallback, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
+import AlertSnackbar, { useAlertState } from 'src/component/alert-snackbar';
 import Skeleton from 'src/component/skeleton';
 import { createTemplateVersion } from 'src/service/server';
 import { getRoute as getTemplateVersionEditionRoute } from 'src/view/template-version-edition';
@@ -40,6 +42,7 @@ const TemplateCreateView: React.FC<any> = () => {
   const history = useHistory();
   const { templateId } = useParams<LocationParams>();
 
+  const { onOpen: openAlert, ...alertState } = useAlertState();
   const [loading, setLoading] = useState<boolean>(false);
   const [name, setName] = useState<string>('');
 
@@ -50,6 +53,12 @@ const TemplateCreateView: React.FC<any> = () => {
       setLoading(true);
       createTemplateVersion(templateId, name)
         .then((version) => history.replace(getTemplateVersionEditionRoute({ templateId, versionId: version.id })))
+        .catch((err: AxiosError) => {
+          if (err.response?.status === 409) {
+            return openAlert('The name already exists', 'warning');
+          }
+          return openAlert('Something went wrong...', 'error');
+        })
         .finally(() => setLoading(false));
     },
     [history, templateId, name],
@@ -84,6 +93,7 @@ const TemplateCreateView: React.FC<any> = () => {
           </CardActions>
         </Card>
       </form>
+      <AlertSnackbar {...alertState} />
     </Skeleton>
   );
 };

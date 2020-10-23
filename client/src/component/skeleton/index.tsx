@@ -64,14 +64,14 @@ const Skeleton: React.FC<SkeletonProps> = ({ backButtonVisible, children, loadin
         <Toolbar>
           <div className={classes.left}>
             {backButtonVisible ? (
-              <IconButton className={classes.backButton} color="inherit" onClick={handleClickBack}>
+              <IconButton className={classes.backButton} color="inherit" name="navigate-back" onClick={handleClickBack}>
                 <ArrowBackIcon />
               </IconButton>
             ) : null}
-            <ButtonBase className={classes.logo} onClick={handleClickHome}>
+            <ButtonBase className={classes.logo} name="navigate-home" onClick={handleClickHome}>
               <img className={classes.logoImg} alt="Jolimail" src={logoSrc} />
             </ButtonBase>
-            {loading ? <CircularProgress color="secondary" size={24} thickness={6} /> : null}
+            {loading ? <CircularProgress color="secondary" id="loading" size={24} thickness={6} /> : null}
           </div>
           <div className={classes.right}>{rightElements}</div>
         </Toolbar>

@@ -24,6 +24,7 @@
   "jest": {
     "collectCoverageFrom": [
       "src/**/*.{js,jsx,ts,tsx}",
+      "!src/**/*.stories.tsx",
       "!<rootDir>/node_modules/",
       "!src/index.tsx",
       "!src/react-app-env.d.ts",
@@ -38,7 +39,8 @@
       }
     },
     "coverageReporters": [
-      "text"
+      "text",
+      "html"
     ]
   },
   "browserslist": {

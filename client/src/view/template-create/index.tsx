@@ -5,8 +5,10 @@ import CardContent from '@material-ui/core/CardContent';
 import CardHeader from '@material-ui/core/CardHeader';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
+import { AxiosError } from 'axios';
 import React, { useCallback, useState } from 'react';
 import { useHistory } from 'react-router-dom';
+import AlertSnackbar, { useAlertState } from 'src/component/alert-snackbar';
 import Skeleton from 'src/component/skeleton';
 import { createTemplate } from 'src/service/server';
 import { getRoute as getTemplateEditionRoute } from 'src/view/template-edition';
@@ -35,6 +37,7 @@ const TemplateCreateView: React.FC<any> = () => {
   const classes = useStyles();
   const history = useHistory();
 
+  const { onOpen: openAlert, ...alertState } = useAlertState();
   const [title, setTitle] = useState<string>('');
   const [description, setDescription] = useState<string>('');
 
@@ -50,9 +53,14 @@ const TemplateCreateView: React.FC<any> = () => {
             }),
           ),
         )
-        .catch(console.error);
+        .catch((err: AxiosError) => {
+          if (err.response?.status === 409) {
+            return openAlert('The title already exists', 'warning');
+          }
+          return openAlert('Something went wrong...', 'error');
+        });
     },
-    [history, title, description],
+    [history, title, description, openAlert],
   );
 
   const formValid = validateInput(title);
@@ -86,13 +94,16 @@ const TemplateCreateView: React.FC<any> = () => {
             />
           </CardContent>
           <CardActions className={classes.actions}>
-            <Button color="primary" disabled={!formValid} size="medium" type="submit" variant="contained">
+            <Button color="primary" disabled={!formValid} name="create" size="medium" type="submit" variant="contained">
               Create
             </Button>
-            <Button onClick={handleClickBack}>Cancel</Button>
+            <Button name="cancel" onClick={handleClickBack}>
+              Cancel
+            </Button>
           </CardActions>
         </Card>
       </form>
+      <AlertSnackbar {...alertState} />
     </Skeleton>
   );
 };
