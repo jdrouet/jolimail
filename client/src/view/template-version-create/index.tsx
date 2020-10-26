@@ -54,12 +54,12 @@ const TemplateCreateView: React.FC<any> = () => {
       createTemplateVersion(templateId, name)
         .then((version) => history.replace(getTemplateVersionEditionRoute({ templateId, versionId: version.id })))
         .catch((err: AxiosError) => {
+          setLoading(false);
           if (err.response?.status === 409) {
             return openAlert('The name already exists', 'warning');
           }
           return openAlert('Something went wrong...', 'error');
-        })
-        .finally(() => setLoading(false));
+        });
     },
     [history, templateId, name],
   );

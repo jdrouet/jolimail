@@ -22,11 +22,16 @@ const ToggleButtonGroup: React.FC<ToggleButtonGroupProps> = ({ options, onChange
         {options.map((option) => {
           const Icon = option.icon;
           return (
-            <Tooltip key={option.value} title={option.label}>
-              <Button disabled={option.value === value} name={option.value} onClick={() => onChange(option.value)}>
+            <Button
+              key={option.value}
+              disabled={option.value === value}
+              name={option.value}
+              onClick={() => onChange(option.value)}
+            >
+              <Tooltip title={option.label}>
                 <Icon />
-              </Button>
-            </Tooltip>
+              </Tooltip>
+            </Button>
           );
         })}
       </ButtonGroup>
