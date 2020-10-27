@@ -60,7 +60,7 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "^4.0.0-alpha.56",
     "ajv": "^6.12.6",
-    "axios": "^0.20.0",
+    "axios": "^0.21.0",
     "classnames": "^2.2.6",
     "date-fns": "^2.16.1",
     "mrml": "0.3.6",
