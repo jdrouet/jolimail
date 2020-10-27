@@ -15,7 +15,7 @@ pub async fn handler(
             "unable to find template with id {}",
             template_id
         ))),
-        _ => Ok(HttpResponse::Ok().finish()),
+        _ => Ok(HttpResponse::NoContent().finish()),
     }
 }
 
@@ -46,6 +46,6 @@ mod tests {
         let url = format!("/api/templates/{}", tmpl.id);
         let req = test::TestRequest::delete().uri(url.as_str()).to_request();
         let res = execute_request(req).await;
-        assert_eq!(res.status(), StatusCode::OK);
+        assert_eq!(res.status(), StatusCode::NO_CONTENT);
     }
 }

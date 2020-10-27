@@ -17,7 +17,7 @@ pub async fn handler(
             "unable to find template version with id {}",
             version_id
         ))),
-        _ => Ok(HttpResponse::Ok().finish()),
+        _ => Ok(HttpResponse::NoContent().finish()),
     }
 }
 
@@ -50,6 +50,6 @@ mod tests {
         let url = format!("/api/templates/{}/versions/{}", tmpl.id, vers.id);
         let req = test::TestRequest::delete().uri(url.as_str()).to_request();
         let res = execute_request(req).await;
-        assert_eq!(res.status(), StatusCode::OK);
+        assert_eq!(res.status(), StatusCode::NO_CONTENT);
     }
 }
