@@ -42,6 +42,13 @@ RUN cargo build --release --offline
 
 FROM debian:buster-slim
 
+LABEL org.label-schema.schema-version="1.0"
+LABEL org.label-schema.docker.cmd="docker run -d -p 3000:3000 -e RUST_LOG=info -e DATABASE_HOST=localhost -e DATABASE_USER=postgres -e DATABASE_DBNAME=postgres jdrouet/jolimail"
+LABEL org.label-schema.vcs-url="https://jolimail.io"
+LABEL org.label-schema.url="https://github.com/jdrouet/jolimail"
+LABEL org.label-schema.description="Web application providing a place to build and preview your templates"
+LABEL maintaner="Jeremie Drouet <jeremie.drouet@gmail.com>"
+
 RUN apt-get update \
   && apt-get install -y ca-certificates libssl1.1 \
   && rm -rf /var/lib/apt/lists/*

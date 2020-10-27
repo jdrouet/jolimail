@@ -4,8 +4,10 @@ publish:
 	docker buildx build --push \
 		--file multiarch.Dockerfile \
 		--platform ${TARGET_PLATFORM} \
-		--tag jdrouet/jolimail:${TAG_NAME} \
+		--tag jdrouet/jolimail:${VERSION} \
 		--tag jdrouet/jolimail:latest \
+		--label org.label-schema.version=${VERSION} \
+		--label org.label-schema.vcs-ref=${shell git rev-parse --short HEAD} \
 		.
 
 ci-install-buildx:
