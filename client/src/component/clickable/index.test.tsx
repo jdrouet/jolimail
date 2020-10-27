@@ -1,4 +1,4 @@
-import { fireEvent, getByText, render } from '@testing-library/react';
+import { fireEvent, render } from '@testing-library/react';
 import React from 'react';
 
 import Element from './index';

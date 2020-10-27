@@ -22,7 +22,7 @@ const editorOptions = {
   renderIndentGuides: true,
 };
 
-export type TemplateEditionViewEditor = {
+export type TemplateEditionViewEditorProps = {
   template: string;
   attributes: string;
   templateInvalid?: boolean;
@@ -31,7 +31,7 @@ export type TemplateEditionViewEditor = {
   onChangeAttributes: (value: string) => void;
 };
 
-const TemplateEditionViewEditor: React.FC<TemplateEditionViewEditor> = ({
+const TemplateEditionViewEditor: React.FC<TemplateEditionViewEditorProps> = ({
   template,
   attributes,
   templateInvalid,
