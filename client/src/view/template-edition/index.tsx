@@ -56,11 +56,9 @@ const TemplateEditionView: React.FC<any> = () => {
   const { templateId } = useParams<LocationParams>();
   const history = useHistory();
   const [loading, setLoading] = useState<boolean>(false);
-  const {
-    data: versions = [],
-    isValidating: loadingVersionList,
-    revalidate: reloadVersionList,
-  } = useTemplateVersionList(templateId);
+  const { data: versions, isValidating: loadingVersionList, revalidate: reloadVersionList } = useTemplateVersionList(
+    templateId,
+  );
   const { data: template, isValidating: loadingTemplate, revalidate: reloadTemplate } = useTemplate(templateId);
 
   const handleClickCreate = useCallback(() => history.push(getTemplateVersionCreatePath({ templateId })), [
@@ -108,7 +106,7 @@ const TemplateEditionView: React.FC<any> = () => {
       .finally(() => setLoading(false));
   }, [history, templateId]);
 
-  const defaultVersion = versions.find((item) => template?.currentVersionId === item.id);
+  const defaultVersion = versions ? versions.find((item) => template?.currentVersionId === item.id) : undefined;
 
   return (
     <Skeleton
@@ -137,25 +135,34 @@ const TemplateEditionView: React.FC<any> = () => {
             </Grid>
           </React.Fragment>
         ) : null}
-        {versions.length ? (
-          <Grid item xs={12} sm={10} md={8}>
-            <Card>
-              <List subheader={<ListSubheader>Available versions</ListSubheader>}>
-                {versions.map((version) => (
-                  <TemplateVersionListItem
-                    key={version.id}
-                    currentVersion={version.id === template?.currentVersionId}
-                    onClick={handleClickVersion}
-                    onDelete={handleClickDeleteVersion}
-                    onDuplicate={handleClickDuplicate}
-                    onSetToDefault={handleClickSetToDefault}
-                    version={version}
-                  />
-                ))}
-              </List>
-            </Card>
-          </Grid>
-        ) : (
+        {Array.isArray(versions) && versions.length ? (
+          <React.Fragment>
+            <Grid item xs={12} sm={10} md={8}>
+              <Card>
+                <List subheader={<ListSubheader>Available versions</ListSubheader>}>
+                  {versions.map((version) => (
+                    <TemplateVersionListItem
+                      key={version.id}
+                      currentVersion={version.id === template?.currentVersionId}
+                      onClick={handleClickVersion}
+                      onDelete={handleClickDeleteVersion}
+                      onDuplicate={handleClickDuplicate}
+                      onSetToDefault={handleClickSetToDefault}
+                      version={version}
+                    />
+                  ))}
+                </List>
+              </Card>
+            </Grid>
+            <CreateButton
+              data-action="create-template-version"
+              extended
+              label="Create a version"
+              onClick={handleClickCreate}
+            />
+          </React.Fragment>
+        ) : null}
+        {Array.isArray(versions) && versions.length === 0 ? (
           <Grid className={classes.empty} item xs={12} sm={10} md={8}>
             <img alt="empty template versions" src={emptyListSrc} />
             <Typography gutterBottom variant="h5">
@@ -170,16 +177,8 @@ const TemplateEditionView: React.FC<any> = () => {
               Create
             </Button>
           </Grid>
-        )}
+        ) : null}
       </Grid>
-      {Array.isArray(versions) && versions.length > 0 ? (
-        <CreateButton
-          data-action="create-template-version"
-          extended
-          label="Create a version"
-          onClick={handleClickCreate}
-        />
-      ) : null}
     </Skeleton>
   );
 };

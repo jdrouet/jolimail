@@ -23,14 +23,6 @@ lazy_static! {
     );
 }
 
-// const QUERY_CONTENT_BY_SLUG: &'static str = r#"
-// SELECT template_versions.content
-// FROM templates
-// JOIN template_versions ON templates.current_version_id = template_versions.id
-// WHERE templates.id = $1 AND templates.deleted_at IS null
-// LIMIT 1
-// "#;
-
 const DELETE_BY_ID: &str = "UPDATE templates SET deleted_at = now() WHERE id = $1";
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -75,16 +67,6 @@ impl Template {
         let rows = client.query(&stmt, &[&id]).await?;
         Ok(rows.first().map(Template::from))
     }
-
-    // pub async fn get_content_by_id(
-    //     client: &Client,
-    //     id: &Uuid,
-    // ) -> Result<Option<String>, ServerError> {
-    //     debug!("get template content by id {}", id);
-    //     let stmt = client.prepare(QUERY_CONTENT_BY_SLUG).await?;
-    //     let rows = client.query(&stmt, &[&id]).await?;
-    //     Ok(rows.first().map(|row| row.get(0)))
-    // }
 
     pub async fn unset_current_version(
         client: &Client,

@@ -61,7 +61,7 @@ const TemplateCreateView: React.FC<any> = () => {
           return openAlert('Something went wrong...', 'error');
         });
     },
-    [history, templateId, name],
+    [history, templateId, name, openAlert],
   );
 
   const formValid = validateInput(name);

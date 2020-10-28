@@ -1,4 +1,4 @@
-import { findByTestId, findByText, fireEvent, getByTestId } from '@testing-library/react';
+import { findByTestId, findByText, fireEvent } from '@testing-library/react';
 import nock from 'nock';
 import React from 'react';
 import { MemoryRouter, Route, Switch } from 'react-router-dom';

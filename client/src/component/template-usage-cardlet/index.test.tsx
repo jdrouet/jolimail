@@ -76,4 +76,5 @@ test('with current version', async () => {
     expect(container).toHaveTextContent('you just need a simple http request');
   });
   expect(container).toHaveTextContent('sender@example.com');
+  scope.done();
 });

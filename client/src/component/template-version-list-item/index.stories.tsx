@@ -1,5 +1,5 @@
 import List from '@material-ui/core/List';
-import { number, select, withKnobs } from '@storybook/addon-knobs';
+import { withKnobs } from '@storybook/addon-knobs';
 import { Meta, Story } from '@storybook/react/types-6-0';
 import React from 'react';
 
