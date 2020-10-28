@@ -15,6 +15,7 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     flexDirection: 'row',
     flex: 1,
+    alignItems: 'center',
   },
   right: {
     color: 'white',
