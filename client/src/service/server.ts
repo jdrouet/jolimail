@@ -64,12 +64,12 @@ export const useTemplate = function (templateId?: string) {
   return useSwr<Template>(templateId ? [`/api/templates/${templateId}`] : null, getter);
 };
 
-export const useTemplateList = () => useSwr<Template[]>('/api/templates', getter);
+export const useTemplateList = () => useSwr<Template[]>('/api/templates');
 
 export const getTemplateContent = (id: string): Promise<string> => getter(`/api/templates/${id}/content`);
 
 export const useTemplateContent = (templateId?: string) =>
-  useSwr<string>(templateId ? [`/api/templates/${templateId}/content`] : null, getter);
+  useSwr<string>(templateId ? [`/api/templates/${templateId}/content`] : null);
 
 export const getTemplateVersion = (id: string, versionId: string): Promise<TemplateVersion> =>
   getter(`/api/templates/${id}/versions/${versionId}`);
@@ -87,7 +87,6 @@ export const getTemplateVersionContent = (templateId: string, versionId: string)
 export const useTemplateVersionContent = function (templateId?: string, versionId?: string) {
   return useSwr<string>(
     templateId && versionId ? [`/api/templates/${templateId}/versions/${versionId}/content`] : null,
-    getter,
   );
 };
 
@@ -95,7 +94,7 @@ export const getTemplateVersionList = (templateId: string): Promise<TemplateVers
   getter(`/api/templates/${templateId}/versions`);
 
 export const useTemplateVersionList = function (templateId?: string) {
-  return useSwr<TemplateVersion[]>(templateId ? [`/api/templates/${templateId}/versions`] : null, getter);
+  return useSwr<TemplateVersion[]>(templateId ? [`/api/templates/${templateId}/versions`] : null);
 };
 
 export const createTemplateVersion = (templateId: string, name: string, content?: string) =>
@@ -112,4 +111,4 @@ export const updateTemplateVersion = (templateId: string, versionId: string, pay
 export const deleteTemplateVersion = (templateId: string, versionId: string): Promise<any> =>
   axios.delete(`/api/templates/${templateId}/versions/${versionId}`);
 
-export const useSettings = () => useSwr<Settings>('/api/settings', getter);
+export const useSettings = () => useSwr<Settings>('/api/settings');
