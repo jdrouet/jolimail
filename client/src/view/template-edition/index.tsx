@@ -10,6 +10,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import React, { useCallback, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import CreateButton from 'src/component/button-fab';
+import ConfirmClickable from 'src/component/confirm-clickable';
 import Skeleton from 'src/component/skeleton';
 import TemplateCardlet from 'src/component/template-cardlet';
 import TemplateUsageCardlet from 'src/component/template-usage-cardlet';
@@ -97,13 +98,11 @@ const TemplateEditionView: React.FC<any> = () => {
     [reloadTemplate, setLoading, templateId],
   );
   const handleClickDelete = useCallback(() => {
-    if (!window.confirm('Are you sure you want to delete this template?')) {
-      return;
-    }
     setLoading(true);
-    deleteTemplate(templateId)
-      .then(() => history.goBack())
-      .finally(() => setLoading(false));
+    deleteTemplate(templateId).then(() => {
+      setLoading(false);
+      history.goBack();
+    });
   }, [history, templateId]);
 
   const defaultVersion = versions ? versions.find((item) => template?.currentVersionId === item.id) : undefined;
@@ -114,14 +113,16 @@ const TemplateEditionView: React.FC<any> = () => {
       loading={loading || loadingVersionList || loadingTemplate}
       mainClassName={classes.root}
       rightElements={
-        <IconButton
-          color="inherit"
-          data-action="template-delete"
-          onClick={handleClickDelete}
+        <ConfirmClickable
+          onConfirmedClick={handleClickDelete}
           title="Delete the template"
+          description="This will completely delete your template and its versions."
+          acceptLabel="Delete"
         >
-          <DeleteIcon />
-        </IconButton>
+          <IconButton color="inherit" data-testid="template-delete" title="Delete the template">
+            <DeleteIcon />
+          </IconButton>
+        </ConfirmClickable>
       }
     >
       <Grid container spacing={1} justify="center">

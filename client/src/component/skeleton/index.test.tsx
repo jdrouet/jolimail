@@ -1,4 +1,4 @@
-import { fireEvent, render } from '@testing-library/react';
+import { findByTestId, fireEvent, render } from '@testing-library/react';
 import React from 'react';
 import { MemoryRouter, Route } from 'react-router-dom';
 
@@ -50,6 +50,6 @@ test('loading state', async () => {
       <div id="now" />
     </Element>,
   );
-  const loader = container.querySelector('#loading');
-  expect(loader).toBeVisible();
+  const loading = await findByTestId(container, 'loading');
+  expect(loading).toBeVisible();
 });

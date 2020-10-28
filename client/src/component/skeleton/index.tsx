@@ -71,7 +71,7 @@ const Skeleton: React.FC<SkeletonProps> = ({ backButtonVisible, children, loadin
             <ButtonBase className={classes.logo} name="navigate-home" onClick={handleClickHome}>
               <img className={classes.logoImg} alt="Jolimail" src={logoSrc} />
             </ButtonBase>
-            {loading ? <CircularProgress color="secondary" id="loading" size={24} thickness={6} /> : null}
+            {loading ? <CircularProgress color="secondary" data-testid="loading" size={24} thickness={6} /> : null}
           </div>
           <div className={classes.right}>{rightElements}</div>
         </Toolbar>

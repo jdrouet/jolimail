@@ -10,6 +10,7 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 import cn from 'classnames';
 import formatDistanceToNow from 'date-fns/formatDistanceToNow';
 import React, { useState } from 'react';
+import ConfirmClickable from 'src/component/confirm-clickable';
 import { TemplateVersion } from 'src/service/server';
 
 const useStyles = makeStyles((theme) => ({
@@ -78,22 +79,27 @@ const TemplateVersionListItem: React.FC<TemplateVersionListItemProps> = ({
           secondary={`Updated ${formatDistanceToNow(new Date(version.updatedAt), { addSuffix: true })}`}
         />
         <ListItemSecondaryAction>
-          <IconButton onClick={handleOpen}>
+          <IconButton data-testid="options" onClick={handleOpen}>
             <MoreVertIcon />
           </IconButton>
         </ListItemSecondaryAction>
       </ListItem>
       <Menu anchorEl={anchorEl} open={menuOpen} onClose={handleClose}>
-        <MenuItem data-action="set-to-default" onClick={handleSetToDefault} disabled={currentVersion}>
+        <MenuItem data-testid="to-default" onClick={handleSetToDefault} disabled={currentVersion}>
           Set to default
         </MenuItem>
-        <MenuItem data-action="duplicate" onClick={handleDuplicate}>
+        <MenuItem data-testid="duplicate" onClick={handleDuplicate}>
           Duplicate
         </MenuItem>
         <Divider />
-        <MenuItem data-action="delete" onClick={handleDelete}>
-          Delete
-        </MenuItem>
+        <ConfirmClickable
+          onConfirmedClick={handleDelete}
+          title="Delete this version"
+          description="This will completely delete your version."
+          acceptLabel="Delete"
+        >
+          <MenuItem data-testid="delete">Delete</MenuItem>
+        </ConfirmClickable>
       </Menu>
     </React.Fragment>
   );

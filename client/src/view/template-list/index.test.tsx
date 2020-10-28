@@ -26,7 +26,8 @@ const renderApp = () =>
 test('empty case', async () => {
   const scope = nock('http://localhost').get('/api/templates').once().reply(200, []);
   const { container } = renderApp();
-  await waitForElementToBeRemoved(() => container.querySelector('#loading'));
+  const loading = await findByTestId(container, 'loading');
+  await waitForElementToBeRemoved(loading);
   await findByAltText(container, 'empty template list');
   const button = container.querySelector('button[data-action="create-template"]');
   fireEvent.click(button!);
@@ -50,7 +51,8 @@ test('with some values', async () => {
       },
     ]);
   const { container } = renderApp();
-  await waitForElementToBeRemoved(() => container.querySelector('#loading'));
+  const loading = await findByTestId(container, 'loading');
+  await waitForElementToBeRemoved(loading);
   const createButton = await waitFor(() => container.querySelector('button[data-action="create-template"]'));
   expect(createButton).toBeVisible();
   const templates = await waitFor(() => container.querySelectorAll('[data-template]'));
