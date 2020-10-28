@@ -41,7 +41,8 @@
     "coverageReporters": [
       "text",
       "html"
-    ]
+    ],
+    "maxConcurrency": 1
   },
   "browserslist": {
     "production": [
