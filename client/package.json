@@ -72,7 +72,7 @@
     "react-monaco-editor": "^0.40.0",
     "react-router-dom": "^5.2.0",
     "react-syntax-highlighter": "^15.2.1",
-    "swr": "^0.3.6"
+    "swr": "^0.3.7"
   },
   "devDependencies": {
     "@storybook/addon-actions": "^6.0.27",
