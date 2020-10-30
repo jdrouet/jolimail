@@ -71,7 +71,7 @@
     "react-dom": "^16.14.0",
     "react-monaco-editor": "^0.40.0",
     "react-router-dom": "^5.2.0",
-    "react-syntax-highlighter": "^15.2.1",
+    "react-syntax-highlighter": "^15.3.0",
     "swr": "^0.3.7"
   },
   "devDependencies": {
