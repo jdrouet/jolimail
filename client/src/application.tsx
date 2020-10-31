@@ -9,6 +9,7 @@ import TemplateEditionView, { ROUTE as TEMPLATE_EDITION_PATH } from 'src/view/te
 import TemplateListView, { ROUTE as TEMPLATE_LIST_PATH } from 'src/view/template-list';
 import TemplateVersionCreateView, { ROUTE as TEMPLATE_VERSION_CREATE_PATH } from 'src/view/template-version-create';
 import TemplateVersionEditionView, { ROUTE as TEMPLATE_VERSION_EDITION_PATH } from 'src/view/template-version-edition';
+import TemplateVersionEditorView, { ROUTE as TEMPLATE_VERSION_WYSIWYG_PATH } from 'src/view/template-version-wysiwyg';
 import { SWRConfig } from 'swr';
 
 function Application() {
@@ -20,6 +21,7 @@ function Application() {
           <Switch>
             <Route path={TEMPLATE_CREATE_PATH} component={TemplateCreateView} />
             <Route path={TEMPLATE_VERSION_CREATE_PATH} component={TemplateVersionCreateView} />
+            <Route path={TEMPLATE_VERSION_WYSIWYG_PATH} component={TemplateVersionEditorView} />
             <Route path={TEMPLATE_VERSION_EDITION_PATH} component={TemplateVersionEditionView} />
             <Route path={TEMPLATE_EDITION_PATH} component={TemplateEditionView} />
             <Route path={TEMPLATE_LIST_PATH} component={TemplateListView} />
