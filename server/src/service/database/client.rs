@@ -81,9 +81,54 @@ impl From<sqlx::Error> for ServerError {
 
 #[cfg(test)]
 pub mod tests {
-    use super::{get_pool, Pool};
+    use super::{get_pool, get_url, Pool};
+    use crate::test_util::TempEnvVar;
 
     lazy_static! {
         pub static ref POOL: Pool = get_pool();
+    }
+
+    #[test]
+    #[serial]
+    fn get_url_from_url() {
+        let _initial_url =
+            TempEnvVar::new("DATABASE_URL").with("postgres://this:is@some.test/from-url");
+        assert_eq!(get_url(), "postgres://this:is@some.test/from-url");
+    }
+
+    #[test]
+    #[serial]
+    fn get_url_from_composition_success_default() {
+        let _initial_url = TempEnvVar::new("DATABASE_URL");
+        let _initial_user = TempEnvVar::new("DATABASE_USER");
+        let _initial_pass = TempEnvVar::new("DATABASE_PASSWORD");
+        let _initial_host = TempEnvVar::new("DATABASE_HOST");
+        let _initial_port = TempEnvVar::new("DATABASE_PORT");
+        let _initial_dbname = TempEnvVar::new("DATABASE_DBNAME");
+        assert_eq!(get_url(), "postgres://localhost/jolimail");
+    }
+
+    #[test]
+    #[serial]
+    fn get_url_from_composition_success_no_password() {
+        let _initial_url = TempEnvVar::new("DATABASE_URL");
+        let _initial_user = TempEnvVar::new("DATABASE_USER").with("username");
+        let _initial_pass = TempEnvVar::new("DATABASE_PASSWORD");
+        let _initial_host = TempEnvVar::new("DATABASE_HOST").with("myhost");
+        let _initial_port = TempEnvVar::new("DATABASE_PORT").with("1234");
+        let _initial_dbname = TempEnvVar::new("DATABASE_DBNAME").with("something");
+        assert_eq!(get_url(), "postgres://username@myhost:1234/something");
+    }
+
+    #[test]
+    #[serial]
+    fn get_url_from_composition_success_complete() {
+        let _initial_url = TempEnvVar::new("DATABASE_URL");
+        let _initial_user = TempEnvVar::new("DATABASE_USER").with("username");
+        let _initial_pass = TempEnvVar::new("DATABASE_PASSWORD").with("pass");
+        let _initial_host = TempEnvVar::new("DATABASE_HOST").with("myhost");
+        let _initial_port = TempEnvVar::new("DATABASE_PORT").with("1234");
+        let _initial_dbname = TempEnvVar::new("DATABASE_DBNAME").with("something");
+        assert_eq!(get_url(), "postgres://username:pass@myhost:1234/something");
     }
 }
