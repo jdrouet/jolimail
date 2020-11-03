@@ -1,8 +1,6 @@
 use crate::error::ServerError;
 use crate::model::template::Template;
-use deadpool_postgres::Client;
 use serde::{Deserialize, Serialize};
-use tokio_postgres::types::ToSql;
 use uuid::Uuid;
 
 use super::COLUMNS;
@@ -16,30 +14,44 @@ pub struct TemplateUpdate {
 }
 
 impl TemplateUpdate {
-    pub async fn save(&self, client: &Client) -> Result<Option<Template>, ServerError> {
+    pub async fn save<'a, X>(&self, conn: X) -> Result<Option<Template>, ServerError>
+    where
+        X: sqlx::Executor<'a, Database = sqlx::Postgres>,
+    {
         debug!("save template {}", self.id);
-        let mut params: Vec<&(dyn ToSql + Sync)> = vec![&self.id];
         let mut changes = vec!["updated_at = now()".to_string()];
-        if let Some(title) = self.title.as_ref() {
-            params.push(title);
-            changes.push(format!("title = ${}", params.len()));
+        if self.title.is_some() {
+            changes.push(format!("title = ${}", changes.len() + 1));
         }
-        if let Some(description) = self.description.as_ref() {
-            params.push(description);
-            changes.push(format!("description = ${}", params.len()));
+        if self.description.is_some() {
+            changes.push(format!("description = ${}", changes.len() + 1));
         }
-        if let Some(current_version_id) = self.current_version_id.as_ref() {
-            params.push(current_version_id);
-            changes.push(format!("current_version_id = ${}", params.len()));
+        if self.current_version_id.is_some() {
+            changes.push(format!("current_version_id = ${}", changes.len() + 1));
         }
         let stmt = format!(
             "UPDATE templates SET {} WHERE id = $1 RETURNING {}",
             changes.join(", "),
             COLUMNS.as_str()
         );
-        let stmt = client.prepare(stmt.as_str()).await?;
-        let rows = client.query(&stmt, &params).await?;
-        Ok(rows.first().map(Template::from))
+        let query = sqlx::query_as::<_, Template>(stmt.as_str()).bind(self.id);
+        let query = if let Some(title) = self.title.as_ref() {
+            query.bind(title)
+        } else {
+            query
+        };
+        let query = if let Some(description) = self.description.as_ref() {
+            query.bind(description)
+        } else {
+            query
+        };
+        let query = if let Some(current_version_id) = self.current_version_id.as_ref() {
+            query.bind(current_version_id)
+        } else {
+            query
+        };
+        let result = query.fetch_optional(conn).await?;
+        Ok(result)
     }
 }
 
@@ -47,6 +59,7 @@ impl TemplateUpdate {
 pub mod tests {
     use super::*;
     use crate::service::database::client::tests::POOL;
+    use crate::service::database::client::Pool;
 
     #[allow(dead_code)]
     pub async fn update_template(
@@ -55,14 +68,14 @@ pub mod tests {
         description: Option<String>,
         current_version_id: Option<Uuid>,
     ) -> Option<Template> {
-        let client = POOL.get().await.unwrap();
+        let pool: &Pool = &POOL;
         let body = TemplateUpdate {
             id: *id,
             title: title.clone(),
             description: description.clone(),
             current_version_id,
         };
-        body.save(&client).await.unwrap()
+        body.save(pool).await.unwrap()
     }
 
     pub async fn set_template_version(id: &Uuid, version_id: &Uuid) -> Option<Template> {

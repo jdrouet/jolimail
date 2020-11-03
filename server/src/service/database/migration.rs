@@ -1,4 +1,4 @@
-use deadpool_postgres::{Client, Transaction};
+use super::client::{Pool, Transaction};
 use regex::Regex;
 use std::collections::HashSet;
 use std::path::PathBuf;
@@ -54,8 +54,8 @@ pub enum Error {
     ScriptFailed(String),
 }
 
-impl From<tokio_postgres::Error> for Error {
-    fn from(err: tokio_postgres::Error) -> Error {
+impl From<sqlx::Error> for Error {
+    fn from(err: sqlx::Error) -> Error {
         Error::QueryError(err.to_string())
     }
 }
@@ -95,14 +95,17 @@ impl Migrator {
     /// check if the script has been run
     async fn check_migrated<'a>(
         &self,
-        client: &Transaction<'_>,
+        conn: &mut Transaction<'_>,
         name: &str,
     ) -> Result<bool, Error> {
         debug!("create migrated {}", name);
         let query = format!("SELECT COUNT(*) FROM {} WHERE name = $1", self.tablename);
-        let row = client.query_one(query.as_str(), &[&name]).await?;
-        let count: i64 = row.get(0);
-        Ok(count > 0)
+        let count: (i64,) = sqlx::query_as(query.as_str())
+            .bind(name)
+            .fetch_one(conn)
+            .await?;
+
+        Ok(count.0 > 0)
     }
 
     fn get_script_path(&self, name: &str, up: bool) -> PathBuf {
@@ -121,10 +124,10 @@ impl Migrator {
 
     async fn execute_script<'a>(
         &self,
-        client: &Transaction<'_>,
+        conn: &mut Transaction<'_>,
         content: &str,
     ) -> Result<(), Error> {
-        match client.batch_execute(content).await {
+        match sqlx::query(content).execute(conn).await {
             Ok(_) => Ok(()),
             Err(err) => Err(Error::ScriptFailed(err.to_string())),
         }
@@ -132,49 +135,49 @@ impl Migrator {
 
     async fn insert_migration<'a>(
         &self,
-        client: &Transaction<'_>,
+        conn: &mut Transaction<'_>,
         name: &str,
     ) -> Result<(), Error> {
         debug!("insert migration for {}", name);
         let query = format!("INSERT INTO {} (name) VALUES ($1)", self.tablename);
-        client.execute(query.as_str(), &[&name]).await?;
+        sqlx::query(query.as_str()).bind(name).execute(conn).await?;
         Ok(())
     }
 
     async fn delete_migration<'a>(
         &self,
-        client: &Transaction<'_>,
+        conn: &mut Transaction<'_>,
         name: &str,
     ) -> Result<(), Error> {
         debug!("delete migration for {}", name);
         let query = format!("DELETE FROM {} WHERE name = $1", self.tablename);
-        client.execute(query.as_str(), &[&name]).await?;
+        sqlx::query(query.as_str()).bind(name).execute(conn).await?;
         Ok(())
     }
 
     async fn run_script<'a>(
         &self,
-        tx: &Transaction<'_>,
+        conn: &mut Transaction<'_>,
         name: &str,
         up: bool,
     ) -> Result<(), Error> {
         debug!("run script for {} ({})", name, up);
         let content = self.get_script_content(name, up)?;
-        self.execute_script(tx, content.as_str()).await?;
+        self.execute_script(conn, content.as_str()).await?;
         if up {
-            self.insert_migration(tx, name).await?;
+            self.insert_migration(conn, name).await?;
         } else {
-            self.delete_migration(tx, name).await?;
+            self.delete_migration(conn, name).await?;
         }
         Ok(())
     }
 
     /// migrate up all the scripts
-    pub async fn up(&self, client: &mut Client) -> Result<(), Error> {
+    pub async fn up(&self, pool: &Pool) -> Result<(), Error> {
         debug!("run migration up");
-        let tx = client.transaction().await?;
+        let mut conn = pool.begin().await?;
         self.execute_script(
-            &tx,
+            &mut conn,
             create_migration_table_query(self.tablename.as_str()).as_str(),
         )
         .await?;
@@ -182,23 +185,23 @@ impl Migrator {
         scripts.sort();
         for item in scripts.iter() {
             let name = item.as_str();
-            if !self.check_migrated(&tx, name).await? {
-                self.run_script(&tx, name, true).await?;
+            if !self.check_migrated(&mut conn, name).await? {
+                self.run_script(&mut conn, name, true).await?;
             } else {
                 debug!("migration {} already done", name);
             }
         }
-        tx.commit().await?;
+        conn.commit().await?;
         Ok(())
     }
 
     /// migrate down all the scripts
     #[cfg(test)]
-    pub async fn down(&self, client: &mut Client) -> Result<(), Error> {
+    pub async fn down(&self, pool: &Pool) -> Result<(), Error> {
         debug!("run migration down");
-        let tx = client.transaction().await?;
+        let mut conn = pool.begin().await?;
         self.execute_script(
-            &tx,
+            &mut conn,
             create_migration_table_query(self.tablename.as_str()).as_str(),
         )
         .await?;
@@ -207,13 +210,13 @@ impl Migrator {
         scripts.reverse();
         for item in scripts.iter() {
             let name = item.as_str();
-            if self.check_migrated(&tx, name).await? {
-                self.run_script(&tx, name, false).await?;
+            if self.check_migrated(&mut conn, name).await? {
+                self.run_script(&mut conn, name, false).await?;
             } else {
                 debug!("migration {} not done", name);
             }
         }
-        tx.commit().await?;
+        conn.commit().await?;
         Ok(())
     }
 }
@@ -245,10 +248,9 @@ pub mod tests {
         std::env::set_var("DATABASE_USER", "postgres");
         std::env::set_var("DATABASE_HOST", "localhost");
         std::env::set_var("DATABASE_DBNAME", "postgres");
-        let mut client = POOL.get().await.unwrap();
         std::env::set_var("MIGRATION_PATH", get_migration_path().as_str());
         let migrator = Migrator::from_env().unwrap();
-        migrator.up(&mut client).await.unwrap();
-        migrator.down(&mut client).await.unwrap();
+        migrator.up(&POOL).await.unwrap();
+        migrator.down(&POOL).await.unwrap();
     }
 }

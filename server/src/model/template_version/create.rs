@@ -1,5 +1,4 @@
 use crate::error::ServerError;
-use deadpool_postgres::Client;
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value as JsonValue};
 use uuid::Uuid;
@@ -64,21 +63,19 @@ impl TemplateVersionCreate {
         }
     }
 
-    pub async fn save(&self, client: &Client) -> Result<TemplateVersion, ServerError> {
+    pub async fn save<'a, X>(&self, conn: X) -> Result<TemplateVersion, ServerError>
+    where
+        X: sqlx::Executor<'a, Database = sqlx::Postgres>,
+    {
         debug!("save template version {}", self.template_id);
-        let stmt = client.prepare(QUERY_INSERT.as_str()).await?;
-        let rows = client
-            .query(
-                &stmt,
-                &[
-                    &self.template_id,
-                    &self.name,
-                    &self.content,
-                    &self.attributes,
-                ],
-            )
+        let result = sqlx::query_as::<_, TemplateVersion>(QUERY_INSERT.as_str())
+            .bind(self.template_id)
+            .bind(self.name.as_str())
+            .bind(self.content.as_str())
+            .bind(&self.attributes)
+            .fetch_one(conn)
             .await?;
-        Ok(rows.first().map(TemplateVersion::from).unwrap())
+        Ok(result)
     }
 }
 
@@ -86,6 +83,7 @@ impl TemplateVersionCreate {
 pub mod tests {
     use super::*;
     use crate::service::database::client::tests::POOL;
+    use crate::service::database::client::Pool;
     use serde_json::Value as JsonValue;
 
     pub async fn create_template_version(
@@ -94,8 +92,8 @@ pub mod tests {
         content: Option<String>,
         attributes: Option<JsonValue>,
     ) -> TemplateVersion {
-        let client = POOL.get().await.unwrap();
+        let pool: &Pool = &POOL;
         let tmpl = TemplateVersionCreate::create(template_id, name, content, attributes);
-        tmpl.save(&client).await.unwrap()
+        tmpl.save(pool).await.unwrap()
     }
 }

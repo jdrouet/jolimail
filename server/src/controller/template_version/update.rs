@@ -1,8 +1,8 @@
 use crate::error::ServerError;
 use crate::model::template_version::update::TemplateVersionUpdate;
+use crate::service::database::client::Pool;
 use crate::service::validation::validate_json_schema;
 use actix_web::{patch, web, HttpResponse};
-use deadpool_postgres::Pool;
 use serde::Deserialize;
 use serde_json::Value as JsonValue;
 use uuid::Uuid;
@@ -28,7 +28,7 @@ pub async fn handler(
     web::Path((template_id, version_id)): web::Path<(Uuid, Uuid)>,
     payload: web::Json<BodyPayload>,
 ) -> Result<HttpResponse, ServerError> {
-    let client = pool.get().await?;
+    let pool: &Pool = &pool;
     payload.validate()?;
     let template = TemplateVersionUpdate::update(
         &version_id,
@@ -36,7 +36,7 @@ pub async fn handler(
         payload.content.clone(),
         payload.attributes.clone(),
     )
-    .save(&client)
+    .save(pool)
     .await?;
     match template {
         Some(value) => Ok(HttpResponse::Ok().json(value)),

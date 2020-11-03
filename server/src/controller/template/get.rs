@@ -1,7 +1,7 @@
 use crate::error::ServerError;
 use crate::model::template::Template;
+use crate::service::database::client::Pool;
 use actix_web::{get, web, HttpResponse};
-use deadpool_postgres::Pool;
 use uuid::Uuid;
 
 #[get("/api/templates/{id}")]
@@ -9,8 +9,8 @@ pub async fn handler(
     pool: web::Data<Pool>,
     template_id: web::Path<Uuid>,
 ) -> Result<HttpResponse, ServerError> {
-    let client = pool.get().await?;
-    match Template::find_by_id(&client, &template_id).await? {
+    let pool: &Pool = &pool;
+    match Template::find_by_id(pool, &template_id).await? {
         Some(template) => Ok(HttpResponse::Ok().json(template)),
         None => Err(ServerError::NotFound(format!(
             "unable to find template with id {}",

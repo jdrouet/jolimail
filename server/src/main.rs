@@ -14,10 +14,9 @@ mod service;
 
 use actix_files::Files;
 use actix_web::{middleware, web, App, HttpServer};
-use deadpool_postgres::Pool;
 use std::env;
 
-use service::database::client::get_pool;
+use service::database::client::{get_pool, Pool};
 use service::database::migration::Migrator;
 
 macro_rules! create_app {
@@ -71,12 +70,8 @@ fn get_bind() -> String {
 
 async fn migrate_database(pool: &Pool) {
     info!("running migrations");
-    let mut client = pool.get().await.expect("couldn't get client");
     let migrator = Migrator::from_env().expect("couldn't init migration");
-    migrator
-        .up(&mut client)
-        .await
-        .expect("couldn't run migration");
+    migrator.up(pool).await.expect("couldn't run migration");
 }
 
 #[actix_rt::main]
