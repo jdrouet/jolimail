@@ -1,5 +1,5 @@
 build:
   docker:
-    web: Dockerfile
+    web: heroku.Dockerfile
 run:
   web: /usr/bin/jolimail
