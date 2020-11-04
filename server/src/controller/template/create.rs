@@ -1,15 +1,15 @@
 use crate::error::ServerError;
 use crate::model::template::create::TemplateCreate;
+use crate::service::database::client::Pool;
 use actix_web::{post, web, HttpResponse};
-use deadpool_postgres::Pool;
 
 #[post("/api/templates")]
 pub async fn handler(
     pool: web::Data<Pool>,
     body: web::Json<TemplateCreate>,
 ) -> Result<HttpResponse, ServerError> {
-    let client = pool.get().await?;
-    let template = body.save(&client).await?;
+    let pool: &Pool = &pool;
+    let template = body.save(pool).await?;
     Ok(HttpResponse::Ok().json(template))
 }
 
@@ -41,5 +41,27 @@ mod tests {
         assert_eq!(body.title, "My first template");
         assert_eq!(body.slug, "my-first-template");
         assert!(body.current_version_id.is_none());
+    }
+
+    #[actix_rt::test]
+    #[serial]
+    async fn name_conflict() {
+        reset_database().await;
+        let payload = json!({
+          "title": "random-name",
+          "description": "whatever",
+        });
+        let req = test::TestRequest::post()
+            .uri("/api/templates")
+            .set_json(&payload)
+            .to_request();
+        let res = execute_request(req).await;
+        assert_eq!(res.status(), StatusCode::OK);
+        let req = test::TestRequest::post()
+            .uri("/api/templates")
+            .set_json(&payload)
+            .to_request();
+        let res = execute_request(req).await;
+        assert_eq!(res.status(), StatusCode::CONFLICT);
     }
 }

@@ -1,7 +1,7 @@
 use crate::error::ServerError;
 use crate::model::template::Template;
+use crate::service::database::client::Pool;
 use actix_web::{delete, web, HttpResponse};
-use deadpool_postgres::Pool;
 use uuid::Uuid;
 
 #[delete("/api/templates/{id}")]
@@ -9,8 +9,8 @@ pub async fn handler(
     pool: web::Data<Pool>,
     template_id: web::Path<Uuid>,
 ) -> Result<HttpResponse, ServerError> {
-    let client = pool.get().await?;
-    match Template::delete_by_id(&client, &template_id).await? {
+    let pool: &Pool = &pool;
+    match Template::delete_by_id(pool, &template_id).await? {
         0 => Err(ServerError::NotFound(format!(
             "unable to find template with id {}",
             template_id

@@ -1,7 +1,7 @@
 use crate::error::ServerError;
 use crate::model::template::update::TemplateUpdate;
+use crate::service::database::client::Pool;
 use actix_web::{patch, web, HttpResponse};
-use deadpool_postgres::Pool;
 use serde::Deserialize;
 use uuid::Uuid;
 
@@ -19,14 +19,14 @@ pub async fn handler(
     params: web::Path<Uuid>,
     payload: web::Json<Payload>,
 ) -> Result<HttpResponse, ServerError> {
-    let client = pool.get().await?;
+    let pool: &Pool = &pool;
     let body = TemplateUpdate {
         id: *params,
         title: payload.title.clone(),
         description: payload.description.clone(),
         current_version_id: payload.current_version_id,
     };
-    let result = body.save(&client).await?;
+    let result = body.save(pool).await?;
     match result {
         Some(template) => Ok(HttpResponse::Ok().json(template)),
         None => Err(ServerError::NotFound(format!(

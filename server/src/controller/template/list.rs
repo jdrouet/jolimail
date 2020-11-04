@@ -1,12 +1,12 @@
 use crate::error::ServerError;
 use crate::model::template::Template;
+use crate::service::database::client::Pool;
 use actix_web::{get, web, HttpResponse};
-use deadpool_postgres::Pool;
 
 #[get("/api/templates")]
 pub async fn handler(pool: web::Data<Pool>) -> Result<HttpResponse, ServerError> {
-    let client = pool.get().await?;
-    let result = Template::list(&client).await?;
+    let pool: &Pool = &pool;
+    let result = Template::list(pool).await?;
     Ok(HttpResponse::Ok().json(result))
 }
 

@@ -1,15 +1,14 @@
 use crate::error::ServerError;
-use deadpool_postgres::Client;
 use serde::{Deserialize, Serialize};
 use serde_json::Value as JsonValue;
-use tokio_postgres::row::Row;
+use sqlx::Row;
 
 lazy_static! {
     pub static ref QUERY_FIND_BY_SLUG: String = concat!(
         "SELECT ",
         "templates.title AS name, ",
         "templates.description AS description, ",
-        "template_versions.content AS template, ",
+        "template_versions.content AS content, ",
         "template_versions.attributes AS attributes ",
         "FROM templates ",
         "JOIN template_versions ON templates.current_version_id = template_versions.id ",
@@ -18,7 +17,7 @@ lazy_static! {
     )
     .to_string();
 }
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(sqlx::FromRow, Clone, Debug, Deserialize, Serialize)]
 pub struct TemplateContent {
     pub name: String,
     pub description: String,
@@ -26,8 +25,8 @@ pub struct TemplateContent {
     pub attributes: JsonValue,
 }
 
-impl From<&Row> for TemplateContent {
-    fn from(row: &Row) -> Self {
+impl From<sqlx::postgres::PgRow> for TemplateContent {
+    fn from(row: sqlx::postgres::PgRow) -> Self {
         Self {
             name: row.get(0),
             description: row.get(1),
@@ -38,10 +37,15 @@ impl From<&Row> for TemplateContent {
 }
 
 impl TemplateContent {
-    pub async fn find_by_slug(client: &Client, slug: &str) -> Result<Option<Self>, ServerError> {
+    pub async fn find_by_slug<'a, X>(conn: X, slug: &str) -> Result<Option<Self>, ServerError>
+    where
+        X: sqlx::Executor<'a, Database = sqlx::Postgres>,
+    {
         debug!("find template content by slug {}", slug);
-        let stmt = client.prepare(QUERY_FIND_BY_SLUG.as_str()).await?;
-        let rows = client.query(&stmt, &[&slug]).await?;
-        Ok(rows.first().map(TemplateContent::from))
+        let result = sqlx::query_as::<_, Self>(QUERY_FIND_BY_SLUG.as_str())
+            .bind(slug)
+            .fetch_optional(conn)
+            .await?;
+        Ok(result)
     }
 }

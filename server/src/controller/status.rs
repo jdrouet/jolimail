@@ -1,11 +1,9 @@
-use actix_web::{get, web, HttpResponse};
-use deadpool_postgres::Pool;
+use actix_web::{get, HttpResponse};
 
 use crate::error::ServerError;
 
 #[get("/status")]
-pub async fn handler(pool: web::Data<Pool>) -> Result<HttpResponse, ServerError> {
-    let _client = pool.get().await?;
+pub async fn handler() -> Result<HttpResponse, ServerError> {
     Ok(HttpResponse::NoContent().finish())
 }
 

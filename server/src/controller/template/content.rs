@@ -1,15 +1,15 @@
 use crate::error::ServerError;
 use crate::model::template::content::TemplateContent;
+use crate::service::database::client::Pool;
 use actix_web::{get, web, HttpResponse};
-use deadpool_postgres::Pool;
 
 #[get("/api/templates/{template_slug}/content")]
 pub async fn handler(
     pool: web::Data<Pool>,
     template_slug: web::Path<String>,
 ) -> Result<HttpResponse, ServerError> {
-    let client = pool.get().await?;
-    match TemplateContent::find_by_slug(&client, template_slug.as_str()).await? {
+    let pool: &Pool = &pool;
+    match TemplateContent::find_by_slug(pool, template_slug.as_str()).await? {
         Some(template) => Ok(HttpResponse::Ok().json(template)),
         None => Err(ServerError::NotFound(format!(
             "unable to find template with slug {}",

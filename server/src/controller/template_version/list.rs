@@ -1,7 +1,7 @@
 use crate::error::ServerError;
 use crate::model::template_version::TemplateVersion;
+use crate::service::database::client::Pool;
 use actix_web::{get, web, HttpResponse};
-use deadpool_postgres::Pool;
 use serde::Deserialize;
 use uuid::Uuid;
 
@@ -28,9 +28,9 @@ pub async fn handler(
     id: web::Path<Uuid>,
     filter: web::Query<Filter>,
 ) -> Result<HttpResponse, ServerError> {
-    let client = pool.get().await?;
+    let pool: &Pool = &pool;
     let result = TemplateVersion::find_by_template(
-        &client,
+        pool,
         &id,
         false,
         filter.limit as i64,

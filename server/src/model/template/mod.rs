@@ -1,8 +1,8 @@
 use crate::error::ServerError;
 use chrono::prelude::*;
-use deadpool_postgres::Client;
 use serde::{Deserialize, Serialize};
-use tokio_postgres::row::Row;
+use sqlx::postgres::{PgDone, PgRow};
+use sqlx::{Done, Row};
 use uuid::Uuid;
 
 pub mod content;
@@ -25,7 +25,7 @@ lazy_static! {
 
 const DELETE_BY_ID: &str = "UPDATE templates SET deleted_at = now() WHERE id = $1";
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(sqlx::FromRow, Clone, Debug, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Template {
     pub id: Uuid,
@@ -38,8 +38,8 @@ pub struct Template {
     pub deleted_at: Option<DateTime<Utc>>,
 }
 
-impl From<&Row> for Template {
-    fn from(row: &Row) -> Self {
+impl From<PgRow> for Template {
+    fn from(row: PgRow) -> Self {
         Self {
             id: row.get(0),
             slug: row.get(1),
@@ -54,33 +54,53 @@ impl From<&Row> for Template {
 }
 
 impl Template {
-    pub async fn list(client: &Client) -> Result<Vec<Template>, ServerError> {
+    pub async fn list<'a, X>(conn: X) -> Result<Vec<Template>, ServerError>
+    where
+        X: sqlx::Executor<'a, Database = sqlx::Postgres>,
+    {
         debug!("list templates");
-        let stmt = client.prepare(QUERY_LIST_ALL.as_str()).await?;
-        let rows = client.query(&stmt, &[]).await?;
-        Ok(rows.iter().map(Template::from).collect())
+        let list: Vec<Template> = sqlx::query_as::<_, Template>(QUERY_LIST_ALL.as_str())
+            .fetch_all(conn)
+            .await?;
+        Ok(list)
     }
 
-    pub async fn find_by_id(client: &Client, id: &Uuid) -> Result<Option<Template>, ServerError> {
+    pub async fn find_by_id<'a, X>(conn: X, id: &Uuid) -> Result<Option<Template>, ServerError>
+    where
+        X: sqlx::Executor<'a, Database = sqlx::Postgres>,
+    {
         debug!("find template by id {}", id);
-        let stmt = client.prepare(QUERY_FIND_BY_ID.as_str()).await?;
-        let rows = client.query(&stmt, &[&id]).await?;
-        Ok(rows.first().map(Template::from))
+        let result: Option<Template> = sqlx::query_as::<_, Template>(QUERY_FIND_BY_ID.as_str())
+            .bind(id)
+            .fetch_optional(conn)
+            .await?;
+        Ok(result)
+        // let stmt = client.prepare(QUERY_FIND_BY_ID.as_str()).await?;
+        // let rows = client.query(&stmt, &[&id]).await?;
+        // Ok(rows.first().map(Template::from))
     }
 
-    pub async fn unset_current_version(
-        client: &Client,
+    pub async fn unset_current_version<'a, X>(
+        conn: X,
         template_id: &Uuid,
         version_id: &Uuid,
-    ) -> Result<u64, ServerError> {
-        let stmt = client.prepare("UPDATE templates SET current_version_id = null WHERE id = $1 AND current_version_id = $2").await?;
-        let count = client.execute(&stmt, &[&template_id, &version_id]).await?;
-        Ok(count)
+    ) -> Result<u64, ServerError>
+    where
+        X: sqlx::Executor<'a, Database = sqlx::Postgres>,
+    {
+        let result = sqlx::query("UPDATE templates SET current_version_id = null WHERE id = $1 AND current_version_id = $2")
+        .bind(template_id)
+        .bind(version_id)
+        .execute(conn)
+        .await?;
+        Ok(result.rows_affected())
     }
 
-    pub async fn delete_by_id(client: &Client, id: &Uuid) -> Result<u64, ServerError> {
-        let stmt = client.prepare(DELETE_BY_ID).await?;
-        let count = client.execute(&stmt, &[&id]).await?;
-        Ok(count)
+    pub async fn delete_by_id<'a, X>(conn: X, id: &Uuid) -> Result<u64, ServerError>
+    where
+        X: sqlx::Executor<'a, Database = sqlx::Postgres>,
+    {
+        let result: PgDone = sqlx::query(DELETE_BY_ID).bind(id).execute(conn).await?;
+        Ok(result.rows_affected())
     }
 }

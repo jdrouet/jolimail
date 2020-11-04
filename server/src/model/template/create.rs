@@ -1,5 +1,4 @@
 use crate::error::ServerError;
-use deadpool_postgres::Client;
 use serde::{Deserialize, Serialize};
 use slug::slugify;
 
@@ -20,14 +19,19 @@ pub struct TemplateCreate {
 }
 
 impl TemplateCreate {
-    pub async fn save(&self, client: &Client) -> Result<Template, ServerError> {
+    pub async fn save<'a, X>(&self, conn: X) -> Result<Template, ServerError>
+    where
+        X: sqlx::Executor<'a, Database = sqlx::Postgres>,
+    {
         debug!("save template {}", self.title);
-        let stmt = client.prepare(QUERY_INSERT.as_str()).await?;
         let slug = slugify(self.title.as_str());
-        let rows = client
-            .query(&stmt, &[&self.title, &slug, &self.description])
+        let result: Template = sqlx::query_as(QUERY_INSERT.as_str())
+            .bind(self.title.as_str())
+            .bind(slug)
+            .bind(self.description.as_ref())
+            .fetch_one(conn)
             .await?;
-        Ok(rows.first().map(Template::from).unwrap())
+        Ok(result)
     }
 }
 
@@ -37,11 +41,11 @@ pub mod tests {
     use crate::service::database::client::tests::POOL;
 
     pub async fn create_template(title: &str, description: Option<&str>) -> Template {
-        let client = POOL.get().await.unwrap();
+        let mut conn = POOL.acquire().await.unwrap();
         let tmpl = TemplateCreate {
             title: title.to_string(),
             description: description.map(|value| value.to_string()),
         };
-        tmpl.save(&client).await.unwrap()
+        tmpl.save(&mut conn).await.unwrap()
     }
 }

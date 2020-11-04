@@ -1,8 +1,8 @@
 use crate::error::ServerError;
 use crate::model::template::Template;
 use crate::model::template_version::TemplateVersion;
+use crate::service::database::client::Pool;
 use actix_web::{delete, web, HttpResponse};
-use deadpool_postgres::Pool;
 use uuid::Uuid;
 
 #[delete("/api/templates/{template_id}/versions/{version_id}")]
@@ -10,14 +10,17 @@ pub async fn handler(
     pool: web::Data<Pool>,
     web::Path((template_id, version_id)): web::Path<(Uuid, Uuid)>,
 ) -> Result<HttpResponse, ServerError> {
-    let client = pool.get().await?;
-    Template::unset_current_version(&client, &template_id, &version_id).await?;
-    match TemplateVersion::delete_by_id(&client, &template_id, &version_id).await? {
+    let mut tx = pool.begin().await?;
+    Template::unset_current_version(&mut tx, &template_id, &version_id).await?;
+    match TemplateVersion::delete_by_id(&mut tx, &template_id, &version_id).await? {
         0 => Err(ServerError::NotFound(format!(
             "unable to find template version with id {}",
             version_id
         ))),
-        _ => Ok(HttpResponse::NoContent().finish()),
+        _ => {
+            tx.commit().await?;
+            Ok(HttpResponse::NoContent().finish())
+        }
     }
 }
 

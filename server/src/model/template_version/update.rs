@@ -1,10 +1,8 @@
 use super::COLUMNS;
 use crate::error::ServerError;
 use crate::model::template_version::TemplateVersion;
-use deadpool_postgres::Client;
 use serde::{Deserialize, Serialize};
 use serde_json::Value as JsonValue;
-use tokio_postgres::types::ToSql;
 use uuid::Uuid;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -30,26 +28,38 @@ impl TemplateVersionUpdate {
         }
     }
 
-    pub async fn save(&self, client: &Client) -> Result<Option<TemplateVersion>, ServerError> {
+    pub async fn save<'a, X>(&self, conn: X) -> Result<Option<TemplateVersion>, ServerError>
+    where
+        X: sqlx::Executor<'a, Database = sqlx::Postgres>,
+    {
         debug!("save template version {}", self.template_id);
-        let mut params: Vec<&(dyn ToSql + Sync)> = vec![&self.template_id, &self.id];
         let mut changes = vec!["updated_at = now()".to_string()];
-        if let Some(content) = self.content.as_ref() {
-            params.push(content);
-            changes.push(format!("content = ${}", params.len()));
+        if self.content.is_some() {
+            changes.push(format!("content = ${}", changes.len() + 2));
         }
-        if let Some(attributes) = self.attributes.as_ref() {
-            params.push(attributes);
-            changes.push(format!("attributes = ${}", params.len()));
+        if self.attributes.is_some() {
+            changes.push(format!("attributes = ${}", changes.len() + 2));
         }
         let stmt = format!(
             "UPDATE template_versions SET {} WHERE template_id = $1 AND id = $2 RETURNING {}",
             changes.join(", "),
             COLUMNS.as_str()
         );
-        let stmt = client.prepare(stmt.as_str()).await?;
-        let rows = client.query(&stmt, &params).await?;
-        Ok(rows.first().map(TemplateVersion::from))
+        let query = sqlx::query_as::<_, TemplateVersion>(stmt.as_str())
+            .bind(self.template_id)
+            .bind(self.id);
+        let query = if let Some(content) = self.content.as_ref() {
+            query.bind(content)
+        } else {
+            query
+        };
+        let query = if let Some(attributes) = self.attributes.as_ref() {
+            query.bind(attributes)
+        } else {
+            query
+        };
+        let result = query.fetch_optional(conn).await?;
+        Ok(result)
     }
 }
 
@@ -57,6 +67,7 @@ impl TemplateVersionUpdate {
 pub mod tests {
     use super::*;
     use crate::service::database::client::tests::POOL;
+    use crate::service::database::client::Pool;
     use serde_json::Value as JsonValue;
 
     #[allow(dead_code)]
@@ -66,9 +77,9 @@ pub mod tests {
         content: Option<String>,
         attributes: Option<JsonValue>,
     ) -> Option<TemplateVersion> {
-        let client = POOL.get().await.unwrap();
+        let pool: &Pool = &POOL;
         TemplateVersionUpdate::update(id, template_id, content, attributes)
-            .save(&client)
+            .save(pool)
             .await
             .unwrap()
     }
