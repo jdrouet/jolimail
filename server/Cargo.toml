@@ -25,4 +25,5 @@ tokio = { version = "0.2", features = ["full"] }
 uuid = { version = "0.8", features = ["serde"] }
 
 [dev-dependencies]
+env-test-util = "1.0.1"
 serial_test = "0.5"
