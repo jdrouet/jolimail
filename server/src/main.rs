@@ -7,9 +7,6 @@ extern crate lazy_static;
 #[macro_use]
 extern crate log;
 
-#[cfg(test)]
-mod test_util;
-
 mod controller;
 mod error;
 mod model;
@@ -105,6 +102,7 @@ mod tests {
     use actix_http::Request;
     use actix_web::dev::ServiceResponse;
     use actix_web::{test, App};
+    use env_test_util::TempEnvVar;
 
     pub async fn execute_request(req: Request) -> ServiceResponse {
         let mut app = test::init_service(bind_services!(create_app!().data(POOL.clone()))).await;
@@ -114,29 +112,29 @@ mod tests {
     #[test]
     #[serial]
     fn test_get_address() {
-        std::env::remove_var("ADDRESS");
+        let _address = TempEnvVar::new("ADDRESS");
         assert_eq!(get_address(), "localhost");
-        std::env::set_var("ADDRESS", "something");
+        let _address = _address.with("something");
         assert_eq!(get_address(), "something");
     }
 
     #[test]
     #[serial]
     fn test_get_port() {
-        std::env::remove_var("PORT");
+        let _port = TempEnvVar::new("PORT");
         assert_eq!(get_port(), "3000");
-        std::env::set_var("PORT", "1234");
+        let _port = _port.with("1234");
         assert_eq!(get_port(), "1234");
     }
 
     #[test]
     #[serial]
     fn test_bind() {
-        std::env::remove_var("ADDRESS");
-        std::env::remove_var("PORT");
+        let _address = TempEnvVar::new("ADDRESS");
+        let _port = TempEnvVar::new("PORT");
         assert_eq!(get_bind(), "localhost:3000");
-        std::env::set_var("ADDRESS", "something");
-        std::env::set_var("PORT", "1234");
+        let _address = _address.with("something");
+        let _port = _port.with("1234");
         assert_eq!(get_bind(), "something:1234");
     }
 }

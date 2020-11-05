@@ -82,7 +82,7 @@ impl From<sqlx::Error> for ServerError {
 #[cfg(test)]
 pub mod tests {
     use super::{get_pool, get_url, Pool};
-    use crate::test_util::TempEnvVar;
+    use env_test_util::TempEnvVar;
 
     lazy_static! {
         pub static ref POOL: Pool = get_pool();
