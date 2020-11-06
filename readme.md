@@ -6,7 +6,10 @@
 
 [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
 [![Build Status](https://travis-ci.com/jdrouet/jolimail.svg?branch=main)](https://travis-ci.com/jdrouet/jolimail)
+[![codecov](https://codecov.io/gh/jdrouet/jolimail/branch/mmain/graph/badge.svg)](https://codecov.io/gh/jdrouet/jolimail)
+
 ![Docker Pulls](https://img.shields.io/docker/pulls/jdrouet/jolimail)
+[![Docker Image Size (latest by date)](https://img.shields.io/docker/image-size/jdrouet/jolimail?sort=date)](https://hub.docker.com/r/jdrouet/jolimail)
 
 ## Why did we build jolimail?
 
