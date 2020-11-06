@@ -30,17 +30,13 @@
       "!src/react-app-env.d.ts",
       "!src/serviceWorker.ts"
     ],
-    "coverageThreshold": {
-      "global": {
-        "branches": 90,
-        "functions": 90,
-        "lines": 90,
-        "statements": 90
-      }
-    },
     "coverageReporters": [
-      "text",
-      "html"
+      [
+        "lcov",
+        {
+          "projectRoot": ".."
+        }
+      ]
     ],
     "maxConcurrency": 1
   },

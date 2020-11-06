@@ -9,3 +9,7 @@ test: node_modules
 
 lint: node_modules
 	npm run lint
+
+ci-coverage: node_modules
+	CI=true npm run test -- --coverage
+	curl -s https://codecov.io/bash | bash
