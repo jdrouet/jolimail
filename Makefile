@@ -22,3 +22,6 @@ ci-install-buildx:
 	chmod a+x ~/.docker/cli-plugins/docker-buildx
 	docker buildx install
 	docker buildx create --use
+
+dev-env:
+	docker-compose -f docker-compose.dev.yml up -d
