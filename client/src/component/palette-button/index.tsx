@@ -7,12 +7,14 @@ export type PaletteButtonProps = {
   children: JSX.Element | JSX.Element[];
   className?: string;
   type: string;
-  params: any;
+  properties: any;
 };
 
-const PaletteButton: React.FC<PaletteButtonProps> = ({ className, children, type, params }) => {
+const PaletteButton: React.FC<PaletteButtonProps> = ({ className, children, type, properties }) => {
+  const item = { type, properties };
+  console.log(item);
   const [{ isDragging }, drag] = useDrag({
-    item: { type, params },
+    item,
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),

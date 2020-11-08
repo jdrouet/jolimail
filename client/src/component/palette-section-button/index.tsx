@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
 const PaletteSectionButton: React.FC<PaletteSectionButtonProps> = ({ columns }) => {
   const classes = useStyles();
   return (
-    <PaletteButton className={classes.root} type="section" params={{}}>
+    <PaletteButton className={classes.root} type="section" properties={{ columns }}>
       <table className={classes.table}>
         <tr>
           {times(columns).map((_, index) => (

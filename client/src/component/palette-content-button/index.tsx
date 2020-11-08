@@ -6,6 +6,7 @@ import PaletteButton from 'src/component/palette-button';
 export type PaletteContentButtonProps = {
   label: string;
   icon: React.FunctionComponent<{ className: string }>;
+  type: string;
 };
 
 const useStyles = makeStyles((theme) => ({
@@ -20,10 +21,10 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const PaletteContentButton: React.FC<PaletteContentButtonProps> = ({ icon: Icon, label }) => {
+const PaletteContentButton: React.FC<PaletteContentButtonProps> = ({ icon: Icon, type, label }) => {
   const classes = useStyles();
   return (
-    <PaletteButton className={classes.root} type="section" params={{}}>
+    <PaletteButton className={classes.root} type={type} properties={{}}>
       <Icon className={classes.icon} />
       <Typography>{label}</Typography>
     </PaletteButton>
