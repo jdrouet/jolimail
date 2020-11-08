@@ -1,7 +1,8 @@
 import { makeStyles } from '@material-ui/core/styles';
 import React from 'react';
-import PaletteButton from 'src/component/palette-button';
 import { times } from 'src/service/utils';
+
+import PaletteButton from '../palette-button';
 
 export type PaletteSectionButtonProps = {
   columns: number;
@@ -26,11 +27,13 @@ const PaletteSectionButton: React.FC<PaletteSectionButtonProps> = ({ columns }) 
   return (
     <PaletteButton className={classes.root} type="section" properties={{ columns }}>
       <table className={classes.table}>
-        <tr>
-          {times(columns).map((_, index) => (
-            <td key={index} />
-          ))}
-        </tr>
+        <tbody>
+          <tr>
+            {times(columns).map((_, index) => (
+              <td key={index} />
+            ))}
+          </tr>
+        </tbody>
       </table>
     </PaletteButton>
   );

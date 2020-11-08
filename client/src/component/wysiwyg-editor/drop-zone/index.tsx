@@ -4,7 +4,8 @@ import Typography from '@material-ui/core/Typography';
 import cn from 'classnames';
 import React from 'react';
 import { useDrop } from 'react-dnd';
-import * as Editor from 'src/service/editor';
+
+import { Element } from '../preview-element';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -23,8 +24,8 @@ const useStyles = makeStyles((theme) => ({
 
 export type DropZoneProps = {
   className?: string;
-  accept: Editor.Element['type'] | Editor.Element['type'][];
-  onDrop: (element: Editor.Element) => void;
+  accept: Element['type'] | Element['type'][];
+  onDrop: (element: Element) => void;
 };
 
 const DropZone: React.FC<DropZoneProps> = ({ accept, className, onDrop }) => {
