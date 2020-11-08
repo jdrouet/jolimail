@@ -1,1 +1,1 @@
-export const times = (n: number) => [...new Array(n)];
+export const times = (n: number, initialValue?: any) => [...new Array(n)].fill(initialValue);

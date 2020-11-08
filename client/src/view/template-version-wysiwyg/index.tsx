@@ -11,12 +11,14 @@ import ShareIcon from '@material-ui/icons/ShareOutlined';
 import TextFieldsIcon from '@material-ui/icons/TextFieldsRounded';
 import TouchAppIcon from '@material-ui/icons/TouchAppRounded';
 import ViewDayIcon from '@material-ui/icons/ViewDayRounded';
-import React from 'react';
+import React, { useState } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import PaletteContentButton from 'src/component/palette-content-button';
 import PaletteSectionButton from 'src/component/palette-section-button';
 import Skeleton from 'src/component/skeleton';
+import TemplatePreview, { Mode as TemplatePreviewMode } from 'src/component/template-preview';
+import { SectionElement } from 'src/service/editor';
 import { times } from 'src/service/utils';
 
 type LocationParams = {
@@ -43,11 +45,15 @@ const useStyles = makeStyles(() => ({
     display: 'flex',
     flex: 4,
     flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 }));
 
 const EditorView: React.FC<any> = () => {
   const classes = useStyles();
+  const [mode, setMode] = useState<TemplatePreviewMode>('desktop');
+  const [content, setContent] = useState<SectionElement[]>([]);
 
   return (
     <Skeleton backButtonVisible mainClassName={classes.root}>
@@ -77,32 +83,32 @@ const EditorView: React.FC<any> = () => {
           <CardContent>
             <Grid container spacing={1}>
               <Grid item xs={6}>
-                <PaletteContentButton icon={TextFieldsIcon} label="Text" />
+                <PaletteContentButton icon={TextFieldsIcon} label="Text" type="text" />
               </Grid>
               <Grid item xs={6}>
-                <PaletteContentButton icon={TouchAppIcon} label="Button" />
+                <PaletteContentButton icon={TouchAppIcon} label="Button" type="button" />
               </Grid>
               <Grid item xs={6}>
-                <PaletteContentButton icon={ImageIcon} label="Image" />
+                <PaletteContentButton icon={ImageIcon} label="Image" type="image" />
               </Grid>
               <Grid item xs={6}>
-                <PaletteContentButton icon={RemoveIcon} label="Divider" />
+                <PaletteContentButton icon={RemoveIcon} label="Divider" type="divider" />
               </Grid>
               <Grid item xs={6}>
-                <PaletteContentButton icon={ViewDayIcon} label="Spacer" />
+                <PaletteContentButton icon={ViewDayIcon} label="Spacer" type="spacer" />
               </Grid>
               <Grid item xs={6}>
-                <PaletteContentButton icon={ShareIcon} label="Social Sharing" />
+                <PaletteContentButton icon={ShareIcon} label="Social Sharing" type="social-sharing" />
               </Grid>
               <Grid item xs={6}>
-                <PaletteContentButton icon={CodeIcon} label="HTML block" />
+                <PaletteContentButton icon={CodeIcon} label="HTML block" type="raw-html" />
               </Grid>
             </Grid>
           </CardContent>
           <Divider />
         </Paper>
         <section className={classes.editor}>
-          <div />
+          <TemplatePreview mode={mode} onChange={setContent} elements={content} />
         </section>
       </DndProvider>
     </Skeleton>
