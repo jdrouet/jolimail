@@ -1,7 +1,8 @@
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import React from 'react';
-import PaletteButton from 'src/component/palette-button';
+
+import PaletteButton from '../palette-button';
 
 export type PaletteContentButtonProps = {
   label: string;

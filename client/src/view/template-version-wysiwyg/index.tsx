@@ -14,11 +14,12 @@ import ViewDayIcon from '@material-ui/icons/ViewDayRounded';
 import React, { useState } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import PaletteContentButton from 'src/component/palette-content-button';
-import PaletteSectionButton from 'src/component/palette-section-button';
 import Skeleton from 'src/component/skeleton';
-import TemplatePreview, { Mode as TemplatePreviewMode } from 'src/component/template-preview';
-import { SectionElement } from 'src/service/editor';
+import ModeButtonGroup, { Mode as EditorMode } from 'src/component/wysiwyg-editor/mode-button-group';
+import PaletteContentButton from 'src/component/wysiwyg-editor/palette-content-button';
+import PaletteSectionButton from 'src/component/wysiwyg-editor/palette-section-button';
+import TemplateDocument from 'src/component/wysiwyg-editor/preview-document';
+import { SectionElement } from 'src/component/wysiwyg-editor/preview-section';
 import { times } from 'src/service/utils';
 
 type LocationParams = {
@@ -52,13 +53,22 @@ const useStyles = makeStyles(() => ({
 
 const EditorView: React.FC<any> = () => {
   const classes = useStyles();
-  const [mode, setMode] = useState<TemplatePreviewMode>('desktop');
+  const [mode, setMode] = useState<EditorMode>('desktop');
   const [content, setContent] = useState<SectionElement[]>([]);
 
   return (
     <Skeleton backButtonVisible mainClassName={classes.root}>
       <DndProvider backend={HTML5Backend}>
         <Paper className={classes.palette} square>
+          <CardContent>
+            <Typography>Mode</Typography>
+          </CardContent>
+          <Divider />
+          <CardContent>
+            <ModeButtonGroup onChange={setMode} value={mode} />
+          </CardContent>
+          <Divider />
+
           <CardContent>
             <Typography>Sections</Typography>
           </CardContent>
@@ -76,6 +86,7 @@ const EditorView: React.FC<any> = () => {
             </Grid>
           </CardContent>
           <Divider />
+
           <CardContent>
             <Typography>Content</Typography>
           </CardContent>
@@ -108,7 +119,7 @@ const EditorView: React.FC<any> = () => {
           <Divider />
         </Paper>
         <section className={classes.editor}>
-          <TemplatePreview mode={mode} onChange={setContent} elements={content} />
+          <TemplateDocument mode={mode} onChange={setContent} elements={content} />
         </section>
       </DndProvider>
     </Skeleton>
