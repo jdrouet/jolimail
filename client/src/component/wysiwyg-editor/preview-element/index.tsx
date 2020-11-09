@@ -35,10 +35,11 @@ export type PreviewElementProps = {
   className?: string;
   mode: Mode;
   onChange: (element: Element) => void;
+  onDelete: (element: Element) => void;
   value: Element;
 };
 
-const PreviewElement: React.FC<PreviewElementProps> = ({ className, mode, onChange, value }) => {
+const PreviewElement: React.FC<PreviewElementProps> = ({ className, mode, onChange, onDelete, value }) => {
   if (value.type === 'button') {
     return <PreviewButton className={className} value={value} />;
   }
@@ -46,13 +47,13 @@ const PreviewElement: React.FC<PreviewElementProps> = ({ className, mode, onChan
     return <PreviewDivider className={className} value={value} />;
   }
   if (value.type === 'image') {
-    return <PreviewImage className={className} value={value} />;
+    return <PreviewImage className={className} onChange={onChange} onDelete={onDelete} value={value} />;
   }
   if (value.type === 'raw-html') {
     return <PreviewRawHtml className={className} value={value} />;
   }
   if (value.type === 'section') {
-    return <PreviewSection className={className} mode={mode} onChange={onChange} value={value} />;
+    return <PreviewSection className={className} mode={mode} onChange={onChange} onDelete={onDelete} value={value} />;
   }
   if (value.type === 'social-sharing') {
     return <PreviewSocialSharing className={className} value={value} />;
@@ -61,7 +62,7 @@ const PreviewElement: React.FC<PreviewElementProps> = ({ className, mode, onChan
     return <PreviewSpacer className={className} value={value} />;
   }
   if (value.type === 'text') {
-    return <PreviewText className={className} value={value} />;
+    return <PreviewText className={className} onChange={onChange} onDelete={onDelete} value={value} />;
   }
   return null;
 };
