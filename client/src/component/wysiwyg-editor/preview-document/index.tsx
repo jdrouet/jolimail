@@ -57,10 +57,20 @@ const TemplatePreview: React.FC<TemplatePreviewProps> = ({
     [elements, onChange],
   );
 
+  const handleDropChild = (index: number) => (_: Element) => {
+    onChange(elements.filter((_, idx) => idx !== index));
+  };
+
   return (
     <Paper className={cn(className, classes[mode])}>
       {elements.map((element, index) => (
-        <PreviewElement key={`${index}-${element.type}`} mode={mode} onChange={handleChange(index)} value={element} />
+        <PreviewElement
+          key={`${index}-${element.type}`}
+          mode={mode}
+          onChange={handleChange(index)}
+          onDelete={handleDropChild(index)}
+          value={element}
+        />
       ))}
       <DropZone accept="section" onDrop={handleDrop} />
     </Paper>

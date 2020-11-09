@@ -1,4 +1,6 @@
+import IconButton from '@material-ui/core/IconButton';
 import { makeStyles } from '@material-ui/core/styles';
+import DeleteIcon from '@material-ui/icons/Delete';
 import cn from 'classnames';
 import React, { useCallback } from 'react';
 import { times } from 'src/service/utils';
@@ -28,11 +30,19 @@ export type TemplateSectionChildProps = {
   index: number;
   mode: Mode;
   onChange: (element: ContentElement, index: number) => void;
+  onDelete: (element: ContentElement, index: number) => void;
   value?: ContentElement;
 };
 
-const TemplateSectionChild: React.FC<TemplateSectionChildProps> = ({ index, mode, onChange, value }) => {
+const TemplateSectionChild: React.FC<TemplateSectionChildProps> = ({ index, mode, onChange, onDelete, value }) => {
   const classes = useChildrenStyles();
+
+  const handleDelete = useCallback(
+    (element: Element) => {
+      onDelete(element as ContentElement, index);
+    },
+    [index, onDelete],
+  );
 
   const handleChange = useCallback(
     (element: Element) => {
@@ -44,17 +54,40 @@ const TemplateSectionChild: React.FC<TemplateSectionChildProps> = ({ index, mode
   if (!value) {
     return <DropZone className={classes[mode]} accept={CONTENT_TYPES} onDrop={handleChange} />;
   }
-  return <PreviewElement className={classes[mode]} mode={mode} onChange={handleChange} value={value} />;
+  return (
+    <PreviewElement
+      className={classes[mode]}
+      mode={mode}
+      onChange={handleChange}
+      onDelete={handleDelete}
+      value={value}
+    />
+  );
 };
 
 const useStyles = makeStyles((theme) => ({
+  root: {
+    '&:hover > $panel': {
+      visibility: 'visible',
+    },
+    'marginLeft': theme.spacing(-4),
+    'paddingLeft': theme.spacing(4),
+    'position': 'relative',
+  },
   desktop: {
     display: 'flex',
     flexDirection: 'row',
-    padding: theme.spacing(),
   },
   mobile: {
     display: 'block',
+  },
+  panel: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    bottom: 0,
+    visibility: 'hidden',
+    paddingRight: theme.spacing(),
   },
 }));
 
@@ -62,15 +95,35 @@ export type TemplateSectionProps = {
   className?: string;
   mode: Mode;
   onChange: (element: SectionElement) => void;
+  onDelete: (element: SectionElement) => void;
   value: SectionElement;
 };
 
-const TemplateSection: React.FC<TemplateSectionProps> = ({ className, mode, onChange, value }) => {
+const getChildren = (value: SectionElement) => value.children ?? times(value.properties.columns);
+
+const TemplateSection: React.FC<TemplateSectionProps> = ({ className, mode, onChange, onDelete, value }) => {
   const classes = useStyles();
+
+  const handleDelete = useCallback(() => {
+    onDelete(value);
+  }, [onDelete, value]);
+
+  const handleDeleteChild = useCallback(
+    (_: Element, index: number) => {
+      onChange({
+        ...value,
+        children: getChildren(value).map((item, idx: number) => {
+          if (idx === index) return undefined;
+          return item;
+        }),
+      });
+    },
+    [onChange, value],
+  );
 
   const handleChangeChild = useCallback(
     (element: Element, index) => {
-      const children = (value.children ?? times(value.properties.columns)).map((item, idx: number) => {
+      const children = getChildren(value).map((item, idx: number) => {
         if (idx === index) return element;
         return item;
       });
@@ -83,13 +136,19 @@ const TemplateSection: React.FC<TemplateSectionProps> = ({ className, mode, onCh
   );
 
   return (
-    <div className={cn(className, classes[mode])}>
+    <div className={cn(className, classes.root, classes[mode])}>
+      <div className={classes.panel}>
+        <IconButton size="small">
+          <DeleteIcon onClick={handleDelete} />
+        </IconButton>
+      </div>
       {times(value.properties.columns).map((_, index) => (
         <TemplateSectionChild
           key={index}
           index={index}
           mode={mode}
           onChange={handleChangeChild}
+          onDelete={handleDeleteChild}
           value={value.children && value.children[index]}
         />
       ))}
