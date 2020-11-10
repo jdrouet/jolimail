@@ -3,7 +3,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import cn from 'classnames';
 import React from 'react';
-import { useDrop } from 'react-dnd';
+import { DropTargetMonitor, useDrop } from 'react-dnd';
 
 import { Element } from '../preview-element';
 
@@ -23,21 +23,25 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export type DropZoneProps = {
-  className?: string;
   accept: Element['type'] | Element['type'][];
+  className?: string;
+  label?: string;
   onDrop: (element: Element) => void;
 };
 
-const DropZone: React.FC<DropZoneProps> = ({ accept, className, onDrop }) => {
+const collect = (monitor: DropTargetMonitor) => ({
+  isOver: !!monitor.isOver(),
+  canDrop: !!monitor.canDrop(),
+});
+
+const DropZone: React.FC<DropZoneProps> = ({ accept, className, onDrop, label = 'Drop an element here' }) => {
   const classes = useStyles();
   const [{ isOver, canDrop }, drop] = useDrop({
     accept,
-    collect: (monitor) => ({
-      isOver: !!monitor.isOver(),
-      canDrop: !!monitor.canDrop(),
-    }),
+    collect,
     drop: onDrop,
   });
+  console.log({ isOver, canDrop });
   return (
     <Paper
       className={cn(classes.root, className, {
@@ -47,7 +51,7 @@ const DropZone: React.FC<DropZoneProps> = ({ accept, className, onDrop }) => {
       innerRef={drop}
       variant="outlined"
     >
-      <Typography variant="caption">Drop it here</Typography>
+      <Typography variant="caption">{label}</Typography>
     </Paper>
   );
 };

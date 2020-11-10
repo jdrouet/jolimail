@@ -72,7 +72,7 @@ const TemplatePreview: React.FC<TemplatePreviewProps> = ({
           value={element}
         />
       ))}
-      <DropZone accept="section" onDrop={handleDrop} />
+      <DropZone accept="section" label="Drop a section here" onDrop={handleDrop} />
     </Paper>
   );
 };

@@ -6,6 +6,8 @@ import { Align } from '../align-select';
 import DialogEditionImage from '../dialog-edition-image';
 import EditionOverlay from '../edition-overlay';
 
+export const DEFAULT_SRC = 'https://github.com/jdrouet/jolimail/raw/main/client/public/logo192.png';
+
 export type ImageElement = {
   type: 'image';
   properties: {
@@ -78,7 +80,7 @@ const PreviewImage: React.FC<PreviewImageProps> = ({ className, onChange, onDele
         <img
           className={cn(classes.element, value.properties['css-class'])}
           alt={value.properties.alt}
-          src={value.properties.src}
+          src={value.properties.src ?? DEFAULT_SRC}
           title={value.properties.title}
         />
       </EditionOverlay>
