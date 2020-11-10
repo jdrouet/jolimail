@@ -9,7 +9,7 @@ export type Align = 'left' | 'center' | 'right' | 'justify';
 export type AlignSelectProps = {
   label?: string;
   onChange: (value: Align) => any;
-  value: Align;
+  value?: Align;
 };
 
 const AlignSelect: React.FC<AlignSelectProps> = ({ onChange, label, value }) => {

@@ -9,7 +9,7 @@ export type TextDecoration = 'underline' | 'overline' | 'line-through' | 'none';
 export type TextDecorationSelectProps = {
   label?: string;
   onChange: (value: TextDecoration) => any;
-  value: TextDecoration;
+  value?: TextDecoration;
 };
 
 const TextDecorationSelect: React.FC<TextDecorationSelectProps> = ({ onChange, label, value }) => {

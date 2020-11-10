@@ -41,7 +41,7 @@ export type PreviewElementProps = {
 
 const PreviewElement: React.FC<PreviewElementProps> = ({ className, mode, onChange, onDelete, value }) => {
   if (value.type === 'button') {
-    return <PreviewButton className={className} value={value} />;
+    return <PreviewButton className={className} onChange={onChange} onDelete={onDelete} value={value} />;
   }
   if (value.type === 'divider') {
     return <PreviewDivider className={className} value={value} />;

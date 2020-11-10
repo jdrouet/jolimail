@@ -138,8 +138,8 @@ const TemplateSection: React.FC<TemplateSectionProps> = ({ className, mode, onCh
   return (
     <div className={cn(className, classes.root, classes[mode])}>
       <div className={classes.panel}>
-        <IconButton size="small">
-          <DeleteIcon onClick={handleDelete} />
+        <IconButton onClick={handleDelete} size="small">
+          <DeleteIcon />
         </IconButton>
       </div>
       {times(value.properties.columns).map((_, index) => (

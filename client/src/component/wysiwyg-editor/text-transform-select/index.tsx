@@ -9,7 +9,7 @@ export type TextTransform = 'uppercase' | 'lowercase' | 'capitalize';
 export type TextTransformSelectProps = {
   label?: string;
   onChange: (value: TextTransform) => any;
-  value: TextTransform;
+  value?: TextTransform;
 };
 
 const TextTransformSelect: React.FC<TextTransformSelectProps> = ({ onChange, label, value }) => {
