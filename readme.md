@@ -13,7 +13,7 @@
 
 ## Why did we build jolimail?
 
-Catapulte comes from the frustration of using several email providers.
+Jolimail comes from the frustration of using several email providers.
 We used to work with products like [sendgrid](https://sendgrid.com/),
 [mailgun](https://www.mailgun.com/), [mailchimp](https://mailchimp.com/), [sendinblue](https://www.sendinblue.com/), etc.
 
