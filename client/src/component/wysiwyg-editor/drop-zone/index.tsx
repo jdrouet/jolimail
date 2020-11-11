@@ -5,7 +5,7 @@ import cn from 'classnames';
 import React from 'react';
 import { DropTargetMonitor, useDrop } from 'react-dnd';
 
-import { Element } from '../preview-element';
+import { Element } from '../element';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -41,7 +41,6 @@ const DropZone: React.FC<DropZoneProps> = ({ accept, className, onDrop, label = 
     collect,
     drop: onDrop,
   });
-  console.log({ isOver, canDrop });
   return (
     <Paper
       className={cn(classes.root, className, {

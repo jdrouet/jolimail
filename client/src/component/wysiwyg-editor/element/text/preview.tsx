@@ -2,40 +2,11 @@ import { makeStyles } from '@material-ui/core/styles';
 import cn from 'classnames';
 import React, { useCallback, useState } from 'react';
 
-import { Align } from '../align-select';
-import DialogEditionText from '../dialog-edition-text';
-import EditionOverlay from '../edition-overlay';
-import { TextDecoration } from '../text-decoration-select';
-import { TextTransform } from '../text-transform-select';
+import EditionOverlay from '../../edition-overlay';
+import DialogEditionText from './dialog';
+import { TextElement } from './service';
 
-export type TextElement = {
-  type: 'text';
-  properties: {
-    'color'?: string;
-    'font-family'?: string;
-    'font-size'?: string;
-    'font-style'?: string;
-    // TODO
-    'font-weight'?: string;
-    'line-height'?: string;
-    'letter-spacing'?: string;
-    'height'?: string;
-    'text-decoration'?: TextDecoration;
-    'text-transform'?: TextTransform;
-    'align'?: Align;
-    // TODO
-    'container-background-color'?: string;
-    'padding'?: string;
-    'padding-top'?: string;
-    'padding-bottom'?: string;
-    'padding-left'?: string;
-    'padding-right'?: string;
-    'css-class'?: string;
-  };
-  children?: string;
-};
-
-export type PreviewTextProps = {
+export type PreviewTextElementProps = {
   className?: string;
   onChange: (element: TextElement) => void;
   onDelete: (element: TextElement) => void;
@@ -66,7 +37,7 @@ const useStyles = makeStyles(() => ({
   }),
 }));
 
-const PreviewText: React.FC<PreviewTextProps> = ({ className, onChange, onDelete, value }) => {
+export const PreviewTextElement: React.FC<PreviewTextElementProps> = ({ className, onChange, onDelete, value }) => {
   const classes = useStyles(value.properties);
   const [open, setOpen] = useState<boolean>(false);
 
@@ -94,5 +65,3 @@ const PreviewText: React.FC<PreviewTextProps> = ({ className, onChange, onDelete
     </React.Fragment>
   );
 };
-
-export default PreviewText;

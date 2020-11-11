@@ -6,8 +6,8 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
 import React, { useState } from 'react';
 
-import AlignSelect from '../align-select';
-import { TextElement } from '../preview-text';
+import AlignSelect from '../../form/align-select';
+import { TextElement } from './service';
 
 export type DialogEditionTextProps = {
   open: boolean;

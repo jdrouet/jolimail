@@ -5,17 +5,11 @@ import cn from 'classnames';
 import React, { useCallback } from 'react';
 import { times } from 'src/service/utils';
 
-import DropZone from '../drop-zone';
-import { Mode } from '../mode-button-group';
-import PreviewElement, { CONTENT_TYPES, ContentElement, Element } from '../preview-element';
-
-export type SectionElement = {
-  type: 'section';
-  properties: {
-    columns: 1 | 2 | 3 | 4;
-  };
-  children?: (ContentElement | undefined)[];
-};
+import DropZone from '../../drop-zone';
+import { Mode } from '../../mode-button-group';
+import { PreviewElement } from '../preview';
+import { CONTENT_TYPES, ContentElement, Element } from '../service';
+import { SectionElement } from './service';
 
 const useChildrenStyles = makeStyles(() => ({
   desktop: {
@@ -26,7 +20,7 @@ const useChildrenStyles = makeStyles(() => ({
   },
 }));
 
-export type TemplateSectionChildProps = {
+export type PreviewSectionElementChildProps = {
   index: number;
   mode: Mode;
   onChange: (element: ContentElement, index: number) => void;
@@ -34,7 +28,13 @@ export type TemplateSectionChildProps = {
   value?: ContentElement;
 };
 
-const TemplateSectionChild: React.FC<TemplateSectionChildProps> = ({ index, mode, onChange, onDelete, value }) => {
+const PreviewSectionElementChild: React.FC<PreviewSectionElementChildProps> = ({
+  index,
+  mode,
+  onChange,
+  onDelete,
+  value,
+}) => {
   const classes = useChildrenStyles();
 
   const handleDelete = useCallback(
@@ -91,7 +91,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export type TemplateSectionProps = {
+export type PreviewSectionElementProps = {
   className?: string;
   mode: Mode;
   onChange: (element: SectionElement) => void;
@@ -101,7 +101,13 @@ export type TemplateSectionProps = {
 
 const getChildren = (value: SectionElement) => value.children ?? times(value.properties.columns);
 
-const TemplateSection: React.FC<TemplateSectionProps> = ({ className, mode, onChange, onDelete, value }) => {
+export const PreviewSectionElement: React.FC<PreviewSectionElementProps> = ({
+  className,
+  mode,
+  onChange,
+  onDelete,
+  value,
+}) => {
   const classes = useStyles();
 
   const handleDelete = useCallback(() => {
@@ -143,7 +149,7 @@ const TemplateSection: React.FC<TemplateSectionProps> = ({ className, mode, onCh
         </IconButton>
       </div>
       {times(value.properties.columns).map((_, index) => (
-        <TemplateSectionChild
+        <PreviewSectionElementChild
           key={index}
           index={index}
           mode={mode}
@@ -155,5 +161,3 @@ const TemplateSection: React.FC<TemplateSectionProps> = ({ className, mode, onCh
     </div>
   );
 };
-
-export default TemplateSection;

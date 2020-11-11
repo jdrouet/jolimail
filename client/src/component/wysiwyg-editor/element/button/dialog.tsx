@@ -6,11 +6,11 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
 import React, { useState } from 'react';
 
-import AlignSelect from '../align-select';
-import { ButtonElement } from '../preview-button';
-import TextDecorationSelect from '../text-decoration-select';
-import TextTransformSelect from '../text-transform-select';
-import VerticalAlignSelect from '../vertical-align-select';
+import AlignSelect from '../../form/align-select';
+import TextDecorationSelect from '../../form/text-decoration-select';
+import TextTransformSelect from '../../form/text-transform-select';
+import VerticalAlignSelect from '../../form/vertical-align-select';
+import { ButtonElement } from './service';
 
 export type DialogEditionButtonProps = {
   open: boolean;
