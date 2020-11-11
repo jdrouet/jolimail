@@ -1,5 +1,5 @@
 import { Align } from '../../form/align-select';
-import { toElement } from '../util';
+import { indent, toElement } from '../util';
 
 export type ImageElement = {
   type: 'image';
@@ -28,4 +28,5 @@ export type ImageElement = {
   };
 };
 
-export const toMrml = (input: ImageElement): string => toElement('mj-image', input.properties);
+export const toMrml = (input: ImageElement, level: number): string =>
+  indent(level, toElement('mj-image', input.properties));

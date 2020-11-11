@@ -1,3 +1,5 @@
+import { times } from 'src/service/utils';
+
 export const toAttributes = (input: { [key: string]: any }) =>
   Object.entries(input)
     .map((entry) => `${entry[0]}="${entry[1]}"`)
@@ -11,3 +13,5 @@ export const toElement = (tag: string, attributes?: { [key: string]: any }, chil
   }
   return `${open}>${children}</${tag}>`;
 };
+
+export const indent = (level: number, value: string) => times(level * 4, ' ').join('') + value;

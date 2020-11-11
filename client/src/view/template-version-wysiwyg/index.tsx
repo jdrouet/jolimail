@@ -1,25 +1,31 @@
 import CardContent from '@material-ui/core/CardContent';
 import Divider from '@material-ui/core/Divider';
 import Grid from '@material-ui/core/Grid';
+import IconButton from '@material-ui/core/IconButton';
 import Paper from '@material-ui/core/Paper';
 import { makeStyles } from '@material-ui/core/styles';
+import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import CodeIcon from '@material-ui/icons/Code';
 import ImageIcon from '@material-ui/icons/ImageOutlined';
 import RemoveIcon from '@material-ui/icons/Remove';
+import SaveIcon from '@material-ui/icons/Save';
 import ShareIcon from '@material-ui/icons/ShareOutlined';
 import TextFieldsIcon from '@material-ui/icons/TextFieldsRounded';
 import TouchAppIcon from '@material-ui/icons/TouchAppRounded';
 import ViewDayIcon from '@material-ui/icons/ViewDayRounded';
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+import { useHistory, useParams } from 'react-router-dom';
 import Skeleton from 'src/component/skeleton';
+import { insertMrml } from 'src/component/wysiwyg-editor/element';
 import { SectionElement } from 'src/component/wysiwyg-editor/element';
 import ModeButtonGroup, { Mode as EditorMode } from 'src/component/wysiwyg-editor/mode-button-group';
 import PaletteContentButton from 'src/component/wysiwyg-editor/palette-content-button';
 import PaletteSectionButton from 'src/component/wysiwyg-editor/palette-section-button';
 import TemplateDocument from 'src/component/wysiwyg-editor/preview-document';
+import { updateTemplateVersion, useTemplateVersion } from 'src/service/server';
 import { times } from 'src/service/utils';
 
 type LocationParams = {
@@ -55,9 +61,30 @@ const EditorView: React.FC<any> = () => {
   const classes = useStyles();
   const [mode, setMode] = useState<EditorMode>('desktop');
   const [content, setContent] = useState<SectionElement[]>([]);
+  const { templateId, versionId } = useParams<LocationParams>();
+  const history = useHistory();
+
+  const { data: existing } = useTemplateVersion(templateId, versionId);
+
+  const handleSave = useCallback(() => {
+    const existingContent = existing?.content ? existing.content : undefined;
+    updateTemplateVersion(templateId, versionId, { content: insertMrml(existingContent, content) })
+      .then(() => history.goBack())
+      .catch(console.error);
+  }, [content, existing, history, templateId, versionId]);
 
   return (
-    <Skeleton backButtonVisible mainClassName={classes.root}>
+    <Skeleton
+      backButtonVisible
+      mainClassName={classes.root}
+      rightElements={
+        <Tooltip title="Save template and attributes">
+          <IconButton color="inherit" onClick={handleSave}>
+            <SaveIcon fontSize="small" />
+          </IconButton>
+        </Tooltip>
+      }
+    >
       <DndProvider backend={HTML5Backend}>
         <Paper className={classes.palette} square>
           <CardContent>

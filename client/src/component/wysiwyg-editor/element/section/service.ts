@@ -1,4 +1,5 @@
 import { ContentElement, toMrml as elementToMrml } from '../service';
+import { indent } from '../util';
 
 export type SectionElement = {
   type: 'section';
@@ -8,9 +9,10 @@ export type SectionElement = {
   children?: (ContentElement | undefined)[];
 };
 
-const childToMrml = (input?: ContentElement): string => `<mj-option>${input ? elementToMrml(input) : ''}</mj-option>`;
+const childToMrml = (input: ContentElement | undefined, level: number): string =>
+  `${indent(level, '<mj-column>')}\n${input ? elementToMrml(input, level + 1) : ''}\n${indent(level, '</mj-column>')}`;
 
-export const toMrml = (input: SectionElement): string => {
-  const children = (input.children ?? []).map(childToMrml).join('');
-  return `<mj-section>${children}</mj-section>`;
+export const toMrml = (input: SectionElement, level: number): string => {
+  const children = (input.children ?? []).map((item) => childToMrml(item, level + 1)).join('');
+  return `${indent(level, '<mj-section>')}\n${children}\n${indent(level, '</mj-section>')}`;
 };

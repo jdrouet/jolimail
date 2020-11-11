@@ -2,11 +2,12 @@ import Badge from '@material-ui/core/Badge';
 import IconButton from '@material-ui/core/IconButton';
 import { makeStyles } from '@material-ui/core/styles';
 import Tooltip from '@material-ui/core/Tooltip';
+import DevicesIcon from '@material-ui/icons/Devices';
 import NotificationIcon from '@material-ui/icons/Notifications';
 import SaveIcon from '@material-ui/icons/Save';
 import cn from 'classnames';
 import React, { useCallback, useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import Skeleton from 'src/component/skeleton';
 import { useValidator, validate as validateJsonSchema } from 'src/service/json-schema';
 import { useMRML, validate as validateTemplate } from 'src/service/mrml';
@@ -48,6 +49,7 @@ const getNotificationTooltip = (templateValid: boolean | undefined, attributesVa
 
 const TemplateEditionView: React.FC<any> = () => {
   const classes = useStyles();
+  const history = useHistory();
   const { templateId, versionId } = useParams<LocationParams>();
   const [loading, setLoading] = useState<boolean>(false);
   const [content, setContent] = useState<string>('');
@@ -80,6 +82,10 @@ const TemplateEditionView: React.FC<any> = () => {
       .finally(() => setLoading(false));
   }, [attributes, content, setAttributes, setContent, templateId, versionId]);
 
+  const handleClickDnDEditor = useCallback(() => {
+    history.push(`/templates/${templateId}/versions/${versionId}/wysiwyg`);
+  }, [history, templateId, versionId]);
+
   return (
     <Skeleton
       backButtonVisible
@@ -87,6 +93,15 @@ const TemplateEditionView: React.FC<any> = () => {
       mainClassName={classes.root}
       rightElements={
         <React.Fragment>
+          <Tooltip title="Try the drag and drop editor">
+            <IconButton
+              color="inherit"
+              disabled={loading || !attributesValid || !templateValid}
+              onClick={handleClickDnDEditor}
+            >
+              <DevicesIcon />
+            </IconButton>
+          </Tooltip>
           <Badge color="secondary" overlap="circle" invisible={attributesValid && templateValid} variant="dot">
             <Tooltip title={getNotificationTooltip(templateValid, attributesValid)}>
               <IconButton color="inherit" disabled={attributesValid && templateValid}>
