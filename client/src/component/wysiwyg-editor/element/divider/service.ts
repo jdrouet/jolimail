@@ -1,4 +1,4 @@
-import { toElement } from '../util';
+import { indent, toElement } from '../util';
 
 export type DividerElement = {
   type: 'divider';
@@ -17,4 +17,5 @@ export type DividerElement = {
   };
 };
 
-export const toMrml = (input: DividerElement): string => toElement('mj-divider', input.properties);
+export const toMrml = (input: DividerElement, level: number): string =>
+  indent(level, toElement('mj-divider', input.properties));

@@ -1,4 +1,4 @@
-import { toElement } from '../util';
+import { indent, toElement } from '../util';
 
 export type SpacerElement = {
   type: 'spacer';
@@ -16,4 +16,5 @@ export type SpacerElement = {
   };
 };
 
-export const toMrml = (element: SpacerElement): string => toElement('mj-spacer', element.properties);
+export const toMrml = (element: SpacerElement, level: number): string =>
+  indent(level, toElement('mj-spacer', element.properties));

@@ -75,7 +75,7 @@ export const getTemplateVersion = (id: string, versionId: string): Promise<Templ
   getter(`/api/templates/${id}/versions/${versionId}`);
 
 export const useTemplateVersion = function (templateId?: string, versionId?: string) {
-  return useSwr<string>(
+  return useSwr<TemplateVersion>(
     templateId && versionId ? [`/api/templates/${templateId}/versions/${versionId}`] : null,
     getter,
   );

@@ -1,7 +1,7 @@
 import { Align } from '../../form/align-select';
 import { TextDecoration } from '../../form/text-decoration-select';
 import { TextTransform } from '../../form/text-transform-select';
-import { toElement } from '../util';
+import { indent, toElement } from '../util';
 
 export type TextElement = {
   type: 'text';
@@ -30,5 +30,5 @@ export type TextElement = {
   children?: string;
 };
 
-export const toMrml = (element: TextElement): string =>
-  toElement('mj-text', element.properties, element.children ?? '');
+export const toMrml = (element: TextElement, level: number): string =>
+  indent(level, toElement('mj-text', element.properties, element.children ?? ''));
