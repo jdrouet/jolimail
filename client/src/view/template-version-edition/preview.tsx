@@ -7,6 +7,8 @@ import { useMRML } from '../../service/mrml';
 
 const useStyles = makeStyles(() => ({
   root: {
+    display: 'flex',
+    alignItems: 'stretch',
     height: '100%',
     margin: '0 auto',
     transition: 'all ease-in-out .5s',
