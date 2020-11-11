@@ -1,3 +1,5 @@
+import { toElement } from '../util';
+
 export type DividerElement = {
   type: 'divider';
   properties: {
@@ -14,3 +16,5 @@ export type DividerElement = {
     'width'?: string;
   };
 };
+
+export const toMrml = (input: DividerElement): string => toElement('mj-divider', input.properties);

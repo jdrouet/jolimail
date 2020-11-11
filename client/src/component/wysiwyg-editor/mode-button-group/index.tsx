@@ -11,10 +11,15 @@ export type ModeButtonGroupProps = {
 
 const ModeButtonGroup: React.FC<ModeButtonGroupProps> = ({ onChange, value }) => (
   <ButtonGroup color="primary">
-    <Button disabled={value === 'desktop'} name="desktop" onClick={() => onChange('desktop')}>
+    <Button
+      data-testid="mode-desktop"
+      disabled={value === 'desktop'}
+      name="desktop"
+      onClick={() => onChange('desktop')}
+    >
       Desktop
     </Button>
-    <Button disabled={value === 'mobile'} name="mobile" onClick={() => onChange('mobile')}>
+    <Button data-testid="mode-mobile" disabled={value === 'mobile'} name="mobile" onClick={() => onChange('mobile')}>
       Mobile
     </Button>
   </ButtonGroup>

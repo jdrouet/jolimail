@@ -50,10 +50,10 @@ const EditionOverlay: React.FC<EditionOverlayProps<any>> = ({ className, childre
     <div className={cn(classes.root, className)}>
       {children}
       <div className={classes.overlay}>
-        <IconButton onClick={handleEdit} size="small">
+        <IconButton data-testid="edit" onClick={handleEdit} size="small">
           <CreateIcon />
         </IconButton>
-        <IconButton onClick={handleDelete} size="small">
+        <IconButton data-testid="delete" onClick={handleDelete} size="small">
           <DeleteIcon />
         </IconButton>
       </div>

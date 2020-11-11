@@ -1,3 +1,5 @@
+import { toElement } from '../util';
+
 export type SpacerElement = {
   type: 'spacer';
   properties: {
@@ -13,3 +15,5 @@ export type SpacerElement = {
     'width'?: string;
   };
 };
+
+export const toMrml = (element: SpacerElement): string => toElement('mj-spacer', element.properties);
