@@ -1,4 +1,5 @@
 import { Align } from '../../form/align-select';
+import { toElement } from '../util';
 
 export type ImageElement = {
   type: 'image';
@@ -26,3 +27,5 @@ export type ImageElement = {
     'width'?: string;
   };
 };
+
+export const toMrml = (input: ImageElement): string => toElement('mj-image', input.properties);

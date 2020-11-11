@@ -1,32 +1,22 @@
-import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
 import React from 'react';
+
+import SimpleSelect, { SimpleSelectParentProps } from '../simple-select';
 
 export type TextTransform = 'uppercase' | 'lowercase' | 'capitalize';
 
-export type TextTransformSelectProps = {
-  label?: string;
-  onChange: (value: TextTransform) => any;
-  value?: TextTransform;
-};
+export const OPTIONS = [
+  { label: 'Uppercase', value: 'uppercase' },
+  { label: 'Lowercase', value: 'lowercase' },
+  { label: 'Capitalize', value: 'capitalize' },
+];
 
-const TextTransformSelect: React.FC<TextTransformSelectProps> = ({ onChange, label, value }) => {
-  const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-    onChange(event.target.value as TextTransform);
-  };
-
-  return (
-    <FormControl fullWidth margin="normal">
-      <InputLabel id="align-select-label">{label}</InputLabel>
-      <Select labelId="align-select-label" id="align-select" onChange={handleChange} value={value}>
-        <MenuItem value="uppercase">Uppercase</MenuItem>
-        <MenuItem value="lowercase">Lowercase</MenuItem>
-        <MenuItem value="capitalize">Capitalize</MenuItem>
-      </Select>
-    </FormControl>
-  );
-};
+const TextTransformSelect: React.FC<SimpleSelectParentProps<TextTransform>> = (props) => (
+  <SimpleSelect
+    options={OPTIONS}
+    {...props}
+    label={props.label ?? 'Text transform'}
+    name={props.name ?? 'text-transform'}
+  />
+);
 
 export default TextTransformSelect;

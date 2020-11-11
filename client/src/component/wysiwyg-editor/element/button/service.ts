@@ -2,6 +2,7 @@ import { Align } from '../../form/align-select';
 import { TextDecoration } from '../../form/text-decoration-select';
 import { TextTransform } from '../../form/text-transform-select';
 import { VerticalAlign } from '../../form/vertical-align-select';
+import { toElement } from '../util';
 
 export type ButtonElement = {
   type: 'button';
@@ -41,3 +42,5 @@ export type ButtonElement = {
   };
   children?: string;
 };
+
+export const toMrml = (input: ButtonElement): string => toElement('mj-button', input.properties, input.children ?? '');

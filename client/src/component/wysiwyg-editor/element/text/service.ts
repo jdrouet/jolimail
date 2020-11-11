@@ -1,6 +1,7 @@
 import { Align } from '../../form/align-select';
 import { TextDecoration } from '../../form/text-decoration-select';
 import { TextTransform } from '../../form/text-transform-select';
+import { toElement } from '../util';
 
 export type TextElement = {
   type: 'text';
@@ -29,9 +30,5 @@ export type TextElement = {
   children?: string;
 };
 
-export const toHtml = (element: TextElement) => {
-  const attributes = Object.entries(element.properties)
-    .map((entry) => `${entry[0]}="${entry[1]}"`)
-    .join(' ');
-  return `<mj-text ${attributes}>${element.children}</mj-text>`;
-};
+export const toMrml = (element: TextElement): string =>
+  toElement('mj-text', element.properties, element.children ?? '');
