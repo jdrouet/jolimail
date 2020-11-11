@@ -28,6 +28,7 @@ const useStyles = makeStyles(() => ({
     display: 'flex',
     flexDirection: 'row',
     height: '100vh',
+    paddingBottom: 24,
   },
   grow: {
     flex: 1,
