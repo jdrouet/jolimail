@@ -15,11 +15,11 @@ import React, { useState } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import Skeleton from 'src/component/skeleton';
+import { SectionElement } from 'src/component/wysiwyg-editor/element';
 import ModeButtonGroup, { Mode as EditorMode } from 'src/component/wysiwyg-editor/mode-button-group';
 import PaletteContentButton from 'src/component/wysiwyg-editor/palette-content-button';
 import PaletteSectionButton from 'src/component/wysiwyg-editor/palette-section-button';
 import TemplateDocument from 'src/component/wysiwyg-editor/preview-document';
-import { SectionElement } from 'src/component/wysiwyg-editor/preview-section';
 import { times } from 'src/service/utils';
 
 type LocationParams = {

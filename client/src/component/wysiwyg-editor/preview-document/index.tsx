@@ -4,9 +4,8 @@ import cn from 'classnames';
 import React, { useCallback } from 'react';
 
 import DropZone from '../drop-zone';
+import { Element, PreviewElement, SectionElement } from '../element';
 import { Mode } from '../mode-button-group';
-import PreviewElement, { Element } from '../preview-element';
-import { SectionElement } from '../preview-section';
 
 export type TemplatePreviewProps = {
   className?: string;

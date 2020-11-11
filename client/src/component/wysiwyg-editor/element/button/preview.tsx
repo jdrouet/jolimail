@@ -2,53 +2,13 @@ import { makeStyles } from '@material-ui/core/styles';
 import cn from 'classnames';
 import React, { useState } from 'react';
 
-import { Align } from '../align-select';
-import DialogEditionButton from '../dialog-edition-button';
-import EditionOverlay from '../edition-overlay';
-import { TextDecoration } from '../text-decoration-select';
-import { TextTransform } from '../text-transform-select';
-import { VerticalAlign } from '../vertical-align-select';
+import EditionOverlay from '../../edition-overlay';
+import { Align } from '../../form/align-select';
+import { VerticalAlign } from '../../form/vertical-align-select';
+import DialogEditionButton from './dialog';
+import { ButtonElement } from './service';
 
-export type ButtonElement = {
-  type: 'button';
-  properties: {
-    'align'?: Align;
-    'background-color'?: string;
-    'border'?: string;
-    'border-radius'?: string;
-    'border-bottom'?: string;
-    'border-top'?: string;
-    'border-right'?: string;
-    'border-left'?: string;
-    'color'?: string;
-    'container-background-color'?: string;
-    'css-class'?: string;
-    'font-family'?: string;
-    'font-size'?: string;
-    'font-style'?: string;
-    'font-weight'?: string;
-    'height'?: string;
-    'href'?: string;
-    'inner-padding'?: string;
-    'letter-spacing'?: string;
-    'line-height'?: string;
-    'padding'?: string;
-    'padding-top'?: string;
-    'padding-right'?: string;
-    'padding-bottom'?: string;
-    'padding-left'?: string;
-    'rel'?: string;
-    'target'?: string;
-    'text-align'?: Align;
-    'text-decoration'?: TextDecoration;
-    'text-transform'?: TextTransform;
-    'vertical-align'?: VerticalAlign;
-    'width'?: string;
-  };
-  children?: string;
-};
-
-export type PreviewButtonProps = {
+export type PreviewButtonElementProps = {
   className?: string;
   onChange: (element: ButtonElement) => void;
   onDelete: (element: ButtonElement) => void;
@@ -100,7 +60,7 @@ const useStyles = makeStyles(() => ({
   }),
 }));
 
-const PreviewButton: React.FC<PreviewButtonProps> = ({ className, onChange, onDelete, value }) => {
+export const PreviewButtonElement: React.FC<PreviewButtonElementProps> = ({ className, onChange, onDelete, value }) => {
   const classes = useStyles(value.properties);
   const [open, setOpen] = useState<boolean>(false);
 
@@ -123,5 +83,3 @@ const PreviewButton: React.FC<PreviewButtonProps> = ({ className, onChange, onDe
     </React.Fragment>
   );
 };
-
-export default PreviewButton;

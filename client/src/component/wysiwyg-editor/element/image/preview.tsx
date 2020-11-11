@@ -2,40 +2,13 @@ import { makeStyles } from '@material-ui/core/styles';
 import cn from 'classnames';
 import React, { useState } from 'react';
 
-import { Align } from '../align-select';
-import DialogEditionImage from '../dialog-edition-image';
-import EditionOverlay from '../edition-overlay';
+import EditionOverlay from '../../edition-overlay';
+import DialogEditionImage from './dialog';
+import { ImageElement } from './service';
 
 export const DEFAULT_SRC = 'https://github.com/jdrouet/jolimail/raw/main/client/public/logo192.png';
 
-export type ImageElement = {
-  type: 'image';
-  properties: {
-    'align'?: Align;
-    'alt'?: string;
-    'border'?: string;
-    'border-radius'?: string;
-    'container-background-color'?: string;
-    'css-class'?: string;
-    'fluid-on-mobile'?: string;
-    'height'?: string;
-    'href'?: string;
-    'padding'?: string;
-    'padding-top'?: string;
-    'padding-bottom'?: string;
-    'padding-left'?: string;
-    'padding-right'?: string;
-    'rel'?: string;
-    'src'?: string;
-    'srcset'?: string;
-    'target'?: string;
-    'title'?: string;
-    'usemap'?: string;
-    'width'?: string;
-  };
-};
-
-export type PreviewImageProps = {
+export type PreviewImageElementProps = {
   className?: string;
   onChange: (element: ImageElement) => void;
   onDelete: (element: ImageElement) => void;
@@ -60,7 +33,7 @@ const useStyles = makeStyles(() => ({
   }),
 }));
 
-const PreviewImage: React.FC<PreviewImageProps> = ({ className, onChange, onDelete, value }) => {
+export const PreviewImageElement: React.FC<PreviewImageElementProps> = ({ className, onChange, onDelete, value }) => {
   const classes = useStyles(value['properties']);
   const [open, setOpen] = useState<boolean>(false);
 
@@ -88,5 +61,3 @@ const PreviewImage: React.FC<PreviewImageProps> = ({ className, onChange, onDele
     </React.Fragment>
   );
 };
-
-export default PreviewImage;
