@@ -1,12 +1,14 @@
 import Button from '@material-ui/core/Button';
+import Collapse from '@material-ui/core/Collapse';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import TextField from '@material-ui/core/TextField';
-import React, { useState } from 'react';
+import { makeStyles } from '@material-ui/core/styles';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import AlignSelect from '../../form/align-select';
+import TextInput from '../../form/text-input';
 import { TextElement } from './service';
 
 export type DialogEditionTextProps = {
@@ -16,133 +18,121 @@ export type DialogEditionTextProps = {
   value: TextElement;
 };
 
-const DialogEditionText: React.FC<DialogEditionTextProps> = ({ open, onCancel, onSave, value }) => {
-  const [element, setElement] = useState<TextElement>(value);
+const useStyles = makeStyles(() => ({
+  push: {
+    flex: 1,
+  },
+}));
 
-  const handleChangeChildren = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const children = event.target.value;
+const DialogEditionText: React.FC<DialogEditionTextProps> = ({ open, onCancel, onSave, value }) => {
+  const classes = useStyles();
+  const [element, setElement] = useState<TextElement>(value);
+  const [expanded, setExpanded] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (open) {
+      setExpanded(false);
+    }
+  }, [open, setExpanded]);
+
+  const handleToggle = useCallback(() => setExpanded((value) => !value), [setExpanded]);
+
+  const handleChangeChildren = (children: string) =>
     setElement((item) => ({
       ...item,
       children,
     }));
-  };
 
-  const handleChangeProperty = (key: keyof TextElement['properties']) => (property: string) => {
-    setElement((item) => ({
-      ...item,
-      properties: {
-        ...item.properties,
-        [key]: property,
-      },
-    }));
-  };
-
-  const handleChangePropertyFromInput = (key: keyof TextElement['properties']) => (
-    event: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    const property = event.target.value;
-    setElement((item) => ({
-      ...item,
-      properties: {
-        ...item.properties,
-        [key]: property,
-      },
-    }));
-  };
+  const handleChangeProperty = useCallback(
+    (property: string, name: string) =>
+      setElement((item) => ({
+        ...item,
+        properties: {
+          ...item.properties,
+          [name]: property,
+        },
+      })),
+    [setElement],
+  );
 
   return (
     <Dialog fullWidth maxWidth="sm" open={open} onClose={onCancel} scroll="paper">
       <DialogTitle>Text edition</DialogTitle>
       <DialogContent>
-        <TextField
+        <TextInput
           autoFocus
           label="Content"
-          fullWidth
-          margin="normal"
           multiline
           name="children"
           onChange={handleChangeChildren}
-          value={element.children ?? ''}
+          value={element.children}
         />
-        <AlignSelect
-          label="Align"
-          onChange={handleChangeProperty('align')}
-          value={element.properties.align ?? 'left'}
-        />
-        <TextField
-          label="Color"
-          fullWidth
-          margin="normal"
-          name="color"
-          onChange={handleChangePropertyFromInput('color')}
-          value={element.properties.color ?? '#000000'}
-        />
-        <TextField
-          label="Font Family"
-          fullWidth
-          margin="normal"
-          name="font-family"
-          onChange={handleChangePropertyFromInput('font-family')}
-          value={element.properties['font-family'] ?? 'Ubuntu, Helvetica, Arial, sans-serif'}
-        />
-        <TextField
-          label="Font Size"
-          fullWidth
-          margin="normal"
-          name="font-size"
-          onChange={handleChangePropertyFromInput('font-size')}
-          value={element.properties['font-size'] ?? '13px'}
-        />
-        <TextField
-          label="Font Style"
-          fullWidth
-          margin="normal"
-          name="font-style"
-          onChange={handleChangePropertyFromInput('font-style')}
-          value={element.properties['font-style']}
-        />
-        <TextField
-          label="Font Weight"
-          fullWidth
-          margin="normal"
-          name="font-weight"
-          onChange={handleChangePropertyFromInput('font-weight')}
-          value={element.properties['font-weight']}
-        />
-        <TextField
-          label="Line Height"
-          fullWidth
-          margin="normal"
-          name="line-height"
-          onChange={handleChangePropertyFromInput('line-height')}
-          value={element.properties['line-height']}
-        />
-        <TextField
-          label="Letter Spacing"
-          fullWidth
-          margin="normal"
-          name="letter-spacing"
-          onChange={handleChangePropertyFromInput('letter-spacing')}
-          value={element.properties['letter-spacing']}
-        />
-        <TextField
-          label="Height"
-          fullWidth
-          margin="normal"
-          name="height"
-          onChange={handleChangePropertyFromInput('height')}
-          value={element.properties['height']}
-        />
-        <TextField
-          label="Text Decoration"
-          fullWidth
-          margin="normal"
-          name="text-decoration"
-          onChange={handleChangePropertyFromInput('text-decoration')}
-          value={element.properties['text-decoration']}
-        />
+        <Collapse in={expanded}>
+          <AlignSelect
+            label="Align"
+            name="align"
+            onChange={handleChangeProperty}
+            value={element.properties.align ?? 'left'}
+          />
+          <TextInput
+            label="Color"
+            name="color"
+            onChange={handleChangeProperty}
+            value={element.properties.color ?? '#000000'}
+          />
+          <TextInput
+            label="Font Family"
+            name="font-family"
+            onChange={handleChangeProperty}
+            value={element.properties['font-family'] ?? 'Ubuntu, Helvetica, Arial, sans-serif'}
+          />
+          <TextInput
+            label="Font Size"
+            name="font-size"
+            onChange={handleChangeProperty}
+            value={element.properties['font-size'] ?? '13px'}
+          />
+          <TextInput
+            label="Font Style"
+            name="font-style"
+            onChange={handleChangeProperty}
+            value={element.properties['font-style']}
+          />
+          <TextInput
+            label="Font Weight"
+            name="font-weight"
+            onChange={handleChangeProperty}
+            value={element.properties['font-weight']}
+          />
+          <TextInput
+            label="Line Height"
+            name="line-height"
+            onChange={handleChangeProperty}
+            value={element.properties['line-height']}
+          />
+          <TextInput
+            label="Letter Spacing"
+            name="letter-spacing"
+            onChange={handleChangeProperty}
+            value={element.properties['letter-spacing']}
+          />
+          <TextInput
+            label="Height"
+            name="height"
+            onChange={handleChangeProperty}
+            value={element.properties['height']}
+          />
+          <TextInput
+            label="Text Decoration"
+            name="text-decoration"
+            onChange={handleChangeProperty}
+            value={element.properties['text-decoration']}
+          />
+        </Collapse>
       </DialogContent>
       <DialogActions>
+        <Button onClick={handleToggle}>{expanded ? 'Less options' : 'More options'}</Button>
+        <div className={classes.push} />
         <Button onClick={onCancel} color="primary">
           Cancel
         </Button>

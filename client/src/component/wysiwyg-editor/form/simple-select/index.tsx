@@ -8,8 +8,8 @@ export type SimpleSelectOption<T> = { label: string; value: T };
 
 export type SimpleSelectParentProps<T> = {
   label?: string;
-  name?: string;
-  onChange: (value: T) => any;
+  name: string;
+  onChange: (value: T, name: string) => any;
   value?: T;
 };
 
@@ -19,7 +19,7 @@ export type SimpleSelectProps<T> = SimpleSelectParentProps<T> & {
 
 const SimpleSelect: React.FC<SimpleSelectProps<any>> = ({ label, name, onChange, options, value }) => {
   const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-    onChange(event.target.value as string);
+    onChange(event.target.value as string, name);
   };
 
   const labelId = `${name}-label`;

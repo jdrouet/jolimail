@@ -3,10 +3,10 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import TextField from '@material-ui/core/TextField';
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 
 import AlignSelect from '../../form/align-select';
+import TextInput from '../../form/text-input';
 import { ImageElement } from './service';
 
 export type DialogEditionImageProps = {
@@ -19,145 +19,85 @@ export type DialogEditionImageProps = {
 const DialogEditionImage: React.FC<DialogEditionImageProps> = ({ open, onCancel, onSave, value }) => {
   const [element, setElement] = useState<ImageElement>(value);
 
-  const handleChangeProperty = (key: keyof ImageElement['properties']) => (property: string) => {
-    setElement((item) => ({
-      ...item,
-      properties: {
-        ...item.properties,
-        [key]: property,
-      },
-    }));
-  };
-
-  const handleChangePropertyFromInput = (key: keyof ImageElement['properties']) => (
-    event: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    const property = event.target.value;
-    handleChangeProperty(key)(property);
-  };
+  const handleChangeProperty = useCallback(
+    (property: string, name: string) => {
+      setElement((item) => ({
+        ...item,
+        properties: {
+          ...item.properties,
+          [name]: property,
+        },
+      }));
+    },
+    [setElement],
+  );
 
   return (
     <Dialog fullWidth maxWidth="sm" open={open} onClose={onCancel}>
       <DialogTitle>Image edition</DialogTitle>
       <DialogContent>
-        <TextField
-          autoFocus
-          label="Source"
-          fullWidth
-          margin="normal"
-          onChange={handleChangePropertyFromInput('src')}
-          value={element.properties.src ?? ''}
-        />
+        <TextInput autoFocus label="Source" name="src" onChange={handleChangeProperty} value={element.properties.src} />
         <AlignSelect
           label="Align"
-          onChange={handleChangeProperty('align')}
+          name="align"
+          onChange={handleChangeProperty}
           value={element.properties.align ?? 'center'}
         />
-        <TextField
-          label="Alt"
-          fullWidth
-          margin="normal"
-          onChange={handleChangePropertyFromInput('alt')}
-          value={element.properties.alt ?? ''}
-        />
-        <TextField
-          label="Border"
-          fullWidth
-          margin="normal"
-          onChange={handleChangePropertyFromInput('border')}
-          value={element.properties.border ?? ''}
-        />
-        <TextField
+        <TextInput label="Alt" name="alt" onChange={handleChangeProperty} value={element.properties.alt} />
+        <TextInput label="Border" name="border" onChange={handleChangeProperty} value={element.properties.border} />
+        <TextInput
           label="Border radius"
-          fullWidth
-          margin="normal"
-          onChange={handleChangePropertyFromInput('border-radius')}
+          name="border-radius"
+          onChange={handleChangeProperty}
           value={element.properties['border-radius'] ?? 'none'}
         />
-        <TextField
+        <TextInput
           label="Container background color"
-          fullWidth
-          margin="normal"
-          onChange={handleChangePropertyFromInput('container-background-color')}
-          value={element.properties['container-background-color'] ?? ''}
+          name="container-background-color"
+          onChange={handleChangeProperty}
+          value={element.properties['container-background-color']}
         />
-        <TextField
+        <TextInput
           label="CSS class"
-          fullWidth
-          margin="normal"
-          onChange={handleChangePropertyFromInput('css-class')}
-          value={element.properties['css-class'] ?? ''}
+          name="css-class"
+          onChange={handleChangeProperty}
+          value={element.properties['css-class']}
         />
-        <TextField
-          label="Height"
-          fullWidth
-          margin="normal"
-          onChange={handleChangePropertyFromInput('height')}
-          value={element.properties['height'] ?? ''}
-        />
-        <TextField
-          label="Href"
-          fullWidth
-          margin="normal"
-          onChange={handleChangePropertyFromInput('href')}
-          value={element.properties['href'] ?? ''}
-        />
-        <TextField
+        <TextInput label="Height" name="height" onChange={handleChangeProperty} value={element.properties['height']} />
+        <TextInput label="Href" name="href" onChange={handleChangeProperty} value={element.properties['href']} />
+        <TextInput
           label="Padding"
-          fullWidth
-          margin="normal"
-          onChange={handleChangePropertyFromInput('padding')}
+          name="padding"
+          onChange={handleChangeProperty}
           value={element.properties['padding'] ?? '10px 25px'}
         />
-        <TextField
+        <TextInput
           label="Padding Top"
-          fullWidth
-          margin="normal"
-          onChange={handleChangePropertyFromInput('padding-top')}
-          value={element.properties['padding-top'] ?? ''}
+          name="padding-top"
+          onChange={handleChangeProperty}
+          value={element.properties['padding-top']}
         />
-        <TextField
+        <TextInput
           label="Padding Right"
-          fullWidth
-          margin="normal"
-          onChange={handleChangePropertyFromInput('padding-right')}
-          value={element.properties['padding-right'] ?? ''}
+          name="padding-right"
+          onChange={handleChangeProperty}
+          value={element.properties['padding-right']}
         />
-        <TextField
+        <TextInput
           label="Padding Bottom"
-          fullWidth
-          margin="normal"
-          onChange={handleChangePropertyFromInput('padding-bottom')}
-          value={element.properties['padding-bottom'] ?? ''}
+          name="padding-bottom"
+          onChange={handleChangeProperty}
+          value={element.properties['padding-bottom']}
         />
-        <TextField
+        <TextInput
           label="Padding Left"
-          fullWidth
-          margin="normal"
-          onChange={handleChangePropertyFromInput('padding-left')}
-          value={element.properties['padding-left'] ?? ''}
+          name="padding-left"
+          onChange={handleChangeProperty}
+          value={element.properties['padding-left']}
         />
-        <TextField
-          label="Rel"
-          fullWidth
-          margin="normal"
-          onChange={handleChangePropertyFromInput('rel')}
-          value={element.properties['rel'] ?? ''}
-        />
-        <TextField
-          label="Title"
-          fullWidth
-          margin="normal"
-          onChange={handleChangePropertyFromInput('title')}
-          value={element.properties['title'] ?? ''}
-        />
-        <TextField
-          label="Width"
-          fullWidth
-          margin="normal"
-          onChange={handleChangePropertyFromInput('width')}
-          value={element.properties['width'] ?? ''}
-        />
+        <TextInput label="Rel" name="rel" onChange={handleChangeProperty} value={element.properties['rel']} />
+        <TextInput label="Title" name="title" onChange={handleChangeProperty} value={element.properties['title']} />
+        <TextInput label="Width" name="width" onChange={handleChangeProperty} value={element.properties['width']} />
       </DialogContent>
       <DialogActions>
         <Button onClick={onCancel} color="primary">
