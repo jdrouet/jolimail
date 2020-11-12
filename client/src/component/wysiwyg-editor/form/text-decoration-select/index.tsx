@@ -4,6 +4,8 @@ import SimpleSelect, { SimpleSelectParentProps } from '../simple-select';
 
 export type TextDecoration = 'underline' | 'overline' | 'line-through' | 'none';
 
+export type TextDecorationSelectProps = SimpleSelectParentProps<TextDecoration>;
+
 export const OPTIONS = [
   { label: 'Underline', value: 'underline' },
   { label: 'Overline', value: 'overline' },
@@ -11,7 +13,7 @@ export const OPTIONS = [
   { label: 'None', value: 'none' },
 ];
 
-const TextDecorationSelect: React.FC<SimpleSelectParentProps<TextDecoration>> = (props) => (
+const TextDecorationSelect: React.FC<TextDecorationSelectProps> = (props) => (
   <SimpleSelect
     options={OPTIONS}
     {...props}
