@@ -20,7 +20,7 @@ regex = "1"
 serde = { features = ["derive"], version = "1.0" }
 serde_json = { version = "1.0" }
 slug = "0.1"
-sqlformat = "=0.1.1"
+sqlformat = "=0.1.4"
 sqlx = { version = "0.4.1", default-features = false, features = [ "runtime-actix-rustls", "macros", "postgres", "uuid", "chrono", "json", "tls" ] }
 tokio = { version = "0.2", features = ["full"] }
 uuid = { version = "0.8", features = ["serde"] }
