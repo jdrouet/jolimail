@@ -19,7 +19,7 @@ dev-coverage:
 	MIGRATION_PATH=./migrations DATABASE_HOST=localhost DATABASE_USER=postgres DATABASE_DBNAME=postgres cargo tarpaulin --out Lcov
 
 dev-test:
-	MIGRATION_PATH=./migrations DATABASE_HOST=localhost DATABASE_USER=postgres DATABASE_DBNAME=postgres cargo test
+	MIGRATION_PATH=./migrations DATABASE_HOST=localhost DATABASE_USER=postgres DATABASE_DBNAME=postgres cargo test ${FILTER}
 
 install-rustfmt:
 	rustup component add rustfmt
