@@ -19,7 +19,7 @@ We used to work with products like [sendgrid](https://sendgrid.com/),
 
 But they have many disadvantages :
 
-- Most of them are not really transactionnal oriented, and users complain that their login emails take a long time to arrive.
+- Most of them are not really transactional oriented, and users complain that their login emails take a long time to arrive.
 - You cannot host it nor use it on premise
 - It's American, with the patriot act, they are able to access your users data.
 - They usually don't have templating tools for our non tech coworkers that ask us to change a wording every 2 days.
@@ -30,7 +30,7 @@ But they have many disadvantages :
 Jolimail is a simple application that allows you to create your email templates directly in the browser and have a preview.
 
 You can start it in different ways but we recommend using Docker if you are on a amd64, i386 or arm64 architecture.
-By doing the following, you'll be able to have a running jolimail server that will provide your email tempalte, a [catapulte](https://github.com/jdrouet/catapulte) instance and a [fake smtp server](https://github.com/ReachFive/fake-smtp-server).
+By doing the following, you'll be able to have a running jolimail server that will provide your email template, a [catapulte](https://github.com/jdrouet/catapulte) instance and a [fake smtp server](https://github.com/ReachFive/fake-smtp-server).
 
 ```bash
 git clone https://github.com/jdrouet/jolimail.git
@@ -48,7 +48,7 @@ You can also deploy it on Heroku with the following button
 
 ## Should you use it?
 
-If, like us, you didn't find any good way of doing transactionnal emails, then Yes!
+If, like us, you didn't find any good way of doing transactional emails, then Yes!
 
 ## Why you should use it :
 
