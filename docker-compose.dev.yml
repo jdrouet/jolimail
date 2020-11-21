@@ -11,7 +11,7 @@ services:
       - 5432:5432
 
   mailer:
-    image: jdrouet/catapulte:beta
+    image: jdrouet/catapulte:latest
     ports:
       - 3010:3000
 
