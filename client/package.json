@@ -87,7 +87,7 @@
     "@types/react-dom": "^16.9.9",
     "@types/react-router-dom": "^5.1.6",
     "@types/react-syntax-highlighter": "^13.5.0",
-    "fetch-mock": "^9.10.7",
+    "fetch-mock": "^9.11.0",
     "import-sort-style-module": "^6.0.0",
     "jest-environment-jsdom-sixteen": "^1.0.3",
     "monaco-editor-webpack-plugin": "^2.0.0",
