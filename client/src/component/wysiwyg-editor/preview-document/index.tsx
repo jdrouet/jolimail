@@ -19,8 +19,8 @@ const useStyles = makeStyles(() => ({
   root: {
     transition: 'all ease-in .5s',
   },
-  mobile: (breakpoint: number) => ({
-    maxWidth: breakpoint,
+  mobile: (props: { breakpoint: number }) => ({
+    maxWidth: props.breakpoint,
     width: '100%',
     height: 640,
   }),
@@ -37,7 +37,7 @@ const TemplatePreview: React.FC<TemplatePreviewProps> = ({
   onChange,
   elements,
 }) => {
-  const classes = useStyles(breakpoint);
+  const classes = useStyles({ breakpoint });
 
   const handleChange = (index: number) => (element: Element) => {
     const changed = elements.map((elt, idx) => {
