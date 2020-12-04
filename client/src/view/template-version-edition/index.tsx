@@ -94,13 +94,15 @@ const TemplateEditionView: React.FC<any> = () => {
       rightElements={
         <React.Fragment>
           <Tooltip title="Try the drag and drop editor">
-            <IconButton
-              color="inherit"
-              disabled={loading || !attributesValid || !templateValid}
-              onClick={handleClickDnDEditor}
-            >
-              <DevicesIcon />
-            </IconButton>
+            <Badge color="secondary" badgeContent="Beta" overlap="circle">
+              <IconButton
+                color="inherit"
+                disabled={loading || !attributesValid || !templateValid}
+                onClick={handleClickDnDEditor}
+              >
+                <DevicesIcon />
+              </IconButton>
+            </Badge>
           </Tooltip>
           <Badge color="secondary" overlap="circle" invisible={attributesValid && templateValid} variant="dot">
             <Tooltip title={getNotificationTooltip(templateValid, attributesValid)}>
