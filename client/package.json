@@ -71,7 +71,7 @@
     "swr": "^0.3.9"
   },
   "devDependencies": {
-    "@storybook/addon-actions": "^6.1.9",
+    "@storybook/addon-actions": "^6.1.10",
     "@storybook/addon-knobs": "^6.1.9",
     "@storybook/addon-links": "^6.1.9",
     "@storybook/addons": "^6.1.9",
