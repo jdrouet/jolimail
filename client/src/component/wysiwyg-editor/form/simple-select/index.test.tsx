@@ -13,9 +13,9 @@ it('should toggle to mobile', async () => {
   const { container } = render(
     <SimpleSelect label="Example" name="example" onChange={handleChange} options={options} value="first" />,
   );
-  const label = await findByText(container, 'Example');
+  const label = await findByText(container as HTMLElement, 'Example');
   expect(label).toBeVisible();
-  const select = await findByRole(container, 'button');
+  const select = await findByRole(container as HTMLElement, 'button');
   fireEvent.click(select);
   // TODO find a way to test popover
 });

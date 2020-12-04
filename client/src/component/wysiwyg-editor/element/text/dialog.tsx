@@ -7,7 +7,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import { makeStyles } from '@material-ui/core/styles';
 import React, { useCallback, useEffect, useState } from 'react';
 
-import AlignSelect from '../../form/align-select';
+import AbstractInput from '../../form/abstract-input';
 import TextInput from '../../form/text-input';
 import { TextElement } from './service';
 
@@ -68,61 +68,71 @@ const DialogEditionText: React.FC<DialogEditionTextProps> = ({ open, onCancel, o
           value={element.children}
         />
         <Collapse in={expanded}>
-          <AlignSelect
+          <AbstractInput
             label="Align"
             name="align"
+            type="align"
             onChange={handleChangeProperty}
             value={element.properties.align ?? 'left'}
           />
-          <TextInput
+          <AbstractInput
             label="Color"
             name="color"
+            type="text"
             onChange={handleChangeProperty}
             value={element.properties.color ?? '#000000'}
           />
-          <TextInput
+          <AbstractInput
             label="Font Family"
             name="font-family"
             onChange={handleChangeProperty}
+            type="text"
             value={element.properties['font-family'] ?? 'Ubuntu, Helvetica, Arial, sans-serif'}
           />
-          <TextInput
+          <AbstractInput
             label="Font Size"
             name="font-size"
             onChange={handleChangeProperty}
+            type="text"
             value={element.properties['font-size'] ?? '13px'}
           />
-          <TextInput
+          <AbstractInput
             label="Font Style"
             name="font-style"
             onChange={handleChangeProperty}
+            type="text"
             value={element.properties['font-style']}
           />
-          <TextInput
+          <AbstractInput
+            type="text"
             label="Font Weight"
             name="font-weight"
             onChange={handleChangeProperty}
             value={element.properties['font-weight']}
           />
-          <TextInput
+          <AbstractInput
+            type="text"
             label="Line Height"
             name="line-height"
             onChange={handleChangeProperty}
             value={element.properties['line-height']}
           />
-          <TextInput
+          <AbstractInput
+            type="text"
             label="Letter Spacing"
             name="letter-spacing"
             onChange={handleChangeProperty}
             value={element.properties['letter-spacing']}
           />
-          <TextInput
+          <AbstractInput
+            type="text"
             label="Height"
             name="height"
             onChange={handleChangeProperty}
             value={element.properties['height']}
           />
-          <TextInput
+          <AbstractInput
+            type="text-decoration"
             label="Text Decoration"
             name="text-decoration"
             onChange={handleChangeProperty}

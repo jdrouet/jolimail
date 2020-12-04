@@ -23,7 +23,7 @@ const TextInput: React.FC<TextInputProps> = ({ autoFocus, label, multiline, name
   return (
     <TextField
       autoFocus={autoFocus}
-      data-testId={testId}
+      data-testid={testId}
       label={label}
       fullWidth
       margin="normal"
