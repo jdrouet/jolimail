@@ -12,7 +12,7 @@ it('call callbacks', async () => {
       <div>content</div>
     </EditionOverlay>,
   );
-  const content = await findByText(container, 'content');
+  const content = await findByText(container as HTMLElement, 'content');
   expect(content).toBeVisible();
   fireEvent.mouseOver(content);
 });

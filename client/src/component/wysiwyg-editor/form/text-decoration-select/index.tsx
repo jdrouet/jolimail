@@ -1,12 +1,12 @@
 import React from 'react';
 
-import SimpleSelect, { SimpleSelectParentProps } from '../simple-select';
+import SimpleSelect, { SimpleSelectOption, SimpleSelectParentProps } from '../simple-select';
 
 export type TextDecoration = 'underline' | 'overline' | 'line-through' | 'none';
 
 export type TextDecorationSelectProps = SimpleSelectParentProps<TextDecoration>;
 
-export const OPTIONS = [
+export const OPTIONS: SimpleSelectOption<TextDecoration>[] = [
   { label: 'Underline', value: 'underline' },
   { label: 'Overline', value: 'overline' },
   { label: 'Line Through', value: 'line-through' },
@@ -19,6 +19,7 @@ const TextDecorationSelect: React.FC<TextDecorationSelectProps> = (props) => (
     {...props}
     label={props.label ?? 'Text Decoration'}
     name={props.name ?? 'text-decoration'}
+    value={props.value ?? 'none'}
   />
 );
 

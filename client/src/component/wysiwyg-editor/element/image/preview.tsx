@@ -28,8 +28,8 @@ const useStyles = makeStyles(() => ({
     paddingLeft: props['padding-left'],
   }),
   element: (props: ImageElement['properties']) => ({
-    height: props.height,
-    width: props.width,
+    height: props.height ?? 'auto',
+    width: props.width ?? '100%',
   }),
 }));
 

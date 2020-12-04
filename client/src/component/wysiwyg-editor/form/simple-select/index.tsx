@@ -4,22 +4,22 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import React from 'react';
 
-export type SimpleSelectOption<T> = { label: string; value: T };
+export type SimpleSelectOption<T extends string> = { label: string; value: T };
 
-export type SimpleSelectParentProps<T> = {
+export type SimpleSelectParentProps<T extends string> = {
   label?: string;
   name: string;
   onChange: (value: T, name: string) => any;
   value?: T;
 };
 
-export type SimpleSelectProps<T> = SimpleSelectParentProps<T> & {
+export type SimpleSelectProps<T extends string> = SimpleSelectParentProps<T> & {
   options: SimpleSelectOption<T>[];
 };
 
-const SimpleSelect: React.FC<SimpleSelectProps<any>> = ({ label, name, onChange, options, value }) => {
+const SimpleSelect = function <T extends string>({ label, name, onChange, options, value }: SimpleSelectProps<T>) {
   const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-    onChange(event.target.value as string, name);
+    onChange(event.target.value as T, name);
   };
 
   const labelId = `${name}-label`;
