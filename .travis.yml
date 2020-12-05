@@ -4,6 +4,10 @@ rust: stable
 
 cache: cargo
 
+branches:
+  except:
+    - /^dependabot\/.*/
+
 env:
   global:
     - RUST_LOG=info
