@@ -1,0 +1,35 @@
+stages:
+  - lint
+  - test
+
+client-lint:
+  stage: lint
+  image: node:lts
+  script:
+    - make -C client lint
+
+server-lint:
+  stage: lint
+  image: rust:latest
+  before_script:
+    - rustup component add rustfmt
+  script:
+    - make -C server ci-lint
+
+client-test:
+  stage: test
+  image: node:lts
+  script:
+    - make -C client ci-coverage
+
+server-test:
+  stage: test
+  image: rust:latest
+  variables:
+    POSTGRES_HOST_AUTH_METHOD: trust
+  services:
+    - name: postgres:12-alpine
+      alias: postgres
+  script:
+    - make -C server install-tarpaulin
+    - make -C server ci-coverage
