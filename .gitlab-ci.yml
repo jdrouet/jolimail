@@ -27,7 +27,7 @@ server-test:
   image: rust:latest
   variables:
     RUST_LOG: info
-    DATABASE_HOST: localhost
+    DATABASE_HOST: postgres
     DATABASE_USER: postgres
     DATABASE_DBNAME: postgres
     MIGRATION_PATH: migrations
