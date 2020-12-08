@@ -26,6 +26,12 @@ server-test:
   stage: test
   image: rust:latest
   variables:
+    RUST_LOG: info
+    DATABASE_HOST: localhost
+    DATABASE_USER: postgres
+    DATABASE_DBNAME: postgres
+    MIGRATION_PATH: migrations
+    TEST_MIGRATION_PATH: migrations
     POSTGRES_HOST_AUTH_METHOD: trust
   services:
     - name: postgres:12-alpine
