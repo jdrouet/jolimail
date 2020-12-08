@@ -24,7 +24,7 @@ client-test:
 
 server-test:
   stage: test
-  image: rust:latest
+  image: xd009642/tarpaulin
   variables:
     RUST_LOG: info
     DATABASE_HOST: postgres
@@ -37,5 +37,4 @@ server-test:
     - name: postgres:12-alpine
       alias: postgres
   script:
-    - make -C server install-tarpaulin
     - make -C server ci-coverage
