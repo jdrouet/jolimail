@@ -4,7 +4,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import cn from 'classnames';
 import React from 'react';
-import SyntaxHighlighter from 'react-syntax-highlighter';
 import { Template, TemplateVersion, useSettings } from 'src/service/server';
 
 const useStyles = makeStyles(() => ({
@@ -51,11 +50,9 @@ const TemplateUsageCardlet: React.FC<TemplateCardletProps> = ({ className, templ
               </a>
               , you just need a simple http request
             </Typography>
-            <SyntaxHighlighter language="bash">
-              {buildCurlCatapulte(settings.exampleCatapulteBaseUrl, template)}
-            </SyntaxHighlighter>
+            <pre>{buildCurlCatapulte(settings.exampleCatapulteBaseUrl, template)}</pre>
             <Typography>If you just want to download the template, you also need a simple http request</Typography>
-            <SyntaxHighlighter language="bash">{buildCurlJolimail(window.location.origin, template)}</SyntaxHighlighter>
+            <pre>{buildCurlJolimail(window.location.origin, template)}</pre>
           </React.Fragment>
         ) : (
           <Typography>
