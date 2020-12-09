@@ -2,6 +2,16 @@ stages:
   - lint
   - test
 
+commit-lint:
+  stage: lint
+  image: aevea/commitsar
+  except:
+    refs:
+      - main
+  script:
+    - git fetch origin main
+    - commitsar main...HEAD
+
 client-lint:
   stage: lint
   image: node:lts
