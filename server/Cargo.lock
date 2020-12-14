@@ -1256,9 +1256,9 @@ dependencies = [
 
 [[package]]
 name = "jsonschema"
-version = "0.4.1"
+version = "0.4.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "91849ce5f3f30a11120cffb0af6e00e94c9c62cbb0e9b114ff54b060ab53e962"
+checksum = "ac7b43b3d52aca7f527dbadc06ca928a212a463ad0c29a2af960300329cdfca2"
 dependencies = [
  "base64 0.13.0",
  "chrono",
@@ -1266,7 +1266,6 @@ dependencies = [
  "lazy_static",
  "num-cmp",
  "parking_lot",
- "paste",
  "percent-encoding",
  "rayon",
  "regex",
@@ -1652,12 +1651,6 @@ dependencies = [
  "smallvec",
  "winapi 0.3.9",
 ]
-
-[[package]]
-name = "paste"
-version = "1.0.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7151b083b0664ed58ed669fcdd92f01c3d2fdbf10af4931a301474950b52bfa9"
 
 [[package]]
 name = "percent-encoding"
