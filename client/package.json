@@ -67,7 +67,7 @@
     "react-dom": "^17.0.1",
     "react-monaco-editor": "^0.41.1",
     "react-router-dom": "^5.2.0",
-    "swr": "^0.3.9"
+    "swr": "^0.3.11"
   },
   "devDependencies": {
     "@storybook/addon-actions": "^6.1.11",
