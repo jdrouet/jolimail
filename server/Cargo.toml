@@ -15,7 +15,7 @@ chrono = { version = "0.4.19", features = ["serde"] }
 env_logger = "0.8.1"
 jsonschema = "0.4.3"
 lazy_static = "1.4.0"
-log = "0.4.13"
+log = "0.4.14"
 regex = "1.4.3"
 serde = { features = ["derive"], version = "1.0.123" }
 serde_json = { version = "1.0.61" }
