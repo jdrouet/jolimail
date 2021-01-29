@@ -53,7 +53,7 @@
     ]
   },
   "dependencies": {
-    "@material-ui/core": "^4.11.2",
+    "@material-ui/core": "^4.11.3",
     "@material-ui/icons": "^4.11.2",
     "@material-ui/lab": "^4.0.0-alpha.57",
     "ajv": "^6.12.6",
@@ -70,7 +70,7 @@
     "swr": "^0.4.0"
   },
   "devDependencies": {
-    "@storybook/addon-actions": "^6.1.14",
+    "@storybook/addon-actions": "^6.1.15",
     "@storybook/addon-knobs": "^6.1.15",
     "@storybook/addon-links": "^6.1.14",
     "@storybook/addons": "^6.1.14",
