@@ -20,7 +20,7 @@ regex = "1.4.3"
 serde = { features = ["derive"], version = "1.0.123" }
 serde_json = { version = "1.0.61" }
 slug = "0.1.4"
-sqlx = { version = "0.4.2", default-features = false, features = [
+sqlx = { version = "0.5.1", default-features = false, features = [
   "runtime-actix-rustls",
   "macros",
   "postgres",
