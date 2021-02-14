@@ -14,10 +14,6 @@ RUN npm run build
 
 FROM rust:1-slim-buster AS server-builder
 
-RUN apt-get update -y \
-  && apt-get install -y curl make pkg-config libssl-dev \
-  && rm -rf /var/lib/apt/lists/*
-
 ENV USER=root
 
 WORKDIR /code
@@ -37,10 +33,6 @@ LABEL org.label-schema.vcs-url="https://jolimail.io"
 LABEL org.label-schema.url="https://github.com/jdrouet/jolimail"
 LABEL org.label-schema.description="Web application providing a place to build and preview your templates"
 LABEL maintaner="Jeremie Drouet <jeremie.drouet@gmail.com>"
-
-RUN apt-get update \
-  && apt-get install -y ca-certificates libssl1.1 \
-  && rm -rf /var/lib/apt/lists/*
 
 ENV ADDRESS=0.0.0.0
 ENV CLIENT_PATH=/client
