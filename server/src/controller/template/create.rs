@@ -10,7 +10,7 @@ pub async fn handler(
 ) -> Result<HttpResponse, ServerError> {
     let pool: &Pool = &pool;
     let template = body.save(pool).await?;
-    Ok(HttpResponse::Ok().json(template))
+    Ok(HttpResponse::Ok().json(&template))
 }
 
 #[cfg(test)]

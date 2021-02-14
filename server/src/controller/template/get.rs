@@ -11,7 +11,7 @@ pub async fn handler(
 ) -> Result<HttpResponse, ServerError> {
     let pool: &Pool = &pool;
     match Template::find_by_id(pool, &template_id).await? {
-        Some(template) => Ok(HttpResponse::Ok().json(template)),
+        Some(template) => Ok(HttpResponse::Ok().json(&template)),
         None => Err(ServerError::NotFound(format!(
             "unable to find template with id {}",
             template_id

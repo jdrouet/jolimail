@@ -39,7 +39,7 @@ pub async fn handler(
     )
     .save(pool)
     .await?;
-    Ok(HttpResponse::Ok().json(created))
+    Ok(HttpResponse::Ok().json(&created))
 }
 
 #[cfg(test)]
