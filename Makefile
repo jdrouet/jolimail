@@ -1,5 +1,14 @@
 TARGET_PLATFORM?=linux/amd64,linux/386,linux/arm64,linux/arm/v7
 
+build-alpine:
+	docker build \
+		--file alpine.Dockerfile \
+		--tag jdrouet/jolimail:${VERSION}-alpine \
+		--tag jdrouet/jolimail:alpine \
+		--label org.label-schema.version=${VERSION} \
+		--label org.label-schema.vcs-ref=${shell git rev-parse --short HEAD} \
+		.
+
 publish:
 	docker buildx build --push \
 		--file multiarch.Dockerfile \
