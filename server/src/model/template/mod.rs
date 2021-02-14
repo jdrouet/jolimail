@@ -1,8 +1,8 @@
 use crate::error::ServerError;
 use chrono::prelude::*;
 use serde::{Deserialize, Serialize};
-use sqlx::postgres::{PgDone, PgRow};
-use sqlx::{Done, Row};
+use sqlx::postgres::{PgQueryResult, PgRow};
+use sqlx::Row;
 use uuid::Uuid;
 
 pub mod content;
@@ -100,7 +100,7 @@ impl Template {
     where
         X: sqlx::Executor<'a, Database = sqlx::Postgres>,
     {
-        let result: PgDone = sqlx::query(DELETE_BY_ID).bind(id).execute(conn).await?;
+        let result: PgQueryResult = sqlx::query(DELETE_BY_ID).bind(id).execute(conn).await?;
         Ok(result.rows_affected())
     }
 }

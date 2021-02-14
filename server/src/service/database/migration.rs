@@ -242,7 +242,7 @@ pub mod tests {
         assert_ne!(migrator.scripts.len(), 0);
     }
 
-    #[tokio::test]
+    #[actix_rt::test]
     #[serial]
     async fn run_up_down() {
         std::env::set_var("DATABASE_USER", "postgres");

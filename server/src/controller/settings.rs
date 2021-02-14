@@ -26,7 +26,8 @@ impl Default for Settings {
 
 #[get("/api/settings")]
 pub async fn handler() -> Result<HttpResponse, ServerError> {
-    Ok(HttpResponse::Ok().json(SETTINGS.clone()))
+    let settings: &Settings = &SETTINGS;
+    Ok(HttpResponse::Ok().json(&settings))
 }
 
 #[cfg(test)]

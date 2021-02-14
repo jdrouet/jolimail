@@ -2,8 +2,7 @@ use crate::error::ServerError;
 use chrono::prelude::*;
 use serde::{Deserialize, Serialize};
 use serde_json::Value as JsonValue;
-use sqlx::postgres::PgDone;
-use sqlx::Done;
+use sqlx::postgres::PgQueryResult;
 use uuid::Uuid;
 
 pub mod create;
@@ -94,7 +93,7 @@ impl TemplateVersion {
         X: sqlx::Executor<'a, Database = sqlx::Postgres>,
     {
         debug!("delete template versions by id {}", version_id);
-        let result: PgDone = sqlx::query(DELETE_BY_ID)
+        let result: PgQueryResult = sqlx::query(DELETE_BY_ID)
             .bind(template_id)
             .bind(version_id)
             .execute(conn)

@@ -7,10 +7,10 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-actix-files = "0.5.0"
-actix-http = "2.2.0"
-actix-web = "3.3.2"
-actix-rt = "1.1.1"
+actix-files = "0.6.0-beta.2"
+actix-http = "3.0.0-beta.3"
+actix-web = "4.0.0-beta.3"
+actix-rt = "2.0.2"
 chrono = { version = "0.4.19", features = ["serde"] }
 env_logger = "0.8.1"
 jsonschema = "0.4.3"
@@ -20,7 +20,7 @@ regex = "1.4.3"
 serde = { features = ["derive"], version = "1.0.123" }
 serde_json = { version = "1.0.61" }
 slug = "0.1.4"
-sqlx = { version = "0.4.2", default-features = false, features = [
+sqlx = { version = "0.5.1", default-features = false, features = [
   "runtime-actix-rustls",
   "macros",
   "postgres",
@@ -30,6 +30,9 @@ sqlx = { version = "0.4.2", default-features = false, features = [
   "tls",
 ] }
 uuid = { version = "0.8.2", features = ["serde"] }
+
+# Fix build in docker
+funty = "=1.1.0"
 
 [dev-dependencies]
 env-test-util = "1.0.1"

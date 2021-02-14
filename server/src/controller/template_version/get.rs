@@ -7,14 +7,14 @@ use uuid::Uuid;
 #[get("/api/templates/{template_id}/versions/{version_id}")]
 pub async fn handler(
     pool: web::Data<Pool>,
-    web::Path((template_id, version_id)): web::Path<(Uuid, Uuid)>,
+    params: web::Path<(Uuid, Uuid)>,
 ) -> Result<HttpResponse, ServerError> {
     let pool: &Pool = &pool;
-    match TemplateVersion::find_by_id(pool, &template_id, &version_id).await? {
-        Some(result) => Ok(HttpResponse::Ok().json(result)),
+    match TemplateVersion::find_by_id(pool, &params.0, &params.1).await? {
+        Some(result) => Ok(HttpResponse::Ok().json(&result)),
         None => Err(ServerError::NotFound(format!(
             "unable to find template_version with id {}",
-            version_id
+            params.1
         ))),
     }
 }

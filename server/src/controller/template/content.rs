@@ -10,7 +10,7 @@ pub async fn handler(
 ) -> Result<HttpResponse, ServerError> {
     let pool: &Pool = &pool;
     match TemplateContent::find_by_slug(pool, template_slug.as_str()).await? {
-        Some(template) => Ok(HttpResponse::Ok().json(template)),
+        Some(template) => Ok(HttpResponse::Ok().json(&template)),
         None => Err(ServerError::NotFound(format!(
             "unable to find template with slug {}",
             template_slug

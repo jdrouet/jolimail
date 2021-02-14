@@ -25,24 +25,24 @@ impl BodyPayload {
 #[patch("/api/templates/{template_id}/versions/{version_id}")]
 pub async fn handler(
     pool: web::Data<Pool>,
-    web::Path((template_id, version_id)): web::Path<(Uuid, Uuid)>,
+    params: web::Path<(Uuid, Uuid)>,
     payload: web::Json<BodyPayload>,
 ) -> Result<HttpResponse, ServerError> {
     let pool: &Pool = &pool;
     payload.validate()?;
     let template = TemplateVersionUpdate::update(
-        &version_id,
-        &template_id,
+        &params.1,
+        &params.0,
         payload.content.clone(),
         payload.attributes.clone(),
     )
     .save(pool)
     .await?;
     match template {
-        Some(value) => Ok(HttpResponse::Ok().json(value)),
+        Some(value) => Ok(HttpResponse::Ok().json(&value)),
         None => Err(ServerError::NotFound(format!(
             "unable to find template version with id {}",
-            version_id
+            params.1
         ))),
     }
 }

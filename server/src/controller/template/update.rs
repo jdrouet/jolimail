@@ -28,7 +28,7 @@ pub async fn handler(
     };
     let result = body.save(pool).await?;
     match result {
-        Some(template) => Ok(HttpResponse::Ok().json(template)),
+        Some(template) => Ok(HttpResponse::Ok().json(&template)),
         None => Err(ServerError::NotFound(format!(
             "unable to find template version with id {}",
             params
