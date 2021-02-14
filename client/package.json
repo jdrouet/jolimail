@@ -89,7 +89,7 @@
     "import-sort-style-module": "^6.0.0",
     "jest-environment-jsdom-sixteen": "^1.0.3",
     "monaco-editor-webpack-plugin": "^3.0.0",
-    "nock": "^13.0.6",
+    "nock": "^13.0.7",
     "node-fetch": "^2.6.1",
     "prettier": "^2.2.1",
     "prettier-plugin-import-sort": "0.0.6",
