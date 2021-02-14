@@ -11,6 +11,8 @@
 ![Docker Pulls](https://img.shields.io/docker/pulls/jdrouet/jolimail)
 [![Docker Image Size (latest by date)](https://img.shields.io/docker/image-size/jdrouet/jolimail?sort=date)](https://hub.docker.com/r/jdrouet/jolimail)
 
+[![Gitter](https://badges.gitter.im/jolimail/community.svg)](https://gitter.im/jolimail/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+
 ## Why did we build jolimail?
 
 Jolimail comes from the frustration of using several email providers.
