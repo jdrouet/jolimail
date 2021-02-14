@@ -5,8 +5,8 @@
 **Jolimail** is an open source alternative to all the transactionnal email solutions.
 
 [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
-[![Build Status](https://travis-ci.com/jdrouet/jolimail.svg?branch=main)](https://travis-ci.com/jdrouet/jolimail)
-[![codecov](https://codecov.io/gh/jdrouet/jolimail/branch/mmain/graph/badge.svg)](https://codecov.io/gh/jdrouet/jolimail)
+[![pipeline status](https://gitlab.com/jeremie.drouet/jolimail/badges/main/pipeline.svg)](https://gitlab.com/jeremie.drouet/jolimail/-/commits/main)
+[![codecov](https://codecov.io/gh/jdrouet/jolimail/branch/main/graph/badge.svg)](https://codecov.io/gh/jdrouet/jolimail)
 
 ![Docker Pulls](https://img.shields.io/docker/pulls/jdrouet/jolimail)
 [![Docker Image Size (latest by date)](https://img.shields.io/docker/image-size/jdrouet/jolimail?sort=date)](https://hub.docker.com/r/jdrouet/jolimail)
