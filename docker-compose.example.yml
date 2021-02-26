@@ -16,7 +16,7 @@ services:
       - 1080:1080
 
   catapulte:
-    image: jdrouet/catapulte:master
+    image: jdrouet/catapulte:latest
     environment:
       RUST_LOG: info
       SMTP_HOSTNAME: smtp
@@ -32,7 +32,7 @@ services:
       - 3010:3000
 
   jolimail:
-    image: jdrouet/jolimail:master
+    image: jdrouet/jolimail:latest
     environment:
       DATABASE_HOST: database
       DATABASE_USER: postgres
