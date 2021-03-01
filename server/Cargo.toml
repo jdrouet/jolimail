@@ -18,7 +18,7 @@ lazy_static = "1.4.0"
 log = "0.4.14"
 regex = "1.4.3"
 serde = { features = ["derive"], version = "1.0.123" }
-serde_json = { version = "1.0.63" }
+serde_json = { version = "1.0.64" }
 slug = "0.1.4"
 sqlx = { version = "0.5.1", default-features = false, features = [
   "runtime-actix-rustls",
