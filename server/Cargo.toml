@@ -10,7 +10,7 @@ edition = "2018"
 actix-files = "0.6.0-beta.3"
 actix-http = "3.0.0-beta.3"
 actix-web = "4.0.0-beta.3"
-actix-rt = "2.1.0"
+actix-rt = "2.2.0"
 chrono = { version = "0.4.19", features = ["serde"] }
 env_logger = "0.8.3"
 jsonschema = { version = "0.6.1", default-features = false }
