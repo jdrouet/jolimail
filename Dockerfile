@@ -19,6 +19,7 @@ ENV USER=root
 WORKDIR /code
 RUN cargo init
 COPY server/Cargo.toml /code/Cargo.toml
+COPY server/Cargo.lock /code/Cargo.lock
 RUN cargo fetch
 
 COPY server/src /code/src

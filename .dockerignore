@@ -1,6 +1,2 @@
 client/node_modules
-packages/mrml-js/pkg
-packages/mrml-js/target
-packages/mrml-js/Cargo.lock
 server/target
-server/Cargo.lock
