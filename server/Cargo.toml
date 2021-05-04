@@ -32,7 +32,7 @@ sqlx = { version = "0.5.1", default-features = false, features = [
 uuid = { version = "0.8.2", features = ["serde"] }
 
 # Fix build in docker
-funty = "=1.1.0"
+funty = "=1.2.0"
 
 [dev-dependencies]
 env-test-util = "1.0.1"
