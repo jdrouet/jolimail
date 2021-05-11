@@ -57,15 +57,17 @@ const TemplateEditionView: React.FC<any> = () => {
   const { templateId } = useParams<LocationParams>();
   const history = useHistory();
   const [loading, setLoading] = useState<boolean>(false);
-  const { data: versions, isValidating: loadingVersionList, revalidate: reloadVersionList } = useTemplateVersionList(
-    templateId,
-  );
+  const {
+    data: versions,
+    isValidating: loadingVersionList,
+    revalidate: reloadVersionList,
+  } = useTemplateVersionList(templateId);
   const { data: template, isValidating: loadingTemplate, revalidate: reloadTemplate } = useTemplate(templateId);
 
-  const handleClickCreate = useCallback(() => history.push(getTemplateVersionCreatePath({ templateId })), [
-    history,
-    templateId,
-  ]);
+  const handleClickCreate = useCallback(
+    () => history.push(getTemplateVersionCreatePath({ templateId })),
+    [history, templateId],
+  );
   const handleClickVersion = useCallback(
     (version: TemplateVersion) =>
       history.push(
