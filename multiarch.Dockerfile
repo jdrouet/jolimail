@@ -30,6 +30,7 @@ ENV USER=root
 WORKDIR /code
 
 COPY server/Cargo.toml /code/Cargo.toml
+COPY server/migrations /code/migrations
 COPY server/src /code/src
 COPY --from=server-sources /code/.cargo /code/.cargo
 COPY --from=server-sources /code/vendor /code/vendor
@@ -47,12 +48,10 @@ LABEL maintaner="Jeremie Drouet <jeremie.drouet@gmail.com>"
 
 ENV ADDRESS=0.0.0.0
 ENV CLIENT_PATH=/client
-ENV MIGRATION_PATH=/migrations
 ENV PORT=3000
 ENV RUST_LOG=info
 
 COPY --from=client-builder /code/build /client
-COPY server/migrations /migrations
 COPY --from=server-builder /code/target/release/jolimail /usr/bin/jolimail
 
 EXPOSE 3000
