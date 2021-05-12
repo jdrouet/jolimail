@@ -1,7 +1,51 @@
 use super::client::{Pool, Transaction};
-use regex::Regex;
-use std::collections::HashSet;
-use std::path::PathBuf;
+
+const SCRIPTS_UP: [(&str, &str); 5] = [
+    (
+        "20200609_183000",
+        include_str!("../../../migrations/20200609_183000-up.sql"),
+    ),
+    (
+        "20200609_184000",
+        include_str!("../../../migrations/20200609_184000-up.sql"),
+    ),
+    (
+        "20200609_184001",
+        include_str!("../../../migrations/20200609_184001-up.sql"),
+    ),
+    (
+        "20200609_183002",
+        include_str!("../../../migrations/20200609_184002-up.sql"),
+    ),
+    (
+        "20200609_183003",
+        include_str!("../../../migrations/20200609_184003-up.sql"),
+    ),
+];
+
+#[cfg(test)]
+const SCRIPTS_DOWN: [(&str, &str); 5] = [
+    (
+        "20200609_183003",
+        include_str!("../../../migrations/20200609_184003-down.sql"),
+    ),
+    (
+        "20200609_183002",
+        include_str!("../../../migrations/20200609_184002-down.sql"),
+    ),
+    (
+        "20200609_184001",
+        include_str!("../../../migrations/20200609_184001-down.sql"),
+    ),
+    (
+        "20200609_184000",
+        include_str!("../../../migrations/20200609_184000-down.sql"),
+    ),
+    (
+        "20200609_183000",
+        include_str!("../../../migrations/20200609_183000-down.sql"),
+    ),
+];
 
 /// build sql query to create migration table
 fn create_migration_table_query(tablename: &str) -> String {
@@ -19,38 +63,9 @@ fn get_tablename_from_env() -> String {
     std::env::var("MIGRATION_TABLENAME").unwrap_or_else(|_| "migrations".into())
 }
 
-/// extract scripts path from environment variables
-fn get_script_path_from_env() -> Result<String, Error> {
-    std::env::var("MIGRATION_PATH").or(Err(Error::PathUndefined))
-}
-
-fn filter_script_entry(entry: std::fs::DirEntry) -> Option<String> {
-    let fname_regex = Regex::new(r"(\d{8}_\d{6})-(?:up|down)\.sql$").unwrap();
-    entry
-        .path()
-        .to_str()
-        .and_then(|value| fname_regex.captures(value))
-        .and_then(|capture| capture.get(1))
-        .map(|m| String::from(m.as_str()))
-}
-
-/// extract list of scripts from migration folder
-fn get_scripts(path: &str) -> Result<HashSet<String>, Error> {
-    debug!("get scripts from {}", path);
-    let path = PathBuf::from(path);
-    let entries = std::fs::read_dir(path)?;
-    Ok(entries
-        .filter_map(|entry| entry.ok())
-        .filter_map(filter_script_entry)
-        .collect())
-}
-
 #[derive(Debug)]
 pub enum Error {
     QueryError(String),
-    PathUndefined,
-    PathInvalid,
-    ScriptNotFound(String),
     ScriptFailed(String),
 }
 
@@ -60,36 +75,21 @@ impl From<sqlx::Error> for Error {
     }
 }
 
-impl From<std::io::Error> for Error {
-    fn from(_err: std::io::Error) -> Self {
-        Error::PathInvalid
-    }
-}
-
 /// util to run the database migration
 #[derive(Clone, Debug)]
 pub struct Migrator {
     tablename: String,
-    script_path: String,
-    scripts: HashSet<String>,
 }
 
 impl Migrator {
-    pub fn from_env() -> Result<Self, Error> {
+    pub fn from_env() -> Self {
         debug!("create migrator from env");
         let tablename = get_tablename_from_env();
-        let script_path = get_script_path_from_env()?;
-        Migrator::new(tablename, script_path)
+        Migrator::new(tablename)
     }
 
-    fn new(tablename: String, script_path: String) -> Result<Self, Error> {
-        debug!("create migrator from {} to {}", script_path, tablename);
-        let scripts = get_scripts(script_path.as_str())?;
-        Ok(Self {
-            tablename,
-            script_path,
-            scripts,
-        })
+    fn new(tablename: String) -> Self {
+        Self { tablename }
     }
 
     /// check if the script has been run
@@ -108,29 +108,16 @@ impl Migrator {
         Ok(count.0 > 0)
     }
 
-    fn get_script_path(&self, name: &str, up: bool) -> PathBuf {
-        debug!("get script path for {} ({})", name, up);
-        let direction = if up { "up" } else { "down" };
-        PathBuf::from(self.script_path.as_str()).join(format!("{}-{}.sql", name, direction))
-    }
-
-    fn get_script_content(&self, name: &str, up: bool) -> Result<String, Error> {
-        debug!("get script content for {} ({})", name, up);
-        match std::fs::read_to_string(self.get_script_path(name, up)) {
-            Ok(content) => Ok(content),
-            Err(_) => Err(Error::ScriptNotFound(name.to_string())),
-        }
-    }
-
     async fn execute_script<'a>(
         &self,
         conn: &mut Transaction<'_>,
         content: &str,
     ) -> Result<(), Error> {
-        match sqlx::query(content).execute(conn).await {
-            Ok(_) => Ok(()),
-            Err(err) => Err(Error::ScriptFailed(err.to_string())),
-        }
+        sqlx::query(content)
+            .execute(conn)
+            .await
+            .map(|_| ())
+            .map_err(|err| Error::ScriptFailed(err.to_string()))
     }
 
     async fn insert_migration<'a>(
@@ -144,6 +131,7 @@ impl Migrator {
         Ok(())
     }
 
+    #[cfg(test)]
     async fn delete_migration<'a>(
         &self,
         conn: &mut Transaction<'_>,
@@ -152,23 +140,6 @@ impl Migrator {
         debug!("delete migration for {}", name);
         let query = format!("DELETE FROM {} WHERE name = $1", self.tablename);
         sqlx::query(query.as_str()).bind(name).execute(conn).await?;
-        Ok(())
-    }
-
-    async fn run_script<'a>(
-        &self,
-        conn: &mut Transaction<'_>,
-        name: &str,
-        up: bool,
-    ) -> Result<(), Error> {
-        debug!("run script for {} ({})", name, up);
-        let content = self.get_script_content(name, up)?;
-        self.execute_script(conn, content.as_str()).await?;
-        if up {
-            self.insert_migration(conn, name).await?;
-        } else {
-            self.delete_migration(conn, name).await?;
-        }
         Ok(())
     }
 
@@ -181,12 +152,10 @@ impl Migrator {
             create_migration_table_query(self.tablename.as_str()).as_str(),
         )
         .await?;
-        let mut scripts: Vec<_> = self.scripts.iter().collect();
-        scripts.sort();
-        for item in scripts.iter() {
-            let name = item.as_str();
+        for (name, script) in SCRIPTS_UP.iter() {
             if !self.check_migrated(&mut conn, name).await? {
-                self.run_script(&mut conn, name, true).await?;
+                self.insert_migration(&mut conn, name).await?;
+                self.execute_script(&mut conn, script).await?;
             } else {
                 debug!("migration {} already done", name);
             }
@@ -205,13 +174,10 @@ impl Migrator {
             create_migration_table_query(self.tablename.as_str()).as_str(),
         )
         .await?;
-        let mut scripts: Vec<_> = self.scripts.iter().collect();
-        scripts.sort();
-        scripts.reverse();
-        for item in scripts.iter() {
-            let name = item.as_str();
+        for (name, script) in SCRIPTS_DOWN.iter() {
             if self.check_migrated(&mut conn, name).await? {
-                self.run_script(&mut conn, name, false).await?;
+                self.delete_migration(&mut conn, name).await?;
+                self.execute_script(&mut conn, script).await?;
             } else {
                 debug!("migration {} not done", name);
             }
@@ -226,30 +192,13 @@ pub mod tests {
     use super::*;
     use crate::service::database::client::tests::POOL;
 
-    pub fn get_migration_path() -> String {
-        std::env::var("TEST_MIGRATION_PATH").unwrap_or_else(|_| "migrations".into())
-    }
-
-    #[test]
-    #[serial]
-    fn create_from_env() {
-        std::env::remove_var("MIGRATION_PATH");
-        assert!(Migrator::from_env().is_err());
-        std::env::set_var("MIGRATION_PATH", "/fake/path");
-        assert!(Migrator::from_env().is_err());
-        std::env::set_var("MIGRATION_PATH", get_migration_path().as_str());
-        let migrator = Migrator::from_env().unwrap();
-        assert_ne!(migrator.scripts.len(), 0);
-    }
-
     #[actix_rt::test]
     #[serial]
     async fn run_up_down() {
         std::env::set_var("DATABASE_USER", "postgres");
         std::env::set_var("DATABASE_HOST", "localhost");
         std::env::set_var("DATABASE_DBNAME", "postgres");
-        std::env::set_var("MIGRATION_PATH", get_migration_path().as_str());
-        let migrator = Migrator::from_env().unwrap();
+        let migrator = Migrator::from_env();
         migrator.up(&POOL).await.unwrap();
         migrator.down(&POOL).await.unwrap();
     }

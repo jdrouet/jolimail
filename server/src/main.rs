@@ -70,7 +70,7 @@ fn get_bind() -> String {
 
 async fn migrate_database(pool: &Pool) {
     info!("running migrations");
-    let migrator = Migrator::from_env().expect("couldn't init migration");
+    let migrator = Migrator::from_env();
     migrator.up(pool).await.expect("couldn't run migration");
 }
 

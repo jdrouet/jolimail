@@ -1,8 +1,8 @@
 dev-run:
-	RUST_LOG=debug MIGRATION_PATH=./migrations DATABASE_HOST=localhost DATABASE_USER=postgres DATABASE_DBNAME=postgres PORT=3001 cargo run
+	RUST_LOG=debug DATABASE_URL=postgres://postgres@localhost/postgres PORT=3001 cargo run
 
 dev-test:
-	MIGRATION_PATH=./migrations DATABASE_HOST=localhost DATABASE_USER=postgres DATABASE_DBNAME=postgres cargo test
+	DATABASE_URL=postgres://postgres@localhost/postgres cargo test
 
 ci-coverage:
 	cargo tarpaulin --out Lcov
@@ -16,10 +16,10 @@ ci-test:
 	cargo test
 
 dev-coverage:
-	MIGRATION_PATH=./migrations DATABASE_HOST=localhost DATABASE_USER=postgres DATABASE_DBNAME=postgres cargo tarpaulin --out Lcov
+	DATABASE_URL=postgres://postgres@localhost/postgres cargo tarpaulin --out Lcov
 
 dev-test:
-	MIGRATION_PATH=./migrations DATABASE_HOST=localhost DATABASE_USER=postgres DATABASE_DBNAME=postgres cargo test ${FILTER}
+	DATABASE_URL=postgres://postgres@localhost/postgres cargo test ${FILTER}
 
 install-rustfmt:
 	rustup component add rustfmt
