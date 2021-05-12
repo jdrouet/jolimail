@@ -1,15 +1,14 @@
-import Badge from '@material-ui/core/Badge';
 import IconButton from '@material-ui/core/IconButton';
 import { makeStyles } from '@material-ui/core/styles';
 import Tooltip from '@material-ui/core/Tooltip';
-import NotificationIcon from '@material-ui/icons/Notifications';
 import SaveIcon from '@material-ui/icons/Save';
 import cn from 'classnames';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import AlertSnackbar from 'src/component/alert-snackbar';
 import Skeleton from 'src/component/skeleton';
-import { useValidator, validate as validateJsonSchema } from 'src/service/json-schema';
-import { useMRML, validate as validateTemplate } from 'src/service/mrml';
+import { useValidation as useJsonSchemaValidation } from 'src/service/json-schema';
+import { useValidation as useMrmlValidation } from 'src/service/mrml';
 import { getTemplateVersion, updateTemplateVersion } from 'src/service/server';
 
 import Editor from './editor';
@@ -39,24 +38,15 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const getNotificationTooltip = (templateValid: boolean | undefined, attributesValid: boolean | undefined) => {
-  if (!templateValid && !attributesValid) return 'Template and attributes are invalid...';
-  if (!templateValid) return 'Template invalid...';
-  if (!attributesValid) return 'Attributes invalid...';
-  return 'Everything looks fine';
-};
-
 const TemplateEditionView: React.FC<any> = () => {
   const classes = useStyles();
   const { templateId, versionId } = useParams<LocationParams>();
   const [loading, setLoading] = useState<boolean>(false);
   const [content, setContent] = useState<string>('');
   const [attributes, setAttributes] = useState<string>('');
-  const validator = useValidator();
-  const mrml = useMRML();
 
-  const attributesValid = validateJsonSchema(validator, attributes);
-  const templateValid = validateTemplate(mrml, content);
+  const attributesError = useJsonSchemaValidation(attributes);
+  const templateError = useMrmlValidation(content);
 
   useEffect(() => {
     setLoading(true);
@@ -87,15 +77,8 @@ const TemplateEditionView: React.FC<any> = () => {
       mainClassName={classes.root}
       rightElements={
         <React.Fragment>
-          <Badge color="secondary" overlap="circle" invisible={attributesValid && templateValid} variant="dot">
-            <Tooltip title={getNotificationTooltip(templateValid, attributesValid)}>
-              <IconButton color="inherit" disabled={attributesValid && templateValid}>
-                <NotificationIcon fontSize="small" />
-              </IconButton>
-            </Tooltip>
-          </Badge>
           <Tooltip title="Save template and attributes">
-            <IconButton color="inherit" disabled={loading || !attributesValid || !templateValid} onClick={handleSave}>
+            <IconButton color="inherit" disabled={loading} onClick={handleSave}>
               <SaveIcon fontSize="small" />
             </IconButton>
           </Tooltip>
@@ -106,8 +89,8 @@ const TemplateEditionView: React.FC<any> = () => {
         <Editor
           template={content}
           attributes={attributes}
-          templateInvalid={!templateValid}
-          attributesInvalid={!attributesValid}
+          attributesInvalid={Boolean(attributesError)}
+          templateInvalid={Boolean(templateError)}
           onChangeTemplate={setContent}
           onChangeAttributes={setAttributes}
         />
@@ -115,6 +98,8 @@ const TemplateEditionView: React.FC<any> = () => {
       <section className={classes.grow}>
         <Preview value={content} />
       </section>
+      <AlertSnackbar message={attributesError} severity="error" />
+      <AlertSnackbar message={templateError} severity="error" />
     </Skeleton>
   );
 };
