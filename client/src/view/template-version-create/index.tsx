@@ -8,7 +8,7 @@ import TextField from '@material-ui/core/TextField';
 import { AxiosError } from 'axios';
 import React, { useCallback, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
-import AlertSnackbar, { useAlertState } from 'src/component/alert-snackbar';
+import AlertSnackbar from 'src/component/alert-snackbar';
 import Skeleton from 'src/component/skeleton';
 import { createTemplateVersion } from 'src/service/server';
 import { getRoute as getTemplateVersionEditionRoute } from 'src/view/template-version-edition';
@@ -41,8 +41,8 @@ const TemplateCreateView: React.FC<any> = () => {
   const classes = useStyles();
   const history = useHistory();
   const { templateId } = useParams<LocationParams>();
+  const [error, setError] = useState<string>();
 
-  const { onOpen: openAlert, ...alertState } = useAlertState();
   const [loading, setLoading] = useState<boolean>(false);
   const [name, setName] = useState<string>('');
 
@@ -56,12 +56,12 @@ const TemplateCreateView: React.FC<any> = () => {
         .catch((err: AxiosError) => {
           setLoading(false);
           if (err.response?.status === 409) {
-            return openAlert('The name already exists', 'warning');
+            return setError('The name already exists');
           }
-          return openAlert('Something went wrong...', 'error');
+          return setError('Something went wrong...');
         });
     },
-    [history, templateId, name, openAlert],
+    [history, templateId, name, setError],
   );
 
   const formValid = validateInput(name);
@@ -93,7 +93,7 @@ const TemplateCreateView: React.FC<any> = () => {
           </CardActions>
         </Card>
       </form>
-      <AlertSnackbar {...alertState} />
+      <AlertSnackbar message={error} severity="error" />
     </Skeleton>
   );
 };

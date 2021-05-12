@@ -1,44 +1,33 @@
-import Snackbar from '@material-ui/core/Snackbar';
+import Snackbar, { SnackbarOrigin } from '@material-ui/core/Snackbar';
 import Alert, { AlertProps } from '@material-ui/lab/Alert';
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
-type AlertState = {
+export type AlertSnackbarProps = {
   message?: string;
-  open: boolean;
+  origin?: SnackbarOrigin;
   severity: AlertProps['severity'];
 };
 
-type HandleOpenAlert = (message: string, severity: AlertProps['severity']) => void;
+const AlertSnackbar: React.FC<AlertSnackbarProps> = ({ message, origin, severity }) => {
+  const [open, setOpen] = useState<boolean>(false);
+  const [content, setContent] = useState<string>();
 
-export type AlertSnackbarProps = AlertState & { onClose: (event: any, reason?: string) => void };
+  useEffect(() => {
+    if (message) {
+      setContent(message);
+    }
+    setOpen(Boolean(message));
+  }, [message, setContent, setOpen]);
 
-export const useAlertState = () => {
-  const [state, setState] = useState<AlertState>({
-    open: false,
-    severity: 'error',
-  });
-
-  const onClose = () => setState((previous) => ({ ...previous, open: false }));
-
-  const onOpen: HandleOpenAlert = (message: string, severity: AlertProps['severity']) =>
-    setState({
-      open: true,
-      message,
-      severity,
-    });
-
-  return { ...state, onClose, onOpen };
-};
-
-const AlertSnackbar: React.FC<AlertSnackbarProps> = ({ message, onClose, open, severity }) => {
-  const handleClose = (event: any, reason?: string) => {
+  const handleClose = useCallback((_event: any, reason?: string) => {
     if (reason === 'clickaway') return;
-    return onClose(event, reason);
-  };
+    return setOpen(false);
+  }, []);
+
   return (
-    <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+    <Snackbar anchorOrigin={origin} autoHideDuration={6000} onClose={handleClose} open={open}>
       <Alert elevation={6} onClose={handleClose} severity={severity} variant="filled">
-        {message}
+        {content}
       </Alert>
     </Snackbar>
   );
