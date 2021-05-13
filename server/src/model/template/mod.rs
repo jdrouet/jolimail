@@ -14,7 +14,7 @@ lazy_static! {
         "id, slug, title, description, current_version_id, created_at, updated_at, deleted_at"
     );
     pub static ref QUERY_LIST_ALL: String = format!(
-        "SELECT {} FROM templates WHERE deleted_at IS NULL ORDER BY updated_at DESC",
+        "SELECT {} FROM templates WHERE deleted_at IS NULL ORDER BY updated_at DESC LIMIT $1 OFFSET $2",
         COLUMNS.as_str()
     );
     pub static ref QUERY_FIND_BY_ID: String = format!(
@@ -54,12 +54,18 @@ impl From<PgRow> for Template {
 }
 
 impl Template {
-    pub async fn list<'a, X>(conn: X) -> Result<Vec<Template>, ServerError>
+    pub async fn list<'a, X>(
+        conn: X,
+        offset: usize,
+        limit: usize,
+    ) -> Result<Vec<Template>, ServerError>
     where
         X: sqlx::Executor<'a, Database = sqlx::Postgres>,
     {
         debug!("list templates");
         let list: Vec<Template> = sqlx::query_as::<_, Template>(QUERY_LIST_ALL.as_str())
+            .bind(limit as u32)
+            .bind(offset as u32)
             .fetch_all(conn)
             .await?;
         Ok(list)
@@ -75,9 +81,6 @@ impl Template {
             .fetch_optional(conn)
             .await?;
         Ok(result)
-        // let stmt = client.prepare(QUERY_FIND_BY_ID.as_str()).await?;
-        // let rows = client.query(&stmt, &[&id]).await?;
-        // Ok(rows.first().map(Template::from))
     }
 
     pub async fn unset_current_version<'a, X>(
@@ -89,10 +92,10 @@ impl Template {
         X: sqlx::Executor<'a, Database = sqlx::Postgres>,
     {
         let result = sqlx::query("UPDATE templates SET current_version_id = null WHERE id = $1 AND current_version_id = $2")
-        .bind(template_id)
-        .bind(version_id)
-        .execute(conn)
-        .await?;
+            .bind(template_id)
+            .bind(version_id)
+            .execute(conn)
+            .await?;
         Ok(result.rows_affected())
     }
 

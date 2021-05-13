@@ -64,7 +64,8 @@ export const useTemplate = function (templateId?: string) {
   return useSwr<Template>(templateId ? [`/api/templates/${templateId}`] : null, getter);
 };
 
-export const useTemplateList = () => useSwr<Template[]>('/api/templates');
+export const useTemplateList = (offset?: number, limit?: number) =>
+  useSwr<Template[]>(['/api/templates', offset, limit], (url, offset, limit) => getter(url, { offset, limit }));
 
 export const getTemplateContent = (id: string): Promise<string> => getter(`/api/templates/${id}/content`);
 
