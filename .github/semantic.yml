@@ -19,6 +19,7 @@ types:
 scopes:
   - ci
   - deps
+  - deps-dev
   - style
   - readme
   - wiki
