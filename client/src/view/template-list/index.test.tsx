@@ -24,11 +24,11 @@ const renderApp = () =>
   );
 
 test('empty case', async () => {
-  const scope = nock('http://localhost').get('/api/templates').once().reply(200, []);
+  const scope = nock('http://localhost').get('/api/templates').query({ offset: 0, limit: 20 }).once().reply(200, []);
   const { container } = renderApp();
   const loading = await findByTestId(container, 'loading');
   await waitForElementToBeRemoved(loading);
-  await findByAltText(container, 'empty template list');
+  await findByAltText(container, 'The are no template available...');
   const button = container.querySelector('button[data-action="create-template"]');
   fireEvent.click(button!);
   await findByTestId(container, 'create-view');
@@ -38,6 +38,7 @@ test('empty case', async () => {
 test('with some values', async () => {
   const scope = nock('http://localhost')
     .get('/api/templates')
+    .query({ offset: 0, limit: 20 })
     .once()
     .reply(200, [
       {
