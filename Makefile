@@ -1,4 +1,6 @@
 TARGET_PLATFORM?=linux/amd64,linux/386,linux/arm64,linux/arm/v7
+TARGET_PLATFORM_ALPINE?=linux/amd64,linux/arm64
+BUILD_ARG?=--push
 
 build-alpine:
 	docker build \
@@ -9,8 +11,28 @@ build-alpine:
 		--label org.label-schema.vcs-ref=${shell git rev-parse --short HEAD} \
 		.
 
-publish:
-	docker buildx build --push \
+build-debian:
+	docker build \
+		--tag jdrouet/jolimail:${VERSION}-alpine \
+		--tag jdrouet/jolimail:alpine \
+		--label org.label-schema.version=${VERSION} \
+		--label org.label-schema.vcs-ref=${shell git rev-parse --short HEAD} \
+		.
+
+build: build-alpine build-debian
+
+publish-alpine:
+	docker buildx build ${BUILD_ARG} \
+		--file multiarch-alpine.Dockerfile \
+		--platform ${TARGET_PLATFORM_ALPINE} \
+		--tag jdrouet/jolimail:${VERSION}-alpine \
+		--tag jdrouet/jolimail:alpine \
+		--label org.label-schema.version=${VERSION} \
+		--label org.label-schema.vcs-ref=${shell git rev-parse --short HEAD} \
+		.
+
+publish-debian:
+	docker buildx build ${BUILD_ARG} \
 		--file multiarch.Dockerfile \
 		--platform ${TARGET_PLATFORM} \
 		--tag jdrouet/jolimail:${VERSION} \
@@ -18,6 +40,8 @@ publish:
 		--label org.label-schema.version=${VERSION} \
 		--label org.label-schema.vcs-ref=${shell git rev-parse --short HEAD} \
 		.
+
+publish: publish-alpine publish-debian
 
 ci-install-buildx:
 	sudo rm -rf /var/lib/apt/lists/*

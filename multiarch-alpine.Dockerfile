@@ -13,7 +13,7 @@ ENV NODE_ENV=production
 RUN npm run build
 
 # fetch the vendor with the builder platform to avoid qemu issues
-FROM --platform=$BUILDPLATFORM rust:1-slim-buster AS server-sources
+FROM --platform=$BUILDPLATFORM rust:1-alpine AS server-sources
 
 ENV USER=root
 
@@ -24,7 +24,9 @@ COPY server/Cargo.lock /code/Cargo.lock
 RUN mkdir -p /code/.cargo \
   && cargo vendor > /code/.cargo/config
 
-FROM rust:1-slim-buster AS server-builder
+FROM rust:1-alpine AS server-builder
+
+RUN apk add --no-cache libc-dev
 
 ENV USER=root
 
@@ -39,7 +41,7 @@ COPY --from=server-sources /code/vendor /code/vendor
 
 RUN cargo build --release --offline
 
-FROM debian:buster-slim
+FROM alpine:3
 
 LABEL org.label-schema.schema-version="1.0"
 LABEL org.label-schema.docker.cmd="docker run -d -p 3000:3000 -e RUST_LOG=info -e DATABASE_HOST=localhost -e DATABASE_USER=postgres -e DATABASE_DBNAME=postgres jdrouet/jolimail"
