@@ -27,4 +27,4 @@ scopes:
   - test
   - client
   - server
-
+  - version
