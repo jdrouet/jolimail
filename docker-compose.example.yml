@@ -32,11 +32,9 @@ services:
       - 3010:3000
 
   jolimail:
-    image: jdrouet/jolimail:latest
+    image: jdrouet/jolimail:canary-alpine
     environment:
-      DATABASE_HOST: database
-      DATABASE_USER: postgres
-      DATABASE_DBNAME: postgres
+      DATABASE_URL: postgres://postgres@database/postgres
       EXAMPLE_CATAPULTE_BASE_URL: http://localhost:3010
       RUST_LOG: info
     networks:
