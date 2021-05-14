@@ -14,11 +14,11 @@ const SCRIPTS_UP: [(&str, &str); 5] = [
         include_str!("../../../migrations/20200609_184001-up.sql"),
     ),
     (
-        "20200609_183002",
+        "20200609_184002",
         include_str!("../../../migrations/20200609_184002-up.sql"),
     ),
     (
-        "20200609_183003",
+        "20200609_184003",
         include_str!("../../../migrations/20200609_184003-up.sql"),
     ),
 ];
@@ -26,11 +26,11 @@ const SCRIPTS_UP: [(&str, &str); 5] = [
 #[cfg(test)]
 const SCRIPTS_DOWN: [(&str, &str); 5] = [
     (
-        "20200609_183003",
+        "20200609_184003",
         include_str!("../../../migrations/20200609_184003-down.sql"),
     ),
     (
-        "20200609_183002",
+        "20200609_184002",
         include_str!("../../../migrations/20200609_184002-down.sql"),
     ),
     (
