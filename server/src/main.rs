@@ -12,7 +12,6 @@ mod error;
 mod model;
 mod service;
 
-use actix_files::Files;
 use actix_web::{middleware, web, App, HttpServer};
 use std::env;
 
@@ -25,43 +24,12 @@ macro_rules! create_app {
     };
 }
 
-macro_rules! bind_services {
-    ($app: expr) => {
-        $app.service(controller::settings::handler)
-            .service(controller::status::handler)
-            .service(controller::template_version::create::handler)
-            .service(controller::template_version::get::handler)
-            .service(controller::template_version::list::handler)
-            .service(controller::template_version::update::handler)
-            .service(controller::template_version::delete::handler)
-            .service(controller::template::create::handler)
-            .service(controller::template::content::handler)
-            .service(controller::template::get::handler)
-            .service(controller::template::list::handler)
-            .service(controller::template::update::handler)
-            .service(controller::template::delete::handler)
-    };
-}
-
 fn get_address() -> String {
-    match env::var("ADDRESS") {
-        Ok(value) => value,
-        Err(_) => "localhost".into(),
-    }
+    env::var("ADDRESS").unwrap_or_else(|_| "localhost".into())
 }
 
 fn get_port() -> String {
-    match env::var("PORT") {
-        Ok(value) => value,
-        Err(_) => "3000".into(),
-    }
-}
-
-fn get_client() -> String {
-    match env::var("CLIENT_PATH") {
-        Ok(value) => value,
-        Err(_) => "static".into(),
-    }
+    env::var("PORT").unwrap_or_else(|_| "3000".into())
 }
 
 fn get_bind() -> String {
@@ -83,12 +51,12 @@ async fn main() -> std::io::Result<()> {
 
     info!("starting server");
     HttpServer::new(move || {
-        bind_services!(create_app!()
+        create_app!()
             .data(pool.clone())
             .wrap(middleware::DefaultHeaders::new().header("X-Version", "0.1.1"))
             .wrap(middleware::Logger::default())
-            .wrap(middleware::Compress::default()))
-        .service(Files::new("/", get_client()).index_file("index.html"))
+            .wrap(middleware::Compress::default())
+            .configure(controller::config)
     })
     .bind(get_bind())?
     .run()
@@ -105,7 +73,12 @@ mod tests {
     use env_test_util::TempEnvVar;
 
     pub async fn execute_request(req: Request) -> ServiceResponse {
-        let mut app = test::init_service(bind_services!(create_app!().data(POOL.clone()))).await;
+        let mut app = test::init_service(
+            create_app!()
+                .data(POOL.clone())
+                .configure(controller::config),
+        )
+        .await;
         test::call_service(&mut app, req).await
     }
 
