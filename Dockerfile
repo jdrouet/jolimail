@@ -12,7 +12,7 @@ FROM client-base AS client-builder
 ENV NODE_ENV=production
 RUN npm run build
 
-FROM rust:1-slim-buster AS server-builder
+FROM rust:1.52-slim-buster AS server-builder
 
 ENV USER=root
 

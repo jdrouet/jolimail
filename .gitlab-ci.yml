@@ -24,6 +24,7 @@ client-test:
 
 server-test:
   stage: test
+  image: rust:1.52
   variables:
     RUST_LOG: info
     DATABASE_HOST: postgres
