@@ -24,7 +24,25 @@ client-test:
 
 server-test:
   stage: test
+  variables:
+    RUST_LOG: info
+    DATABASE_HOST: postgres
+    DATABASE_USER: postgres
+    DATABASE_DBNAME: postgres
+    MIGRATION_PATH: migrations
+    TEST_MIGRATION_PATH: migrations
+    POSTGRES_HOST_AUTH_METHOD: trust
+  services:
+    - name: postgres:12-alpine
+      alias: postgres
+  script:
+    - make -C server ci-test
+
+server-coverage:
+  stage: test
   image: xd009642/tarpaulin
+  # tarpaulin if broken for now
+  allow_failure: true
   variables:
     RUST_LOG: info
     DATABASE_HOST: postgres
