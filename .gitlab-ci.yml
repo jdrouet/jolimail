@@ -62,6 +62,8 @@ server-coverage:
 docker-staging:
   stage: build
   image: jdrouet/docker-with-buildx
+  except:
+    - main
   services:
     - docker:dind
   script:
