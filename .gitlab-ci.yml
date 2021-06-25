@@ -66,9 +66,11 @@ docker-staging:
     - main
   services:
     - docker:dind
+  parallel:
+    matrix:
+      - DOCKERFILE: Dockerfile
+      - DOCKERFILE: alpine.Dockerfile
+      - DOCKERFILE: multiarch.Dockerfile
+      - DOCKERFILE: multiarch-alpine.Dockerfile
   script:
-    - docker buildx version
-    - docker buildx build --tag jolimail-debian --file Dockerfile .
-    - docker buildx build --tag jolimail-debian --file alpine.Dockerfile .
-    - docker buildx build --tag jolimail-multiarch-debian --file multiarch.Dockerfile .
-    - docker buildx build --tag jolimail-multiarch-alpine --file multiarch-alpine.Dockerfile .
+    - docker buildx build --tag jolimail-local --file $DOCKERFILE .
