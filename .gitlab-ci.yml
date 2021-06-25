@@ -26,6 +26,8 @@ client-test:
 server-test:
   stage: test
   image: rust:1.52
+  tags:
+    - private-runner
   variables:
     RUST_LOG: info
     DATABASE_HOST: postgres
@@ -45,6 +47,8 @@ server-coverage:
   image: xd009642/tarpaulin
   # tarpaulin if broken for now
   allow_failure: true
+  tags:
+    - private-runner
   variables:
     RUST_LOG: info
     DATABASE_HOST: postgres
@@ -62,6 +66,8 @@ server-coverage:
 docker-staging:
   stage: build
   image: jdrouet/docker-with-buildx
+  tags:
+    - private-runner
   except:
     - main
   services:
