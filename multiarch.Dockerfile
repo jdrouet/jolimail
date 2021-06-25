@@ -13,7 +13,7 @@ ENV NODE_ENV=production
 RUN npm run build
 
 # fetch the vendor with the builder platform to avoid qemu issues
-FROM --platform=$BUILDPLATFORM rust:1-slim-buster AS server-sources
+FROM --platform=$BUILDPLATFORM rust:1.52-slim-buster AS server-sources
 
 ENV USER=root
 
@@ -24,7 +24,7 @@ COPY server/Cargo.lock /code/Cargo.lock
 RUN mkdir -p /code/.cargo \
   && cargo vendor > /code/.cargo/config
 
-FROM rust:1-slim-buster AS server-builder
+FROM rust:1.52-slim-buster AS server-builder
 
 ENV USER=root
 
