@@ -1,6 +1,7 @@
 stages:
   - lint
   - test
+  - build
 
 client-lint:
   stage: lint
@@ -57,3 +58,15 @@ server-coverage:
       alias: postgres
   script:
     - make -C server ci-coverage
+
+docker-staging:
+  stage: build
+  image: jdrouet/docker-with-buildx
+  services:
+    - docker:dind
+  script:
+    - docker buildx version
+    - docker buildx build --tag jolimail-debian --file Dockerfile .
+    - docker buildx build --tag jolimail-debian --file alpine.Dockerfile .
+    - docker buildx build --tag jolimail-multiarch-debian --file multiarch.Dockerfile .
+    - docker buildx build --tag jolimail-multiarch-alpine --file multiarch-alpine.Dockerfile .
