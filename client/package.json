@@ -66,13 +66,13 @@
     "react-dnd-html5-backend": "^14.0.1",
     "react-dom": "^17.0.2",
     "react-monaco-editor": "^0.43.0",
-    "react-router-dom": "^5.2.1",
+    "react-router-dom": "^5.3.0",
     "swr": "^0.5.6"
   },
   "devDependencies": {
     "@storybook/addon-actions": "^6.3.8",
     "@storybook/addon-knobs": "^6.3.1",
-    "@storybook/addon-links": "^6.3.7",
+    "@storybook/addon-links": "^6.3.8",
     "@storybook/addons": "^6.3.8",
     "@storybook/preset-create-react-app": "^3.2.0",
     "@storybook/react": "^6.3.7",
