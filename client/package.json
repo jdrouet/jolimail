@@ -85,7 +85,7 @@
     "@types/node": "^16.9.4",
     "@types/react": "^17.0.22",
     "@types/react-dom": "^17.0.9",
-    "@types/react-router-dom": "^5.1.9",
+    "@types/react-router-dom": "^5.3.0",
     "fetch-mock": "^9.11.0",
     "import-sort-style-module": "^6.0.0",
     "jest-environment-jsdom-sixteen": "^2.0.0",
