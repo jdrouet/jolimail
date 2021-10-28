@@ -251,6 +251,7 @@ checksum = "efa60d2eadd8b12a996add391db32bd1153eac697ba4869660c0016353611426"
 dependencies = [
  "getrandom 0.2.0",
  "once_cell",
+ "serde",
  "version_check",
 ]
 
@@ -380,6 +381,12 @@ name = "bumpalo"
 version = "3.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2e8c087f005730276d1096a652e92a8bacee2e2472bcc9715a74d2bec38b5820"
+
+[[package]]
+name = "bytecount"
+version = "0.6.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "72feb31ffc86498dacdbd0fcebb56138e7177a8cc5cea4516031d15ae85a742e"
 
 [[package]]
 name = "byteorder"
@@ -628,9 +635,9 @@ dependencies = [
 
 [[package]]
 name = "fraction"
-version = "0.8.0"
+version = "0.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "78d24d088325f939faaf806483fbfac0548e43018606bfe7a44abc83f6dc75ea"
+checksum = "aba3510011eee8825018be07f08d9643421de007eaf62a3bde58d89b058abfa7"
 dependencies = [
  "lazy_static",
  "num",
@@ -900,6 +907,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "iso8601"
+version = "0.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "cee08a007a59a8adfc96f69738ddf59e374888dfd84b49c4b916543067644d58"
+dependencies = [
+ "nom 5.1.2",
+]
+
+[[package]]
 name = "itoa"
 version = "0.4.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -940,23 +956,27 @@ dependencies = [
 
 [[package]]
 name = "jsonschema"
-version = "0.12.2"
+version = "0.13.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f866fd6aaffb6be509b844f988b8c8cef3194418a08f9223294c4c676f2b497f"
+checksum = "dc76cf62dfe956360a07295747c3afd6164a94b5f4f20980d63d2ec14d38c6ea"
 dependencies = [
  "ahash 0.7.0",
  "base64",
+ "bytecount",
  "fancy-regex",
  "fraction",
+ "iso8601",
  "itoa",
  "lazy_static",
  "num-cmp",
  "parking_lot",
  "percent-encoding",
  "regex",
+ "serde",
  "serde_json",
  "time 0.3.3",
  "url",
+ "uuid",
 ]
 
 [[package]]
@@ -1102,6 +1122,16 @@ checksum = "5a33c1b55807fbed163481b5ba66db4b2fa6cde694a5027be10fb724206c5897"
 dependencies = [
  "socket2 0.3.17",
  "winapi",
+]
+
+[[package]]
+name = "nom"
+version = "5.1.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ffb4262d26ed83a1c0a33a38fe2bb15797329c85770da05e6b828ddb782627af"
+dependencies = [
+ "memchr",
+ "version_check",
 ]
 
 [[package]]
@@ -1678,7 +1708,7 @@ checksum = "74c70f0235b9925cbb106c52af1a28b5ea4885a8b851e328b8562e257a389c2d"
 dependencies = [
  "lazy_static",
  "maplit",
- "nom",
+ "nom 6.0.1",
  "regex",
  "unicode_categories",
 ]
