@@ -17,7 +17,7 @@ jsonschema = { version = "0.14.0", default-features = false }
 lazy_static = "1.4.0"
 log = "0.4.14"
 regex = "1.5.4"
-serde = { features = ["derive"], version = "1.0.134" }
+serde = { features = ["derive"], version = "1.0.135" }
 serde_json = { version = "1.0.78" }
 slug = "0.1.4"
 sqlx = { version = "0.5.1", default-features = false, features = [
